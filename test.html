@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>اختبار النظام | يوزرسيف</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <script src="data/schema.js"></script>
+  <script src="assets/js/layout.js" defer></script>
+
+  <style>
+    .test-list { list-style: none; padding: 0; display: grid; gap: var(--s-1); }
+    .test-list li { padding: var(--s-1) var(--s-2); border-radius: var(--r-sm); }
+    .test-list .pass { background: var(--success-bg); color: var(--success); }
+    .test-list .fail { background: var(--error-bg); color: var(--error); }
+    .summary { font-weight: var(--fw-bold); }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main id="main" class="container section stack-lg">
+    <h1>صفحة اختبار النظام</h1>
+    <p class="summary" id="summary">جارٍ التشغيل...</p>
+
+    <section>
+      <h2>1) نتائج الفحص</h2>
+      <ul class="test-list" id="results"></ul>
+    </section>
+
+    <section>
+      <h2>2) الخدمات من data.json</h2>
+      <div class="grid grid--3" id="services"></div>
+    </section>
+
+    <section>
+      <h2>3) الأزرار والحالات</h2>
+      <div class="row" id="badges"></div>
+      <div class="row" style="margin-block-start:16px">
+        <button class="btn btn--primary">ابدأ طلبك</button>
+        <button class="btn btn--secondary">شاهد أعمالنا</button>
+        <button class="btn btn--ghost">نص</button>
+        <button class="btn btn--primary" id="toast-btn">جرّب التنبيه</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>4) التايم لاين لكل حالة</h2>
+      <div class="stack-lg" id="timelines"></div>
+    </section>
+
+    <section class="stack">
+      <h2>5) عداد المقاسات (الكمية الكلية: 24)</h2>
+      <div class="row" id="sizes-row"></div>
+      <div class="counter" id="counter"></div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <div class="toasts" id="toasts"></div>
+
+  <script>
+    // تجميع نتائج الفحص
+    let results = [];
+
+    function check(name, ok, detail) {
+      results.push({ name: name, ok: ok, detail: detail || "" });
+      console.log((ok ? "PASS" : "FAIL") + " - " + name, detail || "");
+    }
+
+    function renderResults() {
+      let list = document.getElementById("results");
+      let passed = results.filter(function (r) { return r.ok; }).length;
+      list.innerHTML = results.map(function (r) {
+        return '<li class="' + (r.ok ? "pass" : "fail") + '">' +
+          (r.ok ? "✔ " : "✘ ") + r.name +
+          (r.detail ? " — " + r.detail : "") + "</li>";
+      }).join("");
+      document.getElementById("summary").textContent =
+        "نجح " + passed + " من " + results.length + " فحص";
+    }
+
+    // عرض كروت الخدمات (بدون صور لأنها لسه مش موجودة)
+    function renderServices(data) {
+      let box = document.getElementById("services");
+      box.innerHTML = data.services.map(function (s) {
+        let price = s.priceMode === "from"
+          ? 'ابتداءً من <span class="num">' + s.priceFrom + "</span> ج.م"
+          : "حسب الطلب";
+        return '<article class="card card--hover">' +
+          '<div class="card__media"><span class="tag-sample">صورة تجريبية</span></div>' +
+          '<div class="card__body"><h3 class="h4">' + s.name + "</h3>" +
+          '<p class="caption">' + price + ' <span class="tag-sample">تجريبي</span></p>' +
+          '<p class="caption">النوع: ' + s.formType + " | الحقول: " + (s.fields.join("، ") || "—") + "</p>" +
+          '<a class="btn btn--secondary btn--sm" href="request.html?service=' + s.id + '">ابدأ الطلب</a>' +
+          "</div></article>";
+      }).join("");
+    }
+
+    function renderBadges() {
+      document.getElementById("badges").innerHTML = STATUSES.map(function (st) {
+        return '<span class="badge ' + STATUS_BADGE[st] + '">' + STATUS_LABELS[st] + "</span>";
+      }).join("");
+    }
+
+    function renderTimelines() {
+      let box = document.getElementById("timelines");
+      box.innerHTML = STATUSES.map(function (st) {
+        let steps = getTimelineState(st);
+        let items = steps.map(function (step, i) {
+          return '<li class="is-' + step.state + '"><span class="timeline__dot">' + (i + 1) +
+            "</span><span>" + step.label + "</span></li>";
+        }).join("");
+        return '<div class="card"><div class="card__body"><span class="badge ' + STATUS_BADGE[st] + '">' +
+          STATUS_LABELS[st] + '</span><ol class="timeline">' + items + "</ol>" +
+          '<p class="caption">' + NEXT_STEP[st] + "</p></div></div>";
+      }).join("");
+    }
+
+    // عداد المقاسات التفاعلي
+    function setupCounter() {
+      let total = 24;
+      let sizes = { S: 4, M: 8, L: 6, XL: 2, XXL: 0 };
+      let row = document.getElementById("sizes-row");
+      let counter = document.getElementById("counter");
+
+      function update() {
+        let sum = sumSizes(sizes);
+        let ok = sum === total;
+        counter.className = "counter" + (ok ? "" : " is-bad");
+        counter.textContent = ok
+          ? "المجموع " + sum + " من " + total + " قطعة ✔"
+          : "المجموع " + sum + " من " + total + " قطعة، راجع المقاسات";
+      }
+
+      row.innerHTML = Object.keys(sizes).map(function (k) {
+        return '<label class="field"><span class="field__label">' + k + "</span>" +
+          '<input class="input" type="number" min="0" style="width:90px" data-size="' + k + '" value="' + sizes[k] + '"></label>';
+      }).join("");
+
+      row.addEventListener("input", function (e) {
+        let key = e.target.getAttribute("data-size");
+        if (!key) return;
+        sizes[key] = Number(e.target.value) || 0;
+        update();
+      });
+      update();
+    }
+
+    function showToast(text) {
+      let box = document.getElementById("toasts");
+      let el = document.createElement("div");
+      el.className = "toast toast--success";
+      el.textContent = text;
+      box.appendChild(el);
+      setTimeout(function () { el.remove(); }, 2500);
+    }
+
+    async function runTests() {
+      // فحص الاتصال بالـ CSS والـ layout
+      let teal = getComputedStyle(document.documentElement).getPropertyValue("--teal-800").trim();
+      check("tokens.css محمّل", teal !== "", teal);
+      check("اتجاه الصفحة RTL", document.documentElement.dir === "rtl");
+      check("الهيدر ظهر من layout.js", !!document.querySelector(".site-header"));
+      check("الفوتر ظهر من layout.js", !!document.querySelector(".site-footer"));
+      check("schema.js محمّل", typeof STATUSES !== "undefined" && STATUSES.length === 6);
+
+      // فحص الخط (يحتاج إنترنت)
+      await document.fonts.ready;
+      let fontOk = document.fonts.check('16px "IBM Plex Sans Arabic"');
+      check("خط IBM Plex Sans Arabic اشتغل", fontOk, fontOk ? "" : "تأكد من الإنترنت");
+
+      // تحميل الداتا
+      let data = null;
+      try {
+        let res = await fetch("data/data.json");
+        data = await res.json();
+        check("data.json اتقرأ كـ JSON صحيح", true);
+      } catch (err) {
+        check("data.json اتقرأ كـ JSON صحيح", false, "شغّل الصفحة من Live Server مش من الملف مباشرة");
+        console.log("Fetch error:", err);
+        renderResults();
+        return;
+      }
+
+      check("عدد الخدمات 10", data.services.length === 10, String(data.services.length));
+      check("عدد الأعمال 12", data.portfolio.length === 12, String(data.portfolio.length));
+      check("عدد الطلبات 12", data.orders.length === 12, String(data.orders.length));
+
+      // كل الحالات الست موجودة في الطلبات
+      let used = {};
+      data.orders.forEach(function (o) { used[o.status] = true; });
+      let missing = STATUSES.filter(function (s) { return !used[s]; });
+      check("كل الحالات الست موجودة في الطلبات", missing.length === 0, missing.join(", "));
+
+      // روابط الداتا سليمة
+      let catIds = data.categories.map(function (c) { return c.id; });
+      let badCat = data.services.filter(function (s) { return catIds.indexOf(s.category) === -1; });
+      check("كل خدمة لها تصنيف موجود", badCat.length === 0);
+
+      let srvIds = data.services.map(function (s) { return s.id; });
+      let badSrv = data.orders.filter(function (o) { return srvIds.indexOf(o.serviceId) === -1; });
+      check("كل طلب مربوط بخدمة موجودة", badSrv.length === 0);
+
+      // منطق النماذج: لا مقاسات للهدايا
+      let giftWithSizes = data.services.filter(function (s) {
+        return s.formType === "gift" && s.fields.indexOf("sizes") !== -1;
+      });
+      check("الهدايا وأغطية الموبايل بدون حقل مقاسات", giftWithSizes.length === 0);
+
+      // مجموع المقاسات: المتوقع طلب واحد غير مطابق وهو YS-1041
+      let mismatched = data.orders.filter(function (o) {
+        return o.specs && o.specs.sizes && sumSizes(o.specs.sizes) !== o.quantity;
+      }).map(function (o) { return o.id; });
+      check("طلب واحد فقط مجموع مقاساته غير مطابق (YS-1041)",
+        mismatched.length === 1 && mismatched[0] === "YS-1041", mismatched.join(", "));
+
+      // رقم الواتساب
+      check("رقم الواتساب موجود وغير مؤكد", data.settings.whatsapp === "01116891025" && data.settings.whatsappVerified === false);
+
+      renderResults();
+      renderServices(data);
+      renderBadges();
+      renderTimelines();
+      setupCounter();
+      document.getElementById("toast-btn").addEventListener("click", function () { showToast("تم الحفظ بنجاح"); });
+    }
+
+    // load يشتغل بعد ما layout.js يرسم الهيدر والفوتر
+    window.addEventListener("load", runTests);
+  </script>
+</body>
+</html>

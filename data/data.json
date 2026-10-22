@@ -1,0 +1,334 @@
+{
+  "meta": {
+    "version": 1,
+    "sample": true,
+    "note": "بيانات تجريبية للعرض فقط"
+  },
+
+  "settings": {
+    "whatsapp": "01116891025",
+    "whatsappVerified": false,
+    "currency": "ج.م"
+  },
+
+  "categories": [
+    { "id": "apparel", "name": "ملابس" },
+    { "id": "caps", "name": "كابات" },
+    { "id": "stickers-labels", "name": "ستيكرات وليبلز" },
+    { "id": "mugs-gifts", "name": "أكواب وهدايا" },
+    { "id": "phone-cases", "name": "أغطية موبايل" },
+    { "id": "custom", "name": "تصميمات مخصصة" }
+  ],
+
+  "options": {
+    "colors": [
+      { "id": "black", "name": "أسود", "hex": "#1A1A1A" },
+      { "id": "white", "name": "أبيض", "hex": "#FFFFFF" },
+      { "id": "teal", "name": "تيل داكن", "hex": "#114850" },
+      { "id": "gray", "name": "رمادي", "hex": "#8A9496" },
+      { "id": "beige", "name": "بيج", "hex": "#D9CFBF" }
+    ],
+    "sizes": ["S", "M", "L", "XL", "XXL"],
+    "placements": [
+      { "id": "chest", "name": "الصدر" },
+      { "id": "back", "name": "الظهر" },
+      { "id": "sleeve", "name": "الكم" },
+      { "id": "capFront", "name": "أمام الكاب" },
+      { "id": "capSide", "name": "جانب الكاب" },
+      { "id": "capBack", "name": "خلف الكاب" }
+    ],
+    "phoneModels": ["iPhone 13", "iPhone 14", "iPhone 15", "Samsung Galaxy S23", "Samsung Galaxy A54", "Redmi Note 12"],
+    "shapes": [
+      { "id": "square", "name": "مربع" },
+      { "id": "circle", "name": "دائري" },
+      { "id": "rectangle", "name": "مستطيل" },
+      { "id": "diecut", "name": "قص حسب التصميم" }
+    ],
+    "units": [
+      { "id": "cm", "name": "سم" },
+      { "id": "mm", "name": "مم" }
+    ],
+    "uses": [
+      { "id": "packaging", "name": "تغليف منتج" },
+      { "id": "branding", "name": "علامة تجارية" },
+      { "id": "gift", "name": "هدية أو مناسبة" },
+      { "id": "other", "name": "أخرى" }
+    ],
+    "pickup": [
+      { "id": "pickup", "name": "استلام" },
+      { "id": "delivery", "name": "توصيل" }
+    ]
+  },
+
+  "services": [
+    {
+      "id": "tshirt", "name": "تيشيرت مطبوع", "category": "apparel", "formType": "apparel",
+      "fields": ["color", "sizes", "placement"], "placements": ["chest", "back", "sleeve"],
+      "description": "تيشيرت بطباعة حسب تصميمك. اختر اللون والمقاسات ومكان الطباعة.",
+      "image": "img/services/tshirt.jpg", "priceMode": "from", "priceFrom": 220, "sample": true, "active": true
+    },
+    {
+      "id": "hoodie", "name": "هودي مطبوع", "category": "apparel", "formType": "apparel",
+      "fields": ["color", "sizes", "placement"], "placements": ["chest", "back", "sleeve"],
+      "description": "هودي بطباعة حسب تصميمك. اختر اللون والمقاسات ومكان الطباعة.",
+      "image": "img/services/hoodie.jpg", "priceMode": "from", "priceFrom": 480, "sample": true, "active": true
+    },
+    {
+      "id": "sweatshirt", "name": "سويت شيرت مطبوع", "category": "apparel", "formType": "apparel",
+      "fields": ["color", "sizes", "placement"], "placements": ["chest", "back", "sleeve"],
+      "description": "سويت شيرت بطباعة حسب تصميمك. اختر اللون والمقاسات ومكان الطباعة.",
+      "image": "img/services/sweatshirt.jpg", "priceMode": "from", "priceFrom": 400, "sample": true, "active": true
+    },
+    {
+      "id": "cap", "name": "كاب مطبوع", "category": "caps", "formType": "apparel",
+      "fields": ["color", "placement"], "placements": ["capFront", "capSide", "capBack"],
+      "description": "كاب بطباعة حسب تصميمك. اختر اللون ومكان الطباعة.",
+      "image": "img/services/cap.jpg", "priceMode": "from", "priceFrom": 150, "sample": true, "active": true
+    },
+    {
+      "id": "stickers", "name": "ستيكرات", "category": "stickers-labels", "formType": "sticker",
+      "fields": ["dimensions", "shape", "use"], "placements": [],
+      "description": "ستيكرات بالمقاس والشكل الذي تحدده.",
+      "image": "img/services/stickers.jpg", "priceMode": "from", "priceFrom": 60, "sample": true, "active": true
+    },
+    {
+      "id": "labels", "name": "ليبلز", "category": "stickers-labels", "formType": "sticker",
+      "fields": ["dimensions", "shape", "use"], "placements": [],
+      "description": "ليبلز بالمقاس والشكل الذي تحدده.",
+      "image": "img/services/labels.jpg", "priceMode": "from", "priceFrom": 80, "sample": true, "active": true
+    },
+    {
+      "id": "mug", "name": "ماج مطبوع", "category": "mugs-gifts", "formType": "gift",
+      "fields": ["customText"], "placements": [],
+      "description": "ماج بطباعة تصميمك أو نص تكتبه.",
+      "image": "img/services/mug.jpg", "priceMode": "from", "priceFrom": 100, "sample": true, "active": true
+    },
+    {
+      "id": "gifts", "name": "هدايا ترويجية", "category": "mugs-gifts", "formType": "gift",
+      "fields": ["customText"], "placements": [],
+      "description": "هدايا مخصصة. اكتب ما تحتاجه وسنراجعه معك.",
+      "image": "img/services/gifts.jpg", "priceMode": "quote", "priceFrom": null, "sample": true, "active": true
+    },
+    {
+      "id": "phonecase", "name": "غطاء موبايل مخصص", "category": "phone-cases", "formType": "gift",
+      "fields": ["customText", "phoneModel"], "placements": [],
+      "description": "غطاء موبايل بتصميمك. حدد طراز الموبايل ونص التخصيص.",
+      "image": "img/services/phonecase.jpg", "priceMode": "from", "priceFrom": 180, "sample": true, "active": true
+    },
+    {
+      "id": "custom", "name": "تصميم مخصص", "category": "custom", "formType": "custom",
+      "fields": [], "placements": [],
+      "description": "فكرة خاصة؟ اشرحها لنا وسنراجعها معك.",
+      "image": "img/services/custom.jpg", "priceMode": "quote", "priceFrom": null, "sample": true, "active": true
+    }
+  ],
+
+  "portfolio": [
+    { "id": "p01", "title": "تيشيرت بطبعة صدر", "category": "apparel", "serviceId": "tshirt", "image": "img/portfolio/p01.jpg", "sample": true },
+    { "id": "p02", "title": "هودي بطبعة ظهر", "category": "apparel", "serviceId": "hoodie", "image": "img/portfolio/p02.jpg", "sample": true },
+    { "id": "p03", "title": "سويت شيرت بنص مطبوع", "category": "apparel", "serviceId": "sweatshirt", "image": "img/portfolio/p03.jpg", "sample": true },
+    { "id": "p04", "title": "تيشيرتات بتصميم موحد", "category": "apparel", "serviceId": "tshirt", "image": "img/portfolio/p04.jpg", "sample": true },
+    { "id": "p05", "title": "كاب بطبعة أمامية", "category": "caps", "serviceId": "cap", "image": "img/portfolio/p05.jpg", "sample": true },
+    { "id": "p06", "title": "كاب بتطريز نصي", "category": "caps", "serviceId": "cap", "image": "img/portfolio/p06.jpg", "sample": true },
+    { "id": "p07", "title": "شيت ستيكرات دائرية", "category": "stickers-labels", "serviceId": "stickers", "image": "img/portfolio/p07.jpg", "sample": true },
+    { "id": "p08", "title": "ليبلز لعبوات", "category": "stickers-labels", "serviceId": "labels", "image": "img/portfolio/p08.jpg", "sample": true },
+    { "id": "p09", "title": "ماجات بنص مخصص", "category": "mugs-gifts", "serviceId": "mug", "image": "img/portfolio/p09.jpg", "sample": true },
+    { "id": "p10", "title": "مجموعة هدايا مطبوعة", "category": "mugs-gifts", "serviceId": "gifts", "image": "img/portfolio/p10.jpg", "sample": true },
+    { "id": "p11", "title": "غطاء موبايل بتصميم خاص", "category": "phone-cases", "serviceId": "phonecase", "image": "img/portfolio/p11.jpg", "sample": true },
+    { "id": "p12", "title": "أغطية موبايل بأسماء", "category": "phone-cases", "serviceId": "phonecase", "image": "img/portfolio/p12.jpg", "sample": true }
+  ],
+
+  "faq": [
+    { "q": "كيف أبدأ طلبًا؟", "a": "من صفحة «ابدأ طلبك»: اختر الخدمة، حدد المواصفات، ارفع تصميمك، ثم راجع الطلب وأرسله." },
+    { "q": "هل يمكنني الطلب بدون تصميم جاهز؟", "a": "نعم، اختر «أحتاج مساعدة في التصميم» في خطوة التصميم واكتب ملاحظاتك." },
+    { "q": "كيف أتابع طلبي؟", "a": "من صفحة «تتبع طلبك» باستخدام رقم الطلب ورقم الهاتف." },
+    { "q": "ماذا يحدث بعد إرسال الطلب؟", "a": "يراجع صاحب المشروع الطلب ثم يوافق عليه أو يرفضه، وتظهر لك النتيجة والخطوة التالية في صفحة التتبع." },
+    { "q": "ماذا يعني التاريخ المطلوب؟", "a": "هو التاريخ الذي تفضله لاستلام الطلب، وليس وعدًا بالتسليم." },
+    { "q": "هل السعر الظاهر نهائي؟", "a": "لا، الأسعار في هذا العرض تجريبية، والسعر النهائي يؤكده صاحب المشروع." }
+  ],
+
+  "orders": [
+    {
+      "id": "YS-1045", "status": "received", "serviceId": "custom", "quantity": 1,
+      "description": "أريد تصميم شعار بسيط لمشروع صغير وطباعته على كروت.",
+      "customer": { "name": "رنا سمير", "phone": "01000001045", "email": null },
+      "requestedDate": "2026-11-10", "pickup": "pickup", "designHelp": true,
+      "artwork": [], "specs": {}, "estimatedTotal": null,
+      "ownerNote": null, "rejectionReason": null,
+      "createdAt": "2026-10-22T16:40:00+03:00",
+      "log": [
+        { "at": "2026-10-22T16:40:00+03:00", "status": "received", "text": "تم استلام طلبك" }
+      ]
+    },
+    {
+      "id": "YS-1044", "status": "received", "serviceId": "phonecase", "quantity": 2,
+      "description": "غطاءان بالاسم نفسه.",
+      "customer": { "name": "عمر خالد", "phone": "01000001044", "email": null },
+      "requestedDate": "2026-11-03", "pickup": "pickup", "designHelp": false,
+      "artwork": [], "specs": { "customText": "عمر" }, "estimatedTotal": 360,
+      "ownerNote": null, "rejectionReason": null,
+      "createdAt": "2026-10-22T11:05:00+03:00",
+      "log": [
+        { "at": "2026-10-22T11:05:00+03:00", "status": "received", "text": "تم استلام طلبك" }
+      ]
+    },
+    {
+      "id": "YS-1043", "status": "received", "serviceId": "phonecase", "quantity": 1,
+      "description": "غطاء بالاسم وتصميم زهور.",
+      "customer": { "name": "سارة إبراهيم", "phone": "01000001043", "email": "sample@example.com" },
+      "requestedDate": "2026-11-02", "pickup": "delivery", "designHelp": false,
+      "artwork": [ { "name": "flowers.png", "url": "img/samples/art-1043.png", "type": "image/png" } ],
+      "specs": { "customText": "سارة", "phoneModel": "iPhone 14" }, "estimatedTotal": 180,
+      "ownerNote": null, "rejectionReason": null,
+      "createdAt": "2026-10-21T18:20:00+03:00",
+      "log": [
+        { "at": "2026-10-21T18:20:00+03:00", "status": "received", "text": "تم استلام طلبك" }
+      ]
+    },
+    {
+      "id": "YS-1042", "status": "review", "serviceId": "tshirt", "quantity": 24,
+      "description": "تيشيرتات لفريق عمل بنفس التصميم على الصدر.",
+      "customer": { "name": "طارق عبد الرحمن", "phone": "01000001042", "email": null },
+      "requestedDate": "2026-11-05", "pickup": "pickup", "designHelp": false,
+      "artwork": [ { "name": "logo-front.png", "url": "img/samples/art-1042.png", "type": "image/png" } ],
+      "specs": { "color": "teal", "sizes": { "S": 4, "M": 8, "L": 8, "XL": 4, "XXL": 0 }, "placements": ["chest"] },
+      "estimatedTotal": 8400,
+      "ownerNote": null, "rejectionReason": null,
+      "createdAt": "2026-10-20T11:15:00+03:00",
+      "log": [
+        { "at": "2026-10-20T11:15:00+03:00", "status": "received", "text": "تم استلام طلبك" },
+        { "at": "2026-10-20T14:30:00+03:00", "status": "review", "text": "بدأت مراجعة الطلب" }
+      ]
+    },
+    {
+      "id": "YS-1041", "status": "review", "serviceId": "tshirt", "quantity": 24,
+      "description": "تيشيرتات بطبعة صدر وظهر.",
+      "customer": { "name": "نورا حسن", "phone": "01000001041", "email": null },
+      "requestedDate": "2026-11-06", "pickup": "pickup", "designHelp": false,
+      "artwork": [ { "name": "front-back.pdf", "url": "img/samples/art-1041.png", "type": "application/pdf" } ],
+      "specs": { "color": "white", "sizes": { "S": 4, "M": 8, "L": 6, "XL": 2, "XXL": 0 }, "placements": ["chest", "back"] },
+      "estimatedTotal": 8400,
+      "ownerNote": null, "rejectionReason": null,
+      "createdAt": "2026-10-19T10:00:00+03:00",
+      "log": [
+        { "at": "2026-10-19T10:00:00+03:00", "status": "received", "text": "تم استلام طلبك" },
+        { "at": "2026-10-19T13:10:00+03:00", "status": "review", "text": "بدأت مراجعة الطلب" }
+      ]
+    },
+    {
+      "id": "YS-1040", "status": "review", "serviceId": "gifts", "quantity": 40,
+      "description": "هدايا ترويجية مطبوع عليها شعار جهة.",
+      "customer": { "name": "إسلام جمال", "phone": "01000001040", "email": null },
+      "requestedDate": "2026-11-15", "pickup": "pickup", "designHelp": false,
+      "artwork": [ { "name": "logo.png", "url": "img/samples/art-1040.png", "type": "image/png" } ],
+      "specs": { "customText": "طباعة شعار على هدية ترويجية" }, "estimatedTotal": null,
+      "ownerNote": null, "rejectionReason": null,
+      "createdAt": "2026-10-18T15:45:00+03:00",
+      "log": [
+        { "at": "2026-10-18T15:45:00+03:00", "status": "received", "text": "تم استلام طلبك" },
+        { "at": "2026-10-19T09:20:00+03:00", "status": "review", "text": "بدأت مراجعة الطلب" }
+      ]
+    },
+    {
+      "id": "YS-1039", "status": "approved", "serviceId": "sweatshirt", "quantity": 10,
+      "description": "سويت شيرت بنص على الصدر.",
+      "customer": { "name": "دينا مصطفى", "phone": "01000001039", "email": null },
+      "requestedDate": "2026-11-01", "pickup": "delivery", "designHelp": false,
+      "artwork": [ { "name": "text-design.png", "url": "img/samples/art-1039.png", "type": "image/png" } ],
+      "specs": { "color": "gray", "sizes": { "S": 2, "M": 3, "L": 3, "XL": 2, "XXL": 0 }, "placements": ["chest"] },
+      "estimatedTotal": 4000,
+      "ownerNote": "تمت الموافقة على التصميم والمواصفات.", "rejectionReason": null,
+      "createdAt": "2026-10-17T12:00:00+03:00",
+      "log": [
+        { "at": "2026-10-17T12:00:00+03:00", "status": "received", "text": "تم استلام طلبك" },
+        { "at": "2026-10-17T16:00:00+03:00", "status": "review", "text": "بدأت مراجعة الطلب" },
+        { "at": "2026-10-18T10:30:00+03:00", "status": "approved", "text": "تمت الموافقة على الطلب" }
+      ]
+    },
+    {
+      "id": "YS-1038", "status": "approved", "serviceId": "hoodie", "quantity": 12,
+      "description": "هوديز بطبعة صدر وظهر.",
+      "customer": { "name": "مريم الجبالي", "phone": "01000001038", "email": null },
+      "requestedDate": "2026-11-02", "pickup": "pickup", "designHelp": false,
+      "artwork": [ { "name": "hoodie-art.png", "url": "img/samples/art-1038.png", "type": "image/png" } ],
+      "specs": { "color": "black", "sizes": { "S": 2, "M": 4, "L": 4, "XL": 2, "XXL": 0 }, "placements": ["chest", "back"] },
+      "estimatedTotal": 5760,
+      "ownerNote": "تمت الموافقة على الطلب.", "rejectionReason": null,
+      "createdAt": "2026-10-16T09:30:00+03:00",
+      "log": [
+        { "at": "2026-10-16T09:30:00+03:00", "status": "received", "text": "تم استلام طلبك" },
+        { "at": "2026-10-16T13:00:00+03:00", "status": "review", "text": "بدأت مراجعة الطلب" },
+        { "at": "2026-10-17T11:15:00+03:00", "status": "approved", "text": "تمت الموافقة على الطلب" }
+      ]
+    },
+    {
+      "id": "YS-1037", "status": "rejected", "serviceId": "stickers", "quantity": 200,
+      "description": "ستيكرات دائرية بشعار صغير.",
+      "customer": { "name": "كريم السيد", "phone": "01000001037", "email": null },
+      "requestedDate": "2026-10-30", "pickup": "pickup", "designHelp": false,
+      "artwork": [ { "name": "small-logo.jpg", "url": "img/samples/art-1037.png", "type": "image/jpeg" } ],
+      "specs": { "width": 5, "height": 5, "unit": "cm", "shape": "circle", "use": "branding" },
+      "estimatedTotal": 1200,
+      "ownerNote": "الصورة المرفوعة صغيرة وغير واضحة.",
+      "rejectionReason": "الصورة المرفوعة صغيرة وغير واضحة. يرجى رفع نسخة أوضح من الشعار، أو اختيار «أحتاج مساعدة في التصميم» وإعادة إرسال الطلب.",
+      "createdAt": "2026-10-14T14:10:00+03:00",
+      "log": [
+        { "at": "2026-10-14T14:10:00+03:00", "status": "received", "text": "تم استلام طلبك" },
+        { "at": "2026-10-14T17:00:00+03:00", "status": "review", "text": "بدأت مراجعة الطلب" },
+        { "at": "2026-10-15T10:00:00+03:00", "status": "rejected", "text": "تم رفض الطلب" }
+      ]
+    },
+    {
+      "id": "YS-1036", "status": "in_progress", "serviceId": "labels", "quantity": 150,
+      "description": "ليبلز لعبوات منتج.",
+      "customer": { "name": "أحمد فتحي", "phone": "01000001036", "email": null },
+      "requestedDate": "2026-10-28", "pickup": "pickup", "designHelp": false,
+      "artwork": [ { "name": "label.pdf", "url": "img/samples/art-1036.png", "type": "application/pdf" } ],
+      "specs": { "width": 7, "height": 4, "unit": "cm", "shape": "rectangle", "use": "packaging" },
+      "estimatedTotal": 1425,
+      "ownerNote": "بدأ التنفيذ.", "rejectionReason": null,
+      "createdAt": "2026-10-12T10:20:00+03:00",
+      "log": [
+        { "at": "2026-10-12T10:20:00+03:00", "status": "received", "text": "تم استلام طلبك" },
+        { "at": "2026-10-12T15:00:00+03:00", "status": "review", "text": "بدأت مراجعة الطلب" },
+        { "at": "2026-10-13T11:00:00+03:00", "status": "approved", "text": "تمت الموافقة على الطلب" },
+        { "at": "2026-10-16T09:00:00+03:00", "status": "in_progress", "text": "بدأ تنفيذ الطلب" }
+      ]
+    },
+    {
+      "id": "YS-1035", "status": "in_progress", "serviceId": "mug", "quantity": 30,
+      "description": "ماجات بنص تذكاري.",
+      "customer": { "name": "هدى عبد الله", "phone": "01000001035", "email": null },
+      "requestedDate": "2026-10-29", "pickup": "pickup", "designHelp": false,
+      "artwork": [ { "name": "mug-text.png", "url": "img/samples/art-1035.png", "type": "image/png" } ],
+      "specs": { "customText": "ذكرى تخرج 2026" },
+      "estimatedTotal": 3000,
+      "ownerNote": "جارٍ تجهيز الطباعة.", "rejectionReason": null,
+      "createdAt": "2026-10-10T13:40:00+03:00",
+      "log": [
+        { "at": "2026-10-10T13:40:00+03:00", "status": "received", "text": "تم استلام طلبك" },
+        { "at": "2026-10-10T18:00:00+03:00", "status": "review", "text": "بدأت مراجعة الطلب" },
+        { "at": "2026-10-11T12:00:00+03:00", "status": "approved", "text": "تمت الموافقة على الطلب" },
+        { "at": "2026-10-14T10:00:00+03:00", "status": "in_progress", "text": "بدأ تنفيذ الطلب" }
+      ]
+    },
+    {
+      "id": "YS-1034", "status": "ready", "serviceId": "cap", "quantity": 20,
+      "description": "كابات بطبعة أمامية.",
+      "customer": { "name": "ياسر محمود", "phone": "01000001034", "email": null },
+      "requestedDate": "2026-10-18", "pickup": "pickup", "designHelp": false,
+      "artwork": [ { "name": "cap-logo.png", "url": "img/samples/art-1034.png", "type": "image/png" } ],
+      "specs": { "color": "black", "placements": ["capFront"] },
+      "estimatedTotal": 3000,
+      "ownerNote": "الطلب جاهز للاستلام.", "rejectionReason": null,
+      "createdAt": "2026-10-08T09:00:00+03:00",
+      "log": [
+        { "at": "2026-10-08T09:00:00+03:00", "status": "received", "text": "تم استلام طلبك" },
+        { "at": "2026-10-08T12:00:00+03:00", "status": "review", "text": "بدأت مراجعة الطلب" },
+        { "at": "2026-10-09T10:00:00+03:00", "status": "approved", "text": "تمت الموافقة على الطلب" },
+        { "at": "2026-10-12T09:00:00+03:00", "status": "in_progress", "text": "بدأ تنفيذ الطلب" },
+        { "at": "2026-10-17T15:00:00+03:00", "status": "ready", "text": "الطلب جاهز للاستلام" }
+      ]
+    }
+  ]
+}
