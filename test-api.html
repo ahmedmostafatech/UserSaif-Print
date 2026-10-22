@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>اختبار الدوال | يوزرسيف</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <script src="data/schema.js"></script>
+  <script src="assets/js/readiness.js"></script>
+  <script src="assets/js/api.js"></script>
+  <style>
+    .test-list { list-style: none; padding: 0; display: grid; gap: var(--s-1); }
+    .test-list li { padding: var(--s-1) var(--s-2); border-radius: var(--r-sm); }
+    .test-list .pass { background: var(--success-bg); color: var(--success); }
+    .test-list .fail { background: var(--error-bg); color: var(--error); }
+  </style>
+</head>
+<body>
+  <main class="container section stack-lg">
+    <h1>اختبار api.js ومساعد الجاهزية</h1>
+    <p id="summary" style="font-weight:700">جارٍ التشغيل...</p>
+    <ul class="test-list" id="results"></ul>
+  </main>
+
+  <script>
+    let results = [];
+
+    function check(name, ok, detail) {
+      results.push({ name: name, ok: ok, detail: detail || "" });
+      console.log((ok ? "PASS" : "FAIL") + " - " + name, detail || "");
+    }
+
+    function render() {
+      let passed = results.filter(function (r) { return r.ok; }).length;
+      document.getElementById("results").innerHTML = results.map(function (r) {
+        return '<li class="' + (r.ok ? "pass" : "fail") + '">' + (r.ok ? "✔ " : "✘ ") +
+          r.name + (r.detail ? " — " + r.detail : "") + "</li>";
+      }).join("");
+      document.getElementById("summary").textContent = "نجح " + passed + " من " + results.length + " فحص";
+    }
+
+    function futureDate(days) {
+      let d = new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString().slice(0, 10);
+    }
+
+    function codes(result) {
+      return result.issues.map(function (i) { return i.code; });
+    }
+
+    async function run() {
+      resetLocalData();
+
+      // --- قراءة المحتوى ---
+      let services = await getServices();
+      check("getServices ترجع 10 خدمات", services.length === 10, String(services.length));
+      let tshirt = await getService("tshirt");
+      check("getService('tshirt') شغالة", tshirt && tshirt.formType === "apparel");
+      let caps = await getPortfolio("caps");
+      check("getPortfolio('caps') ترجع عملين", caps.length === 2, String(caps.length));
+
+      // --- مساعد الجاهزية على الطلبات التجريبية ---
+      let o1042 = await getOrder("YS-1042");
+      check("YS-1042 جاهز", checkReadiness(o1042, await getService(o1042.serviceId)).ready);
+
+      let o1041 = await getOrder("YS-1041");
+      let r1041 = checkReadiness(o1041, await getService(o1041.serviceId));
+      check("YS-1041 يكشف عدم تطابق المقاسات", codes(r1041).indexOf("sizes-mismatch") !== -1);
+      let fix = r1041.issues.filter(function (i) { return i.code === "sizes-mismatch"; })[0];
+      check("الإصلاح السريع يضبط الكمية على 20", fix && fix.fix && fix.fix.patch.quantity === 20);
+
+      let o1044 = await getOrder("YS-1044");
+      let r1044 = checkReadiness(o1044, await getService(o1044.serviceId));
+      check("YS-1044 يكشف نقص طراز الموبايل", codes(r1044).indexOf("phone-model") !== -1);
+
+      let o1043 = await getOrder("YS-1043");
+      check("YS-1043 جاهز", checkReadiness(o1043, await getService(o1043.serviceId)).ready);
+
+      let o1045 = await getOrder("YS-1045");
+      check("YS-1045 (مساعدة تصميم) جاهز", checkReadiness(o1045, await getService(o1045.serviceId)).ready);
+
+      let empty = checkReadiness({}, tshirt);
+      check("طلب فاضي يطلع نواقص كتير", !empty.ready && empty.errorCount >= 6, String(empty.errorCount));
+
+      // أرقام الهاتف
+      check("تطبيع الهاتف: +20 والأرقام العربية", normalizePhone("+201012345678") === "01012345678" &&
+        normalizePhone("٠١٠١٢٣٤٥٦٧٨") === "01012345678");
+
+      // --- إرسال طلب ---
+      let bad = await submitOrder({ serviceId: "tshirt", quantity: 10 });
+      check("submitOrder يرفض طلب ناقص", bad.ok === false && bad.issues.length > 0);
+
+      let draft = {
+        serviceId: "tshirt", quantity: 10, description: "طلب اختبار",
+        customer: { name: "اختبار", phone: "01012345678" },
+        requestedDate: futureDate(14), pickup: "pickup", designHelp: false,
+        artwork: [{ name: "a.png", url: "x", type: "image/png" }],
+        specs: { color: "teal", sizes: { S: 2, M: 4, L: 4, XL: 0, XXL: 0 }, placements: ["chest"] }
+      };
+      let sent = await submitOrder(draft);
+      check("submitOrder يقبل طلب كامل", sent.ok === true, sent.ok ? sent.order.id : "");
+      check("رقم الطلب الجديد YS-1046", sent.ok && sent.order.id === "YS-1046");
+      check("الإجمالي التجريبي = 220 × 10", sent.ok && sent.order.estimatedTotal === 2200);
+
+      // --- التتبع ---
+      let t1 = await trackOrder("YS-1046", "+201012345678");
+      check("trackOrder بالرقم والهاتف الصح", t1 && t1.id === "YS-1046");
+      let t2 = await trackOrder("YS-1046", "01099999999");
+      check("trackOrder بهاتف غلط يرجع null", t2 === null);
+      let t3 = await trackOrder("1042", "01000001042");
+      check("trackOrder يقبل الرقم بدون YS-", t3 && t3.id === "YS-1042");
+
+      // --- الأدمن ---
+      let ap = await approveOrder("YS-1046", "تمت المراجعة");
+      check("approveOrder يغيّر الحالة", ap.ok && ap.order.status === "approved");
+      let rj0 = await rejectOrder("YS-1046", "   ");
+      check("rejectOrder بدون سبب مرفوض", rj0.ok === false && rj0.error === "reason-required");
+      let rj = await rejectOrder("YS-1046", "الصورة غير واضحة");
+      check("rejectOrder بسبب يشتغل", rj.ok && rj.order.status === "rejected" &&
+        rj.order.rejectionReason === "الصورة غير واضحة");
+      let rs = await resubmitOrder("YS-1046", { description: "بعد التعديل" });
+      check("resubmitOrder يرجّع الطلب «تم الاستلام»", rs.ok && rs.order.status === "received" &&
+        rs.order.rejectionReason === null);
+let logStatuses = rs.ok ? rs.order.log.map(function (l) { return l.status; }).join(",") : "";
+check("سجل الأنشطة اتسجل بالترتيب",
+  logStatuses === "received,approved,rejected,received", logStatuses);
+      // --- البحث والفلاتر ---
+      let found = await getOrders({ search: "طارق" });
+      check("البحث بالاسم", found.length === 1 && found[0].id === "YS-1042");
+      let rejected = await getOrders({ status: "rejected" });
+      check("فلتر الحالة", rejected.length === 1 && rejected[0].id === "YS-1037");
+
+      resetLocalData();
+      render();
+    }
+
+    run().catch(function (err) {
+      console.log("Test crashed:", err);
+      check("الاختبار اشتغل بدون أخطاء", false, String(err));
+      render();
+    });
+  </script>
+</body>
+</html>
