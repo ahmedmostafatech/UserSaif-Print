@@ -97,6 +97,15 @@
     for (let i = 0; i < ERROR_MESSAGES.length; i++) {
       if (text.indexOf(ERROR_MESSAGES[i][0]) !== -1) return ERROR_MESSAGES[i][1];
     }
+    if (/row-level security|policy|security policy/i.test(text)) {
+      return "صلاحيات التخزين (RLS) غير مفعّلة في Supabase لـ bucket المحتوى (content). يرجى تشغيل storage-content-policy.sql في Supabase SQL Editor.";
+    }
+    if (/file-type-not-allowed/i.test(text)) {
+      return "صيغة الملف غير مدعومة. الصيغ المسموحة: PNG, JPG, WEBP, SVG.";
+    }
+    if (/file-too-large/i.test(text)) {
+      return "حجم الصورة كبير جداً. الحد الأقصى 10 ميجابايت.";
+    }
     if (/fetch|network|failed to/i.test(text)) {
       return "تعذر الاتصال بالخدمة. تأكد من الإنترنت وحاول مرة أخرى.";
     }

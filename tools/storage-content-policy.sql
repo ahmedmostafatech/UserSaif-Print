@@ -29,19 +29,43 @@ DROP POLICY IF EXISTS "Admin Upload Content Images" ON storage.objects;
 CREATE POLICY "Admin Upload Content Images"
 ON storage.objects FOR INSERT
 TO authenticated
-WITH CHECK (bucket_id = 'content' AND (SELECT is_admin()));
+WITH CHECK (
+  bucket_id = 'content' 
+  AND (
+    (SELECT is_admin()) 
+    OR EXISTS (SELECT 1 FROM public.admins WHERE user_id = auth.uid())
+  )
+);
 
 -- 3. السماح للأدمن بتحديث صور المحتوى
 DROP POLICY IF EXISTS "Admin Update Content Images" ON storage.objects;
 CREATE POLICY "Admin Update Content Images"
 ON storage.objects FOR UPDATE
 TO authenticated
-USING (bucket_id = 'content' AND (SELECT is_admin()))
-WITH CHECK (bucket_id = 'content' AND (SELECT is_admin()));
+USING (
+  bucket_id = 'content' 
+  AND (
+    (SELECT is_admin()) 
+    OR EXISTS (SELECT 1 FROM public.admins WHERE user_id = auth.uid())
+  )
+)
+WITH CHECK (
+  bucket_id = 'content' 
+  AND (
+    (SELECT is_admin()) 
+    OR EXISTS (SELECT 1 FROM public.admins WHERE user_id = auth.uid())
+  )
+);
 
 -- 4. السماح للأدمن بحذف صور المحتوى
 DROP POLICY IF EXISTS "Admin Delete Content Images" ON storage.objects;
 CREATE POLICY "Admin Delete Content Images"
 ON storage.objects FOR DELETE
 TO authenticated
-USING (bucket_id = 'content' AND (SELECT is_admin()));
+USING (
+  bucket_id = 'content' 
+  AND (
+    (SELECT is_admin()) 
+    OR EXISTS (SELECT 1 FROM public.admins WHERE user_id = auth.uid())
+  )
+);
