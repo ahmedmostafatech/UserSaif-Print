@@ -3,213 +3,640 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>استوديو يوزرسيف | طباعة وتجليد وتطويع منتجات في أسوان</title>
+  <title>يوزرسيف | استوديو الطباعة وتخصيص المنتجات بأسوان</title>
+  <meta name="description" content="استوديو يوزرسيف للطباعة والتخصيص الفاخرة في أسوان. تيشيرتات، هوديز، كابات، استيكرات، أكواب وهدايا مخصصة بأعلى معايير الحرفية والألوان الأرشيفية.">
 
+  <!-- الخطوط والأيقونات -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 
+  <!-- الأنماط المعتمدة للمشروع -->
   <link rel="stylesheet" href="assets/css/tokens.css">
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/components.css">
-  <link rel="stylesheet" href="assets/css/page-portfolio.css">
   <link rel="stylesheet" href="assets/css/page-home.css">
 
+  <!-- سكربتات البيانات وقواعد المشروع -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/config.js"></script>
   <script src="data/schema.js"></script>
+  <script src="assets/js/readiness.js"></script>
   <script src="assets/js/api.js"></script>
   <script src="assets/js/layout.js" defer></script>
   <script src="assets/js/page-home.js" defer></script>
 </head>
 <body>
+  <!-- الهيدر المشترك (يُحقن عبر layout.js) -->
   <div id="site-header"></div>
 
   <main id="main">
 
-    <!-- الهيرو الرئيسي -->
-    <section class="home-hero grain">
-      <div class="container home-hero__inner">
-        <div>
-          <span class="home-hero__eyebrow">
-            <span>استوديو يوزرسيف — مشغل أسوان الحرفي</span>
-            <span class="tag-sample">تجريبي</span>
-          </span>
-          <h1 class="display" style="margin-block:var(--s-2)">حِرفة الطباعة الفاخرة والتجليد الأرشيفي</h1>
-          <p class="home-hero__lead">
-            نجمع بين دقة المعايير المطبعية وروح التصميم المعاصر في أسوان. نقدم حلول طباعة الأقمشة، الأكواب، كفرات الهواتف، والستيكرات المقاومة مع مساعد ذكي لفحص جاهزية ملفاتك قبل التنفيذ.
+    <!-- 1. Atelier Hero Section -->
+    <section class="atelier-hero grain" aria-label="مقدمة الاستوديو">
+      <div class="atelier-hero__watermark" aria-hidden="true">24</div>
+      <div class="atelier-hero__glow-1" aria-hidden="true"></div>
+      <div class="atelier-hero__glow-2" aria-hidden="true"></div>
+
+      <div class="container">
+        <!-- شريط الأرشيف والإحداثيات -->
+        <div class="atelier-hero__archival-bar">
+          <div class="atelier-hero__archival-marker">
+            <span class="atelier-hero__marker-dot"></span>
+            <span>استوديو يوزرسيف • سجل الطباعة الحرفية • إصدار 2025</span>
+          </div>
+          <div class="atelier-hero__coords">
+            <span>LAT 24.0889° N</span>
+            <span>•</span>
+            <span>LONG 32.8998° E</span>
+          </div>
+        </div>
+
+        <!-- شبكة محتوى الهيرو -->
+        <div class="atelier-hero__grid">
+          <!-- العمود النصي -->
+          <div class="atelier-hero__content">
+            <div class="atelier-hero__badge">
+              <span class="atelier-hero__marker-dot"></span>
+              <span>ورشة الطباعة والتخصيص الفاخرة • أسوان</span>
+            </div>
+
+            <h1 class="atelier-hero__title">
+              طباعة مخصصة تعكس هويتك،<br>
+              <span class="atelier-hero__title-accent">من قلب أسوان.</span>
+            </h1>
+
+            <p class="atelier-hero__lead">
+              نحول خامات القطن الفاخر، السيراميك المصقول، الفينيل المقاوم، والمنتجات اليومية إلى قطع فنية ناطقة بأدق تفاصيلك؛ بتجهيزات طباعية وتقنيات أرشيفية تليق بذائقتك.
+            </p>
+
+            <!-- أزرار الإجراء الرئيسي -->
+            <div class="atelier-hero__actions">
+              <a class="btn btn--lg btn--atelier-primary" href="request.html">
+                <span>ابدأ طلبك الآن</span>
+                <span class="material-symbols-outlined icon-dir">arrow_forward</span>
+              </a>
+              <a class="btn btn--lg btn--atelier-outline" href="#featured-portfolio">
+                <span>استعرض الأعمال السابقة</span>
+              </a>
+            </div>
+
+            <!-- مؤشرات الأداء الحرفية -->
+            <div class="atelier-hero__stats">
+              <div class="atelier-stat">
+                <span class="atelier-stat__number num">+12,400</span>
+                <span class="atelier-stat__label">قطعة مطبوعة بعناية <span class="tag-sample">تجريبي</span></span>
+              </div>
+              <div class="atelier-stat">
+                <span class="atelier-stat__number num">100%</span>
+                <span class="atelier-stat__label">ألوان أرشيفية ثابتة</span>
+              </div>
+              <div class="atelier-stat">
+                <span class="atelier-stat__number num">48h</span>
+                <span class="atelier-stat__label">متوسط زمن التجهيز</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- العمود البصري (موزاييك العينات والمنتجات) -->
+          <div class="atelier-hero__visual">
+            <div class="atelier-mosaic">
+              <div class="atelier-mosaic__accent-frame" aria-hidden="true"></div>
+
+              <!-- لوحة 1: خامة الهودي الفاخر -->
+              <div class="atelier-mosaic__plate-hoodie">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeSrwazuHF37wmu05nUC82bTLK6DSBpPZA3tckRoXJ-zcxyxUjlfh0zZIzpDFIwspTQw-Abkj2bEqJLUCXoaLMPloI4x60zJphTy-fXxdGbD-00iNw8TC1Z5C7CuqQDJZkvR6YlI6bQA2ks6kEp3PvS3ekILYzLlq1c9Z6ZV5QHhF5foOdWOfGZglHv-tCI9XLiBL0h4hOwtcVQ498r0274RfWIOrm57DWMrfeepqXKRIsyN1m-v4u"
+                     alt="لقطة مقربة لهودي قطن ثقيل بلون تيل مع طباعة مونوغرام نظيفة">
+                <span class="atelier-mosaic__tag-hoodie">نسيج قطن 380 GSM</span>
+              </div>
+
+              <!-- لوحة 2: مج السيراميك الحراري -->
+              <div class="atelier-mosaic__plate-mug">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7TWy22eHoJos_ixJPbLrqw03p6q3RkUmUd6Oer1ItH-mBtgo9DLW8LCWsDY1oikh5-lW36MlzGw7lFF3tuePTiHCs8xZiknYDvIlQe1xiLhyXIAqjF-lMzUkWFAkbKKLnLT5fULawSydXYD7lQoX89txQ6EpuFfs2b6sMhcQDj_Xup1D1aWdaZRXye7wFRa2nbkoej70cFHH3YxOnY630jRPLNDpCgnt29IkA2vKHiu7ZPIeoSL-F"
+                     alt="مج سيراميك حراري مطفي بطبعة معمارية دقيقة">
+                <span class="atelier-mosaic__tag-mug">سيراميك حراري مصقول</span>
+              </div>
+
+              <!-- لوحة 3: ملصقات الفينيل المقاومة للماء -->
+              <div class="atelier-mosaic__plate-stickers">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCe_Ze9MKhR--ssbWEdxen4aUcs7usy0kB1JcLd38Z0lUSxHPs8qFJeHQsau89XRWJ8A4LA3wuWlgZHLEI5A941E2ieKUpJHdTzMibI2Y31XbDfaQzee1Z1fvtq2mxlyHo91ckUg68vPqG8wD9qu0RsKti4094uPFGpGWMn9yTbXVOPZXYlyRWF30oB_MbdB1S5rtN7I4E8kDI0uGUKf74_x-gV6JY3eJht7IlpepkVdfzMN-OZNG70"
+                     alt="حزمة استيكرات فينيل مقصوصة ليزرياً">
+              </div>
+
+              <!-- شارة أمر التشغيل النشط العائمة -->
+              <div class="atelier-floating-badge" role="status">
+                <span class="atelier-pulse-dot" aria-hidden="true"></span>
+                <div>
+                  <div class="atelier-floating-badge__header">
+                    <span class="atelier-floating-badge__order">أمر تشغيل نشط <span class="num">#2408</span></span>
+                    <span class="atelier-floating-badge__tag">طاولة 02</span>
+                    <span class="tag-sample">تجريبي</span>
+                  </div>
+                  <div class="atelier-floating-badge__desc">تجهيز دفعة هوديز مخصصة لمطوري أسوان</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Process Section (منهجية العمل) -->
+    <section class="process-section" aria-labelledby="process-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <span class="section-eyebrow">منهجية العمل والطباعة</span>
+            <h2 class="section-title" id="process-title">خطوات إنتاج قطعتك المخصصة</h2>
+          </div>
+          <p class="section-lead">
+            إجراءات سلسة ومحكمة من لحظة استلام الفكرة حتى تسليمها مطبوعة ومغلفة بأرقى المعايير الحرفية.
           </p>
-          <div class="home-hero__actions">
-            <a class="btn btn--primary btn--lg" href="request.html">
-              <span>ابدأ طلبك (معالج المواصفات)</span>
-              <span class="icon-dir">←</span>
+        </div>
+
+        <div class="process-grid">
+          <!-- خطوة 1 -->
+          <article class="process-card reveal">
+            <div class="process-card__head">
+              <span class="process-card__number num">01</span>
+              <span class="material-symbols-outlined process-card__icon">category</span>
+            </div>
+            <h3 class="process-card__title">اختر المنتج</h3>
+            <p class="process-card__desc">
+              حدد القطعة المراد تخصيصها من تشكيلة المنسوجات، الأكواب، الاستيكرات، أو الهدايا.
+            </p>
+          </article>
+
+          <!-- خطوة 2 -->
+          <article class="process-card reveal">
+            <div class="process-card__head">
+              <span class="process-card__number num">02</span>
+              <span class="material-symbols-outlined process-card__icon">tune</span>
+            </div>
+            <h3 class="process-card__title">حدد المواصفات</h3>
+            <p class="process-card__desc">
+              اختر المقاسات، الألوان، خامات الطباعة (سلك سكرين، DTF، تطريز)، والكميات المطلوبة.
+            </p>
+          </article>
+
+          <!-- خطوة 3 -->
+          <article class="process-card reveal">
+            <div class="process-card__head">
+              <span class="process-card__number num">03</span>
+              <span class="material-symbols-outlined process-card__icon">upload_file</span>
+            </div>
+            <h3 class="process-card__title">ارفع تصميمك</h3>
+            <p class="process-card__desc">
+              أرفق ملفاتك بجودة عالية أو اطلب المساعدة من فريق التصميم لإعداد وتجهيز البروفا للطباعة.
+            </p>
+          </article>
+
+          <!-- خطوة 4 -->
+          <article class="process-card reveal">
+            <div class="process-card__head">
+              <span class="process-card__number num">04</span>
+              <span class="material-symbols-outlined process-card__icon">local_shipping</span>
+            </div>
+            <h3 class="process-card__title">تابع واستلم</h3>
+            <p class="process-card__desc">
+              تتبع مراحل التنفيذ عبر رقم الطلب حتى استلام شحنتك مغلفة بأمان في أسوان أو كافة المحافظات.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Services Catalog Grid (الخدمات والمنتجات) -->
+    <section class="services-section" aria-labelledby="services-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <span class="section-eyebrow">دليل المنتجات الطباعية</span>
+            <h2 class="section-title" id="services-title">الخدمات والمنتجات الجاهزة للتخصيص</h2>
+          </div>
+          <div>
+            <span class="badge badge--received">تحديث المخزون الأسبوعي <span class="tag-sample">تجريبي</span></span>
+          </div>
+        </div>
+
+        <div class="services-catalog-grid">
+          <!-- 1. تيشيرتات مخصصة -->
+          <article class="catalog-card reveal">
+            <div class="catalog-card__media">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXl4TGFfXR30NWHAsnHxn0pTxg7pQZAl9qwFSkxORX9Et-VW-sqWcRzd6apcIlD0nysS9u5mTclzYQTvVC0hZoyA1QeGcMLpj066ZtXHdND2j8bWrXS8qtBi7a-P4zbsk30svFI29xW7XK0P4L9QBgm6TsH6W3KO4TPvY17gllMBvXcBZ_PL9fGOakXCTuxgmD3TEn3ZxwczC8a1pKTX_Bd8GuKkHq_lYOG51XTP4oI74Q-h9GXn2Q"
+                   alt="تيشيرت قطن فاخر بطباعة عربية">
+              <span class="catalog-card__pill">قطن 100%</span>
+              <span class="tag-sample">تجريبي</span>
+            </div>
+            <div class="catalog-card__body">
+              <div>
+                <h3 class="catalog-card__title">تيشيرتات مخصصة</h3>
+                <p class="catalog-card__desc">طباعة DTF فائقة الدقة أو سلك سكرين للألوان المشبعة على قطن مصري ممتاز.</p>
+              </div>
+              <div class="catalog-card__footer">
+                <div class="catalog-card__price-box">
+                  <span class="catalog-card__price-prefix">ابتداءً من</span>
+                  <span class="catalog-card__price-val"><span class="num">220</span> ج.م</span>
+                </div>
+                <a class="btn btn--primary btn--sm" href="request.html?service=tshirt">ابدأ الطلب</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- 2. هوديز وسويت شيرت -->
+          <article class="catalog-card reveal">
+            <div class="catalog-card__media">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_phLH4eLgGLlkA_F142bHnNdwcnR-hqck-nRNo0YlyP2j1-cJEjibCyGPQ8spPMqTOQPGqZYIK4uwEsOJR_XGm8ZhdmU5Ya05KvvaqI78ekEridvZOkzU1EaPEN_R6d8S_J42PKALXSn--JE3Oe2boJfcag51_pBqlz2v57_5IieQb1P0vUuNGJo5oaSg7-3KIvA99x0oCwy5j5GTdQS8Ay66vxmm9TviPPVGAWnUkTqvoiqHtp82"
+                   alt="هودي ثقيل بطبعة ظهر فنية">
+              <span class="catalog-card__pill">شتاء 2025</span>
+              <span class="tag-sample">تجريبي</span>
+            </div>
+            <div class="catalog-card__body">
+              <div>
+                <h3 class="catalog-card__title">هوديز وسويت شيرت</h3>
+                <p class="catalog-card__desc">خامات مبطنة ثقيلة ومقاومة للغسيل المتكرر مع خيارات تطريز أو طباعة حرارية.</p>
+              </div>
+              <div class="catalog-card__footer">
+                <div class="catalog-card__price-box">
+                  <span class="catalog-card__price-prefix">ابتداءً من</span>
+                  <span class="catalog-card__price-val"><span class="num">480</span> ج.م</span>
+                </div>
+                <a class="btn btn--primary btn--sm" href="request.html?service=hoodie">ابدأ الطلب</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- 3. كابات وقبعات مطرزة -->
+          <article class="catalog-card reveal">
+            <div class="catalog-card__media">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHPXBHNx_2z4GMUJPiOissRbjDjWtt-HzhV1HHhu1Inv34t7Ue_88_IDM7FswbD3XJ1A-CY0ISa3vcTFiCvD_FHlNk1ZDzHA3M2oD5EEVnnwcB-JiDYL3_kpZrLUulStms1_Nb7UReIseCZbo-ggr_ASPwHFzn6-YiVgEen-f_qMJHzRtUm_KQcDSRWZKrsTF8yR0OhlNLatwePaH7EgKPm8cosqghlK480VFJCKHLfjMVydZK97Q1"
+                   alt="كاب مطرز ثلاثي الأبعاد">
+              <span class="catalog-card__pill">تطريز / طباعة</span>
+              <span class="tag-sample">تجريبي</span>
+            </div>
+            <div class="catalog-card__body">
+              <div>
+                <h3 class="catalog-card__title">كابات وقبعات مطرزة</h3>
+                <p class="catalog-card__desc">كابات كلاسيكية ورياضية بخيوط تطريز يابانية متينة أو بادجات سيليكون حرارية.</p>
+              </div>
+              <div class="catalog-card__footer">
+                <div class="catalog-card__price-box">
+                  <span class="catalog-card__price-prefix">ابتداءً من</span>
+                  <span class="catalog-card__price-val"><span class="num">150</span> ج.م</span>
+                </div>
+                <a class="btn btn--primary btn--sm" href="request.html?service=cap">ابدأ الطلب</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- 4. استيكرات فينيل Die-Cut -->
+          <article class="catalog-card reveal">
+            <div class="catalog-card__media">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAafUqzcpMEpYD5K00f6cWjdE6I3-mp2JKGJKyBUMEM9dcvmABAmkcba7d3DhoY5ls6DtZgP_p0r70ClD7u0HqI7f7YNIRx7H_auYJPK5aU1r8wiB47i1kggY79W8XSCdUMWLMs3NCzlCOgWRuNaOnm0CfIuWYm7J50MojDiIv_LwMWsxQhb9H4kvyR0MZpkIbb_L6XcsW-1zfoVgDiacq0iCdBxm2tJAe4BYXT8gxd7cN0m8iUo9q3"
+                   alt="استيكرات فينيل عازلة للماء">
+              <span class="catalog-card__pill">فينيل مقاوم للمياه</span>
+              <span class="tag-sample">تجريبي</span>
+            </div>
+            <div class="catalog-card__body">
+              <div>
+                <h3 class="catalog-card__title">استيكرات فينيل Die-Cut</h3>
+                <p class="catalog-card__desc">قص ليزري دقيق على فينيل ألماني عازل للماء والحرارة لأجهزة اللابتوب والسيارات.</p>
+              </div>
+              <div class="catalog-card__footer">
+                <div class="catalog-card__price-box">
+                  <span class="catalog-card__price-prefix">ابتداءً من (شيت 50 ق)</span>
+                  <span class="catalog-card__price-val"><span class="num">95</span> ج.م</span>
+                </div>
+                <a class="btn btn--primary btn--sm" href="request.html?service=stickers">ابدأ الطلب</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- 5. ليبلز وبطاقات براندنج -->
+          <article class="catalog-card reveal">
+            <div class="catalog-card__media">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCA5MQoPjASLTzmTEP0U2wpQQ17qIcPRNsTGdTpVpcoUjDsaT5LqGgTJQrOljtK5GguTzBiORE9ql1Mm2xPip_wP7bkcLGV0rna_w1qB7r6hWXOu1dPTPICv3VMwpWwi58lpm-OWTVpjKx4k4Htl5AHEfzAUUrSqA3RaARx8_xNSfUul3C70g_HDmozGkA9qw3CRtmc6gim36w_jR3yAJB7WS09rUpjfnRKpTt98KFn-fK5ND33Mf4U"
+                   alt="تاجات كرتونية فاخرة وبطاقات علامات أزياء">
+              <span class="catalog-card__pill">ورق مقوى 400g</span>
+              <span class="tag-sample">تجريبي</span>
+            </div>
+            <div class="catalog-card__body">
+              <div>
+                <h3 class="catalog-card__title">ليبلز وبطاقات براندنج</h3>
+                <p class="catalog-card__desc">تاجات كرتونية فاخرة مع تخريم وسولوفان مط وملمس بارز لعلامات الأزياء والمتاجر.</p>
+              </div>
+              <div class="catalog-card__footer">
+                <div class="catalog-card__price-box">
+                  <span class="catalog-card__price-prefix">ابتداءً من (100 قطعة)</span>
+                  <span class="catalog-card__price-val"><span class="num">180</span> ج.م</span>
+                </div>
+                <a class="btn btn--primary btn--sm" href="request.html?service=labels">ابدأ الطلب</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- 6. أكواب وسيراميك -->
+          <article class="catalog-card reveal">
+            <div class="catalog-card__media">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1a5YniWY0iKw8u_FFu3CMvwmuLMKPT0pAaIOUF_P5GRGhLTuzxaYopif10g61fLzK5__tC4s6xMDoPrp0W-Es3E1jajK4wp1-6Udi3M93o9XRy4VoNFyHrPM099EIRJns0MGajGMSoqH3kXnLpqmN1cHQuXgwDN_Mn5WKwByguugPWNb2DakpdmJBHtCfAFTkUsJ5Hc_jM9Pv3WiNRt8AJfZYWVL6_o6dYowiieJ1SMSttoATmfz4"
+                   alt="أكواب سيراميك ملونة بطباعة سابليميشن">
+              <span class="catalog-card__pill">طباعة حرارية 360°</span>
+              <span class="tag-sample">تجريبي</span>
+            </div>
+            <div class="catalog-card__body">
+              <div>
+                <h3 class="catalog-card__title">أكواب وسيراميك</h3>
+                <p class="catalog-card__desc">أكواب بورسلين بيضاء وملونة، مجات سحرية، ومجات سفر معزولة مع طباعة ثابتة.</p>
+              </div>
+              <div class="catalog-card__footer">
+                <div class="catalog-card__price-box">
+                  <span class="catalog-card__price-prefix">ابتداءً من</span>
+                  <span class="catalog-card__price-val"><span class="num">110</span> ج.م</span>
+                </div>
+                <a class="btn btn--primary btn--sm" href="request.html?service=mug">ابدأ الطلب</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- 7. جرابات وأغطية هواتف -->
+          <article class="catalog-card reveal">
+            <div class="catalog-card__media">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3pmeh84GwPcvxlw30HtgdrNyxRWY9LTgptSOCoJpM0wuGb_6NiAgX1wcCf9UJxQv1XEis94Gd63Rk3jnesRv1ror7QtIwGOQseavH9sH_qKc6IvNIjBtR21aD7FdxzTfOMCqa4TRYql8uE0Tn6O2ghJ081u0gNtSoR5-hnOJgSUBWulRqTyA3IrkH2FV0cL9yMM6crXlRCnAIch4L4do836MggdmVtEkOOzgx2IphnuYZ7k-KzzI1"
+                   alt="جرابات موبايل بطباعة خط عربي فني">
+              <span class="catalog-card__pill">مقاوم للصدمات</span>
+              <span class="tag-sample">تجريبي</span>
+            </div>
+            <div class="catalog-card__body">
+              <div>
+                <h3 class="catalog-card__title">جرابات وأغطية هواتف</h3>
+                <p class="catalog-card__desc">كفرات سيليكون وHard-case لكافة طرازات آيفون وسامسونج بطباعة ثلاثية الأبعاد.</p>
+              </div>
+              <div class="catalog-card__footer">
+                <div class="catalog-card__price-box">
+                  <span class="catalog-card__price-prefix">ابتداءً من</span>
+                  <span class="catalog-card__price-val"><span class="num">140</span> ج.م</span>
+                </div>
+                <a class="btn btn--primary btn--sm" href="request.html?service=phonecase">ابدأ الطلب</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- 8. هدايا ودروع ترويجية -->
+          <article class="catalog-card reveal">
+            <div class="catalog-card__media">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQYs-jIzd59sK9hnd5ho9guIvQrtw1408aKzxV-y5SDh9ByPGxhRjrk37OID9RPj3K22t9asAmo5FinqLqNtUJot0nkbIL1UUokgPGM0aq3LsMgvioJZodORW59L9SnUkX_klaoZzm61WN2PV6w7iy47VeUiFD0JQ8-PE7jRg4YdOoajQY3UNRQlzKhBzOEUisZgHX_xPhhQHtOeiPP-qzLpyu5zRGPaJSQCJY416EPrjuy1TjL40o"
+                   alt="باقات ترحيبية للشركات وهدايا مكتبية">
+              <span class="catalog-card__pill catalog-card__pill--corp">للشركات والفعاليات</span>
+              <span class="tag-sample">تجريبي</span>
+            </div>
+            <div class="catalog-card__body">
+              <div>
+                <h3 class="catalog-card__title">هدايا ودروع ترويجية</h3>
+                <p class="catalog-card__desc">حقائب قماشية (Tote bags)، أقلام محفورة، فلاشات، ونوت بوك جلدي مخصص لمؤسستك.</p>
+              </div>
+              <div class="catalog-card__footer">
+                <div class="catalog-card__price-box">
+                  <span class="catalog-card__price-prefix">التسعير</span>
+                  <span class="catalog-card__price-quote">حسب الكمية والمواصفات</span>
+                </div>
+                <a class="btn btn--secondary btn--sm" href="request.html?service=gifts">طلب تسعيرة</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Featured Portfolio (كاروسيل الأرشيف البصري) -->
+    <section class="portfolio-section" id="featured-portfolio" aria-labelledby="portfolio-title">
+      <div class="container">
+        <div class="portfolio-header-wrap reveal">
+          <div>
+            <span class="section-eyebrow">الأرشيف البصري للاستوديو</span>
+            <h2 class="section-title" id="portfolio-title">نماذج من أعمال تم تنفيذها في أسوان</h2>
+          </div>
+
+          <div class="portfolio-controls">
+            <!-- فلاتر التصفية التفاعلية -->
+            <div class="portfolio-filter-row" id="portfolio-filters" role="tablist" aria-label="فلاتر معرض الأعمال">
+              <button class="portfolio-chip active" type="button" data-filter="all" aria-pressed="true">الكل (07)</button>
+              <button class="portfolio-chip" type="button" data-filter="apparel" aria-pressed="false">ملابس وهوديز</button>
+              <button class="portfolio-chip" type="button" data-filter="caps" aria-pressed="false">كابات وتطريز</button>
+              <button class="portfolio-chip" type="button" data-filter="stickers" aria-pressed="false">استيكرات وتغليف</button>
+              <button class="portfolio-chip" type="button" data-filter="mugs" aria-pressed="false">أكواب وهدايا</button>
+            </div>
+
+            <!-- أزرار التنقل والعداد الأرشيفي -->
+            <div class="portfolio-nav-btns" aria-label="أزرار تحريك المعرض">
+              <button class="portfolio-nav-btn portfolio-nav-btn--prev" id="portfolio-prev" type="button" aria-label="العمل السابق" title="السابق">
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+              <div class="portfolio-counter" id="portfolio-counter" aria-live="polite">
+                <span class="num current-idx" id="portfolio-curr">01</span> / <span class="num total-idx" id="portfolio-total">07</span>
+              </div>
+              <button class="portfolio-nav-btn portfolio-nav-btn--next" id="portfolio-next" type="button" aria-label="العمل التالي" title="التالي">
+                <span class="material-symbols-outlined">arrow_back</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- حاوية الكاروسيل -->
+        <div class="portfolio-carousel-wrap">
+          <div class="portfolio-carousel" id="portfolio-carousel" tabindex="0" role="region" aria-label="شريط استعراض الأعمال المنفذة">
+            <!-- عمل 1: أزياء طاقم العمل ومطبوعات الضيافة -->
+            <article class="portfolio-carousel-item reveal" data-category="apparel">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN4kldCTBB87RCRp0fbbihqUu4hoNmrmOKW0s32Xp8NLlet_3GgfyJzLJidfQm7crcbEkRVZc_rHnIh5IVp_r_M3uVRys1YrlpK7a6YXuLD_AzuEeB_Z91uZMmzt5Y3pj-eMXIyMuKk7M2_-RpaxN-Fp2xG60kUvFYBkL06t4xw2-OpeLXq1Z2WaeAZ3vlomL8r7Ywd2fyz4gKkt5dhJjOCpC7FoTZWv8AL_QPGrHscKezRaAwBE50"
+                   alt="جلسة تصوير لأزياء طاقم عمل مقهى بأسوان" loading="lazy">
+              <div class="portfolio-carousel-overlay">
+                <span class="portfolio-carousel-overlay__badge">هوية مقهى نوبي معاصر</span>
+                <h3 class="portfolio-carousel-overlay__title">أزياء طاقم العمل ومطبوعات الضيافة</h3>
+                <p class="portfolio-carousel-overlay__desc">طباعة سلك سكرين 3 ألوان مع نسيج قطن مصري مقاوم لدرجات الحرارة العالية ومناسب للاستخدام المكثف.</p>
+                <div class="portfolio-carousel-overlay__footer">
+                  <span class="portfolio-carousel-overlay__meta">SILK SCREEN • 100% COTTON</span>
+                  <a class="portfolio-carousel-overlay__link" href="request.html?ref=p01">
+                    <span>اطلب مماثل</span>
+                    <span class="material-symbols-outlined icon-dir" style="font-size:16px">arrow_forward</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- عمل 2: أكواب تذكارية لمعرض فني -->
+            <article class="portfolio-carousel-item reveal" data-category="mugs">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdRtD9BhMoKmHAdrzLXdTdsMEO4O-I-kRSc4HssMMWy_pyjJgf786kdYri9xuQWoN4PMYjky3g_bwB5s5NOKPDywwItw-pqHGJSum7cn79P4yvigADcbC2eLQMtzncEqv6s3adGwNRWZzLip2rM_0OiNI8Z8U1vgrgg8eHFKT0feP4KjGP8KAy7xnuHMf0Q8V8KB09Px7k1onK2kK7OoUAi1DiHRxAd8eMJxMgLoQSnb3jRYqfrcl6"
+                   alt="أكواب سيراميك سوداء مطفية بذهب فويل" loading="lazy">
+              <div class="portfolio-carousel-overlay">
+                <span class="portfolio-carousel-overlay__badge">دفعة خاصة محدودة</span>
+                <h3 class="portfolio-carousel-overlay__title">أكواب تذكارية لمعرض فني</h3>
+                <p class="portfolio-carousel-overlay__desc">سيراميك مطفي مع طباعة فويل ذهبي بارز مقاوم للحرارة وغسالات الأطباق لأحد معارض الفنون التشكيلية.</p>
+                <div class="portfolio-carousel-overlay__footer">
+                  <span class="portfolio-carousel-overlay__meta">150 PCS • GOLD FOIL</span>
+                  <a class="portfolio-carousel-overlay__link" href="request.html?ref=p09">
+                    <span>اطلب مماثل</span>
+                    <span class="material-symbols-outlined icon-dir" style="font-size:16px">arrow_forward</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- عمل 3: استيكرات مجتمع المطورين -->
+            <article class="portfolio-carousel-item reveal" data-category="stickers">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIem2w5wOVNXPbUqTgyF7-803eBkNc6YuOlO0sx15R2asrWo3b5Ottdz0j88MymbaDb_eCpiaUIZnsnHHmHwYnqGDhB0Kg6whIycnkCwEFi07yJBYgCauzFPfY8ZrSLQVLFpnly0Zsdzvmo8XY2NO5_0w1OB8YZrWwtfzqllMmXteR5EXSiW8tIpfMgSdLrBBBf5g2GN4XrTSwqB0cUTfDe0t9XOjzAxjVEKGWYHRSmiYdVqjxkciA"
+                   alt="ملصقات فينيل على ظهر لابتوب بحواف حادة" loading="lazy">
+              <div class="portfolio-carousel-overlay">
+                <span class="portfolio-carousel-overlay__badge">فينيل عازل للماء</span>
+                <h3 class="portfolio-carousel-overlay__title">باك استيكرات مجتمع المطورين</h3>
+                <p class="portfolio-carousel-overlay__desc">قص ليزري دقيق على فينيل ألماني مطفي عازل للأشعة فوق البنفسجية والماء يدوم طويلاً دون تقشر.</p>
+                <div class="portfolio-carousel-overlay__footer">
+                  <span class="portfolio-carousel-overlay__meta">MATTE DIE-CUT VINYL</span>
+                  <a class="portfolio-carousel-overlay__link" href="request.html?ref=p07">
+                    <span>اطلب مماثل</span>
+                    <span class="material-symbols-outlined icon-dir" style="font-size:16px">arrow_forward</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- عمل 4: كابات تذكارية لرحلات نيلية -->
+            <article class="portfolio-carousel-item reveal" data-category="caps">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDD8z0DPzJThIFpfERGChPVDyG9H27XoFPEbeyF-KW8YezIGnmEMuLThJNgiBTf_LF-U8wAlqHa86Yf3pogjHlxIVOndad7ejceeJTAPHLgbNycNp0VmIaY6v-ERWhZROV7Nag5TvsoBg2mJ3O92Dr7LwqKghMewXQZiShtNIdr8KCifPnWrFGlp3HEhnuuamHjYGNCi9xUhxbVipar9znfUVcsT1ldqzDW_d8MTZ9IYpWnkAy7cZJC"
+                   alt="كابات مطرزة بتطريز بارز لرحلات نيلية" loading="lazy">
+              <div class="portfolio-carousel-overlay">
+                <span class="portfolio-carousel-overlay__badge">تطريز ثلاثي الأبعاد 3D</span>
+                <h3 class="portfolio-carousel-overlay__title">كابات تذكارية لرحلات نيلية</h3>
+                <p class="portfolio-carousel-overlay__desc">خيوط قطن يابانية مدمجة بكثافة عالية لإنتاج بروز فخم وثابت مع قماش كوتون تويل مهوى ومقاوم للشمس.</p>
+                <div class="portfolio-carousel-overlay__footer">
+                  <span class="portfolio-carousel-overlay__meta">HIGH-DENSITY EMBROIDERY</span>
+                  <a class="portfolio-carousel-overlay__link" href="request.html?ref=p05">
+                    <span>اطلب مماثل</span>
+                    <span class="material-symbols-outlined icon-dir" style="font-size:16px">arrow_forward</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- عمل 5: سويت شيرت بتطريز مونوغرام -->
+            <article class="portfolio-carousel-item reveal" data-category="apparel">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDIthOKR8ERElp4ZGcv51wTYGvn8gciUtm5DkwRnIrVekdVs_cHej8MjwvvRABHidoAIZzxmTea1vHnKXOBpragxeK9JcPehal-SjsMxTe1DPU4sgyvKHM4y94JfeXBvcFfZcF_HvJ_HNsZQ6x0KE8UqdItKbvkyEZaR1SfcKJHjd8crKmsUwWQTuPHkAT9HjZXHQnPfjEcCupZJ-Y-gMk4xFCVifikhyNitIhvdyRnA-1TeA1O4bk"
+                   alt="سويت شيرت بتطريز مونوغرام أنيق لعلامة مستقلة" loading="lazy">
+              <div class="portfolio-carousel-overlay">
+                <span class="portfolio-carousel-overlay__badge">تجهيز براند أزياء</span>
+                <h3 class="portfolio-carousel-overlay__title">سويت شيرت بتطريز مونوغرام</h3>
+                <p class="portfolio-carousel-overlay__desc">تنفيذ دفعة سويت شيرت خريفي بخامات ميلتون مبطن ومقاوم للغسيل مع ليبل داخلي مخصص ومطبوع أرشيفياً.</p>
+                <div class="portfolio-carousel-overlay__footer">
+                  <span class="portfolio-carousel-overlay__meta">380 GSM HEAVY FLEECE</span>
+                  <a class="portfolio-carousel-overlay__link" href="request.html?ref=p02">
+                    <span>اطلب مماثل</span>
+                    <span class="material-symbols-outlined icon-dir" style="font-size:16px">arrow_forward</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- عمل 6: باقة هدايا مكتبية فاخرة -->
+            <article class="portfolio-carousel-item reveal" data-category="mugs">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQYs-jIzd59sK9hnd5ho9guIvQrtw1408aKzxV-y5SDh9ByPGxhRjrk37OID9RPj3K22t9asAmo5FinqLqNtUJot0nkbIL1UUokgPGM0aq3LsMgvioJZodORW59L9SnUkX_klaoZzm61WN2PV6w7iy47VeUiFD0JQ8-PE7jRg4YdOoajQY3UNRQlzKhBzOEUisZgHX_xPhhQHtOeiPP-qzLpyu5zRGPaJSQCJY416EPrjuy1TjL40o"
+                   alt="باقة هدايا مكتبية فاخرة لمؤتمر" loading="lazy">
+              <div class="portfolio-carousel-overlay">
+                <span class="portfolio-carousel-overlay__badge">هدايا مؤسسية فاخرة</span>
+                <h3 class="portfolio-carousel-overlay__title">باقة ترحيبية لمؤتمر الاستثمار</h3>
+                <p class="portfolio-carousel-overlay__desc">دفاتر جلدية بحفر ليزري بارز، أقلام معدنية أنيقة، ومجات سفر حرارية معبأة بصناديق تغليف فخمة.</p>
+                <div class="portfolio-carousel-overlay__footer">
+                  <span class="portfolio-carousel-overlay__meta">CORPORATE VIP SET</span>
+                  <a class="portfolio-carousel-overlay__link" href="request.html?ref=p10">
+                    <span>اطلب مماثل</span>
+                    <span class="material-symbols-outlined icon-dir" style="font-size:16px">arrow_forward</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- عمل 7: كفرات حماية هواتف بتصميم حديث -->
+            <article class="portfolio-carousel-item reveal" data-category="stickers">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3pmeh84GwPcvxlw30HtgdrNyxRWY9LTgptSOCoJpM0wuGb_6NiAgX1wcCf9UJxQv1XEis94Gd63Rk3jnesRv1ror7QtIwGOQseavH9sH_qKc6IvNIjBtR21aD7FdxzTfOMCqa4TRYql8uE0Tn6O2ghJ081u0gNtSoR5-hnOJgSUBWulRqTyA3IrkH2FV0cL9yMM6crXlRCnAIch4L4do836MggdmVtEkOOzgx2IphnuYZ7k-KzzI1"
+                   alt="كفرات هواتف مطبوعة بحروف عربية وتجريد" loading="lazy">
+              <div class="portfolio-carousel-overlay">
+                <span class="portfolio-carousel-overlay__badge">كفرات مضادة للصدمات</span>
+                <h3 class="portfolio-carousel-overlay__title">أغطية هواتف بطابع بصري حديث</h3>
+                <p class="portfolio-carousel-overlay__desc">طباعة بأحبار UV ثلاثية الأبعاد على حواف سيليكون مقواة وظهر أكريليك صلب يحمي الهاتف من السقوط.</p>
+                <div class="portfolio-carousel-overlay__footer">
+                  <span class="portfolio-carousel-overlay__meta">SHOCKPROOF • UV INK</span>
+                  <a class="portfolio-carousel-overlay__link" href="request.html?ref=p11">
+                    <span>اطلب مماثل</span>
+                    <span class="material-symbols-outlined icon-dir" style="font-size:16px">arrow_forward</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <!-- شريط تتبع المسار الأرشيفي -->
+          <div class="portfolio-track" aria-hidden="true">
+            <div class="portfolio-track__bar" id="portfolio-progress-bar"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Studio Craft & Quality Pillars (أركان الجودة) -->
+    <section class="pillars-section" aria-label="أركان الجودة الحرفية">
+      <div class="container">
+        <div class="pillars-grid">
+          <div class="pillar-item reveal">
+            <span class="material-symbols-outlined pillar-item__icon" aria-hidden="true">verified</span>
+            <div>
+              <h4 class="pillar-item__title">ثبات معملي للألوان</h4>
+              <p class="pillar-item__desc">أحبار أصلية خاضعة لاختبارات غسيل مكثفة حتى 50 غسلة دون بهتان أو تشقق لطبقة الطباعة.</p>
+            </div>
+          </div>
+
+          <div class="pillar-item reveal">
+            <span class="material-symbols-outlined pillar-item__icon" aria-hidden="true">pin_drop</span>
+            <div>
+              <h4 class="pillar-item__title">إنتاج وتوريد من أسوان</h4>
+              <p class="pillar-item__desc">ورشة عمل متكاملة داخل المحافظة تتيح معاينة العينات ومراجعة الخامات واقعياً قبل طباعة الكميات.</p>
+            </div>
+          </div>
+
+          <div class="pillar-item reveal">
+            <span class="material-symbols-outlined pillar-item__icon" aria-hidden="true">draw</span>
+            <div>
+              <h4 class="pillar-item__title">فحص ومعالجة الملفات مجاناً</h4>
+              <p class="pillar-item__desc">نقوم بتدقيق ألوان الـ CMYK ودقة الوضوح (DPI) لكل تصميم لضمان خروج المنتج كما تصوره عقلك تماماً.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Deep Teal Atelier CTA Banner -->
+    <section class="atelier-cta-banner" aria-label="دعوة للطلب والتواصل">
+      <div class="container">
+        <div class="atelier-cta-banner__inner reveal">
+          <div class="atelier-cta-banner__content">
+            <div class="atelier-cta-banner__eyebrow">
+              <span class="atelier-hero__marker-dot"></span>
+              <span>جاهز لبدء فكرتك الطباعية؟</span>
+            </div>
+            <h2 class="atelier-cta-banner__title">
+              من قطعة واحدة شخصية، إلى آلاف النسخ لعلامتك التجارية.
+            </h2>
+            <p class="atelier-cta-banner__lead">
+              فريق الاستوديو جاهز لاستقبال ملفاتك وتنسيق المواصفات الدقيقة لتسليم منتجات مطبوعة بدقة أرشيفية.
+            </p>
+          </div>
+
+          <div class="atelier-cta-banner__actions">
+            <a class="btn btn--lg btn--atelier-primary" href="request.html">
+              <span>ابدأ طلبك الآن</span>
+              <span class="material-symbols-outlined icon-dir">north_west</span>
             </a>
-            <a class="btn btn--secondary btn--lg" href="#home-services">استكشف الخدمات</a>
-          </div>
-        </div>
-
-        <!-- أداة التتبع السريع للطلبات السابقة -->
-        <div class="home-quick-track">
-          <div class="home-quick-track__head">
-            <h2 class="h4" style="margin:0">متابعة طلب سابق</h2>
-            <span class="badge badge--progress">لوحة التتبع</span>
-          </div>
-          <p class="caption">هل قدمت طلباً سابقاً؟ أدخل رقم الطلب للاطلاع على حالته ومرحلة التجهيز في المشغل.</p>
-          <form class="home-quick-track__form" id="home-track-form" novalidate>
-            <div class="field">
-              <label class="field__label" for="home-track-input">رقم الطلب</label>
-              <input class="input input--ltr num" id="home-track-input" type="text" placeholder="مثال: YS-1042" required>
-            </div>
-            <button type="submit" class="btn btn--secondary btn--block">
-              <span>تتبع الطلب</span>
-              <span class="icon-dir">←</span>
-            </button>
-          </form>
-        </div>
-      </div>
-    </section>
-
-    <!-- شريط المعايير الفنية والميزات -->
-    <section class="home-features-strip">
-      <div class="container">
-        <div class="features-grid">
-          <div class="feature-box">
-            <div class="feature-icon-wrap">100%</div>
-            <div class="feature-text">
-              <h3>قطن مصري مسرّح</h3>
-              <p>أقمشة ثقيلة 300gsm معالجة ضد الانكماش تدوم طويلاً.</p>
-            </div>
-          </div>
-          <div class="feature-box">
-            <div class="feature-icon-wrap">0.1</div>
-            <div class="feature-text">
-              <h3>قص ليزري Die-Cut</h3>
-              <p>دقة متناهية لحواف الستيكرات والملصقات الفينيل العازلة.</p>
-            </div>
-          </div>
-          <div class="feature-box">
-            <div class="feature-icon-wrap">190°</div>
-            <div class="feature-text">
-              <h3>تثبيت حراري وتسامي</h3>
-              <p>أحبار مجهرية مقاومة للغسيل والخدش وأشعة الشمس.</p>
-            </div>
-          </div>
-          <div class="feature-box">
-            <div class="feature-icon-wrap">✓</div>
-            <div class="feature-text">
-              <h3>فحص آلي للجاهزية</h3>
-              <p>تنبيه لحظي بأي نواقص في المقاسات والملفات قبل الإرسال.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- قسم الخدمات المعتمدة (يُحمّل ديناميكياً من Supabase) -->
-    <section class="container home-services-section" id="home-services" aria-label="خدمات يوزرسيف">
-      <div class="section-header-row">
-        <div>
-          <span class="label" style="color:var(--teal-700)">CATALOGUE</span>
-          <h2 class="h2" style="margin:4px 0 0">خدماتنا المطبعية المعتمدة</h2>
-          <p class="muted" style="margin:0">اختر المنتج المطلوب للانتقال مباشرة لنموذج تخصيص المقاسات والألوان ورفع التصميم.</p>
-        </div>
-        <a class="btn btn--secondary" href="request.html">دليل المواصفات الكامل ←</a>
-      </div>
-
-      <div class="grid grid--3" id="home-services-grid">
-        <div class="skeleton" style="height:320px"></div>
-        <div class="skeleton" style="height:320px"></div>
-        <div class="skeleton" style="height:320px"></div>
-      </div>
-
-      <!-- بانر الدعوة للمعالج الشامل -->
-      <div class="home-wizard-banner grain">
-        <div>
-          <h2 class="h3">هل تبحث عن مواصفات خاصة أو طلب لشركتك؟</h2>
-          <p style="margin:4px 0 0; opacity:0.9">
-            افتح معالج الطلب المتكامل لاختيار توزيع المقاسات، وحساب الأبعاد، وتحديد مواضع الطباعة المتعددة مع فحص الجاهزية اللحظي.
-          </p>
-        </div>
-        <a class="btn btn--light btn--lg" href="request.html">
-          <span>دخول معالج المواصفات الذكي</span>
-          <span class="icon-dir">←</span>
-        </a>
-      </div>
-    </section>
-
-    <!-- قسم الأرشيف البصري ومعرض الأعمال (مطابق للتصميم المرجعي تماماً) -->
-    <section class="container section" id="home-portfolio-section" aria-label="معرض الأعمال المميزة">
-      <div class="row" style="justify-content:space-between; align-items:flex-end; margin-bottom:var(--s-2)">
-        <div>
-          <span class="label" style="color:var(--teal-700); font-weight:700">الأرشيف البصري للاستوديو</span>
-          <h2 class="h2" style="margin:4px 0 0">نماذج من أعمال تم تنفيذها في أسوان</h2>
-        </div>
-        <a class="btn btn--secondary btn--sm" href="portfolio.html">استعراض الأرشيف الكامل ←</a>
-      </div>
-
-      <!-- شريط الفلاتر وعناصر التحكم في السلايدر -->
-      <div class="portfolio-controls-row">
-        
-        <!-- الفلاتر التفاعلية -->
-        <div class="portfolio-filters" id="home-portfolio-filters" role="tablist" aria-label="تصنيفات المعرض">
-          <button class="portfolio-filter-btn is-active" data-cat="all">الكل</button>
-        </div>
-
-        <!-- أزرار الأسهم والعداد 01 / 07 -->
-        <div class="portfolio-slider-nav">
-          <button type="button" class="portfolio-nav-btn is-primary" id="home-portfolio-next" aria-label="العمل التالي">
-            <span class="icon-dir">←</span>
-          </button>
-          <span class="portfolio-counter" id="home-portfolio-counter">00 / 00</span>
-          <button type="button" class="portfolio-nav-btn" id="home-portfolio-prev" aria-label="العمل السابق" disabled>
-            <span class="icon-dir">→</span>
-          </button>
-        </div>
-
-      </div>
-
-      <!-- مسار كروت السلايدر -->
-      <div class="portfolio-carousel-wrapper">
-        <div class="portfolio-carousel-track" id="home-portfolio-track">
-          <div class="skeleton" style="min-width:300px; height:460px; border-radius:var(--r-lg)"></div>
-          <div class="skeleton" style="min-width:300px; height:460px; border-radius:var(--r-lg)"></div>
-          <div class="skeleton" style="min-width:300px; height:460px; border-radius:var(--r-lg)"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- قسم رحلة الطلب والخطوات -->
-    <section class="home-steps-section">
-      <div class="container">
-        <div style="text-align:center; max-width:600px; margin:0 auto var(--s-6)">
-          <span class="label" style="color:var(--teal-700)">HOW IT WORKS</span>
-          <h2 class="h2" style="margin:4px 0 var(--s-1)">كيف يعمل مشغل يوزرسيف؟</h2>
-          <p class="muted">أربع خطوات مدروسة تضمن خروج منتجك بأعلى معايير الحرفية والتسليم في الموعد.</p>
-        </div>
-
-        <div class="grid grid--4">
-          <div class="step-card">
-            <span class="step-number-tag">1</span>
-            <h3 class="h4" style="margin:0">اختر المنتج والمواصفات</h3>
-            <p class="caption">حدد الألوان، المقاسات، الأبعاد، وأماكن الطباعة بدقة عبر واجهة التخصيص.</p>
-          </div>
-
-          <div class="step-card">
-            <span class="step-number-tag">2</span>
-            <h3 class="h4" style="margin:0">ارفع التصميم أو اطلب مساعدة</h3>
-            <p class="caption">ارفع ملفاتك بصيغ PDF أو فكتور أو اطلب من الاستوديو المساعدة في التجهيز.</p>
-          </div>
-
-          <div class="step-card">
-            <span class="step-number-tag">3</span>
-            <h3 class="h4" style="margin:0">مراجعة المشغل وبدء التنفيذ</h3>
-            <p class="caption">نراجع تناسق الألوان والأبعاد، ونجهز ألواح الطباعة وتطريز الأقمشة في أسوان.</p>
-          </div>
-
-          <div class="step-card">
-            <span class="step-number-tag">4</span>
-            <h3 class="h4" style="margin:0">التتبع والاستلام المباشر</h3>
-            <p class="caption">تابع حالة طلبك لحظياً برقم الطلب واستلم من المشغل أو رتب التوصيل المحلي.</p>
+            <a class="btn btn--lg btn--atelier-outline" href="https://wa.me/201116891025" target="_blank" rel="noopener noreferrer">
+              <span class="material-symbols-outlined">chat</span>
+              <span>تواصل عبر واتساب</span>
+            </a>
           </div>
         </div>
       </div>
@@ -217,6 +644,7 @@
 
   </main>
 
+  <!-- الفوتر المشترك (يُحقن عبر layout.js) -->
   <div id="site-footer"></div>
 </body>
 </html>
