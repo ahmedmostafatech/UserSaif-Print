@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>تتبع طلبك | يوزرسيف</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/page-track.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="data/schema.js"></script>
+  <script src="assets/js/readiness.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/layout.js" defer></script>
+  <script src="assets/js/page-track.js" defer></script>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main id="main">
+
+    <!-- الهيرو -->
+    <section class="track-hero grain">
+      <div class="container">
+        <nav aria-label="مسار التنقل">
+          <ol class="breadcrumb">
+            <li><a href="index.html">الرئيسية</a></li>
+            <li aria-current="page">تتبع طلبك</li>
+          </ol>
+        </nav>
+        <p class="track-hero__eyebrow">متابعة الطلبات</p>
+        <h1 class="display">تتبع طلبك</h1>
+        <p class="track-hero__lead">
+          اكتب رقم الطلب ورقم الهاتف المسجل به، لتعرف حالة طلبك وما سيحدث بعد ذلك.
+        </p>
+      </div>
+    </section>
+
+    <div class="container track-main">
+
+      <!-- شاشة البحث -->
+      <section class="track-lookup" id="lookup-view" aria-label="البحث عن طلب">
+
+        <form class="card track-form" id="lookup-form" novalidate>
+          <div class="track-form__head">
+            <h2 class="h3">أدخل بيانات طلبك</h2>
+            <p class="muted">نستخدم رقم الهاتف للتأكد أن الطلب طلبك.</p>
+          </div>
+
+          <div class="field" id="field-order">
+            <label class="field__label" for="order-id">رقم الطلب</label>
+            <input class="input input--ltr" id="order-id" name="order" type="text"
+                   dir="ltr" autocomplete="off" autocapitalize="characters"
+                   placeholder="YS-1042" aria-describedby="order-hint order-error">
+            <span class="field__hint" id="order-hint">مثال: YS-1042</span>
+            <span class="field__error" id="order-error" role="alert"></span>
+          </div>
+
+          <div class="field" id="field-phone">
+            <label class="field__label" for="phone">رقم الهاتف المسجل بالطلب</label>
+            <input class="input input--ltr" id="phone" name="phone" type="tel"
+                   dir="ltr" inputmode="tel" autocomplete="tel"
+                   placeholder="01012345678" aria-describedby="phone-hint phone-error">
+            <span class="field__hint" id="phone-hint">مثال: 01012345678</span>
+            <span class="field__error" id="phone-error" role="alert"></span>
+          </div>
+
+          <div class="track-alert" id="lookup-alert" role="alert" hidden></div>
+
+          <button class="btn btn--primary btn--lg btn--block" type="submit" id="lookup-btn">
+            تتبع طلبك
+          </button>
+        </form>
+
+        <aside class="track-help">
+          <div class="card">
+            <div class="card__body">
+              <h3 class="h4">أين أجد رقم الطلب؟</h3>
+              <p class="muted">
+                يظهر رقم الطلب في صفحة التأكيد بعد إرسال طلبك، ويبدأ بـ
+                <span class="num">YS-</span> متبوعًا بأرقام.
+              </p>
+              <p class="muted" id="help-whatsapp" hidden></p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__body">
+              <h3 class="h4">مراحل الطلب</h3>
+              <ol class="track-steps" id="steps-preview"></ol>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <!-- شاشة النتيجة -->
+      <div id="result-view" tabindex="-1" hidden>
+        <div class="track-toolbar">
+          <button class="btn btn--ghost btn--sm" type="button" id="again-btn">→ تتبع طلب آخر</button>
+        </div>
+        <div id="result-body" aria-live="polite"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- نافذة تعديل وإعادة إرسال الطلب المرفوض -->
+  <dialog class="dialog track-dialog" id="resubmit-dialog" aria-labelledby="rs-title">
+    <form id="resubmit-form" novalidate>
+      <h2 class="h3" id="rs-title">عدّل طلبك وأعد إرساله</h2>
+      <p class="muted">عدّل ما يلزم بحسب سبب الرفض، وسيعود طلبك إلى المراجعة.</p>
+
+      <div class="field">
+        <label class="field__label" for="rs-description">وصف الطلب</label>
+        <textarea class="textarea" id="rs-description" maxlength="2000"></textarea>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="rs-date">التاريخ المطلوب</label>
+        <input class="input" type="date" id="rs-date">
+        <span class="field__hint">هذا تاريخ مفضّل وليس وعدًا بالتسليم.</span>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="rs-files">تصميم جديد (اختياري)</label>
+        <input class="input" type="file" id="rs-files" multiple
+               accept=".png,.jpg,.jpeg,.webp,.pdf,image/png,image/jpeg,image/webp,application/pdf">
+        <span class="field__hint">
+          PNG أو JPG أو WEBP أو PDF، حتى 10 ميجابايت للملف. الملفات الجديدة تحل محل الملفات السابقة.
+        </span>
+      </div>
+
+      <label class="track-check">
+        <input type="checkbox" id="rs-help">
+        <span>أحتاج مساعدة في التصميم</span>
+      </label>
+
+      <p class="caption">لتعديل الكمية أو المقاسات أو اللون، تواصل معنا عبر واتساب.</p>
+
+      <div class="track-alert" id="rs-alert" role="alert" hidden></div>
+
+      <div class="track-actions">
+        <button class="btn btn--primary" type="submit" id="rs-submit">إعادة إرسال الطلب</button>
+        <button class="btn btn--secondary" type="button" id="rs-cancel">إلغاء</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <div id="site-footer"></div>
+</body>
+</html>

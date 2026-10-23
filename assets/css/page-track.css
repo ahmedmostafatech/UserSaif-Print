@@ -1,0 +1,294 @@
+/* ============================================================
+   page-track.css — ستايل صفحة تتبع الطلب فقط
+   كل القيم من tokens.css، ممنوع ألوان أو مقاسات مباشرة
+   ============================================================ */
+
+[hidden] { display: none !important; }
+
+/* ---------- الهيرو ---------- */
+.track-hero {
+  background: var(--teal-900);
+  color: var(--white);
+  padding-block: var(--s-8) calc(var(--s-12) + var(--s-3));
+  position: relative;
+  overflow: hidden;
+}
+.track-hero::after {
+  content: "";
+  position: absolute;
+  inset-block-start: -140px;
+  inset-inline-end: -120px;
+  width: 460px;
+  height: 460px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--teal-300) 30%, transparent), transparent 65%);
+  pointer-events: none;
+  z-index: -1;
+}
+.track-hero h1 { color: var(--white); margin-block-end: var(--s-2); }
+.track-hero .breadcrumb { color: var(--teal-100); }
+.track-hero .breadcrumb a { color: var(--white); }
+.track-hero .breadcrumb [aria-current="page"] { color: var(--teal-100); }
+.track-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  margin: 0 0 var(--s-2);
+  color: var(--teal-300);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+}
+.track-hero__eyebrow::before {
+  content: "";
+  width: 32px;
+  height: 2px;
+  background: var(--teal-300);
+}
+.track-hero__lead {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--teal-100);
+  font-size: 1.125rem;
+}
+
+/* ---------- المحتوى (يتداخل مع الهيرو) ---------- */
+.track-main {
+  position: relative;
+  z-index: 2;
+  margin-block-start: calc(var(--s-8) * -1);
+  padding-block-end: var(--s-12);
+}
+
+/* ---------- شاشة البحث ---------- */
+.track-lookup {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--s-3);
+  align-items: start;
+}
+.track-form {
+  grid-column: span 7;
+  padding: var(--s-5);
+  display: grid;
+  gap: var(--s-3);
+  box-shadow: var(--shadow-3);
+}
+.track-form__head h2 { margin-block-end: var(--s-1); }
+.track-form__head p { margin: 0; }
+.track-help {
+  grid-column: span 5;
+  display: grid;
+  gap: var(--s-3);
+}
+.track-help h3 { margin-block-end: var(--s-1); }
+.track-help p { margin: 0; }
+
+.track-steps {
+  list-style: none;
+  margin: var(--s-2) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2);
+  counter-reset: step;
+}
+.track-steps li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-weight: var(--fw-medium);
+  counter-increment: step;
+}
+.track-steps li::before {
+  content: counter(step);
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--teal-50);
+  border: 1px solid var(--border-strong);
+  color: var(--primary);
+  font-weight: var(--fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- تنبيه الأخطاء ---------- */
+.track-alert {
+  display: grid;
+  gap: var(--s-half);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--error-bg);
+  color: var(--error);
+  border: 1px solid color-mix(in srgb, var(--error) 30%, transparent);
+}
+.track-alert strong { font-weight: var(--fw-semibold); }
+.track-alert a { color: var(--error); font-weight: var(--fw-semibold); }
+
+/* ---------- شاشة النتيجة ---------- */
+.track-toolbar { margin-block-end: var(--s-3); }
+.track-toolbar .btn--ghost { color: var(--white); }
+.track-toolbar .btn--ghost:hover {
+  background: color-mix(in srgb, var(--white) 14%, transparent);
+  color: var(--white);
+}
+
+.track-rise { animation: track-rise var(--dur-slow) var(--ease) both; }
+.track-rise--2 { animation-delay: 80ms; }
+.track-rise--3 { animation-delay: 160ms; }
+@keyframes track-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+.track-banner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--s-4);
+  align-items: end;
+  padding: var(--s-5);
+  margin-block-end: var(--s-3);
+  box-shadow: var(--shadow-3);
+}
+.track-banner__label {
+  margin: 0;
+  color: var(--teal-300);
+  font-size: var(--fs-caption);
+}
+.track-banner__id {
+  margin: var(--s-half) 0 var(--s-2);
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+  line-height: 1.1;
+  color: var(--white);
+}
+.track-banner__stage { color: var(--teal-100); font-size: var(--fs-caption); }
+.track-banner__meta { text-align: end; color: var(--teal-100); }
+.track-banner__meta p { margin: 0 0 var(--s-half); max-width: none; }
+.track-banner__service { color: var(--white); font-weight: var(--fw-semibold); font-size: 1.125rem; }
+
+.track-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+  gap: var(--s-3);
+  align-items: start;
+}
+.track-col { display: grid; gap: var(--s-3); }
+.track-card { padding: var(--s-4); }
+.track-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding-block-end: var(--s-2);
+  margin-block-end: var(--s-3);
+  border-block-end: 1px solid var(--border);
+}
+.track-card__head h2,
+.track-card__head h3 { margin: 0; }
+.track-card .timeline li { font-size: 0.9375rem; }
+
+/* الخطوة التالية وملاحظة صاحب المشروع */
+.track-next {
+  display: grid;
+  gap: var(--s-1);
+  padding: var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--teal-50);
+  border: 1px solid var(--teal-100);
+}
+.track-next p { margin: 0; max-width: none; }
+.track-eyebrow {
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  color: var(--teal-700);
+}
+.track-note {
+  display: grid;
+  gap: var(--s-1);
+  margin-block-start: var(--s-2);
+  padding: var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-inline-start: 4px solid var(--teal-500);
+  box-shadow: var(--shadow-1);
+}
+.track-note p { margin: 0; max-width: none; }
+
+/* حالة الرفض */
+.track-rejection {
+  display: grid;
+  gap: var(--s-1);
+  padding: var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--error-bg);
+  border: 1px solid color-mix(in srgb, var(--error) 30%, transparent);
+  border-inline-start: 4px solid var(--error);
+}
+.track-rejection h3 { margin: 0; color: var(--error); font-size: var(--fs-h4); }
+.track-rejection p { margin: 0; max-width: none; }
+.track-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-block-start: var(--s-3);
+}
+
+/* سجل الطلب */
+.track-log__text { font-weight: var(--fw-medium); }
+
+/* تفاصيل الطلب */
+.track-aside {
+  display: grid;
+  gap: var(--s-3);
+  position: sticky;
+  inset-block-start: calc(var(--header-h) + var(--s-3));
+}
+.track-details { margin: 0; display: grid; }
+.track-details > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding-block: var(--s-1);
+  border-block-end: 1px solid var(--border);
+}
+.track-details > div:last-child { border-block-end: 0; }
+.track-details dt { color: var(--text-muted); font-size: var(--fs-caption); }
+.track-details dd { margin: 0; font-weight: var(--fw-medium); text-align: end; }
+.track-details__note { margin: var(--s-2) 0 0; }
+
+/* بطاقة واتساب */
+.track-wa { padding: var(--s-4); display: grid; gap: var(--s-2); }
+.track-wa h3 { margin: 0; }
+.track-wa p { margin: 0; color: var(--teal-100); max-width: none; }
+.track-wa__note { color: var(--teal-300); font-size: var(--fs-caption); }
+
+/* ---------- نافذة إعادة الإرسال ---------- */
+.track-dialog form { display: grid; gap: var(--s-3); }
+.track-dialog h2, .track-dialog p { margin: 0; }
+.track-check {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  min-height: 44px;
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+}
+.track-check input { width: 20px; height: 20px; accent-color: var(--primary); }
+
+/* ---------- المتجاوب ---------- */
+@media (max-width: 960px) {
+  .track-form, .track-help { grid-column: span 12; }
+  .track-grid { grid-template-columns: 1fr; }
+  .track-aside { position: static; }
+}
+@media (max-width: 640px) {
+  .track-hero { padding-block: var(--s-6) var(--s-10); }
+  .track-main { margin-block-start: calc(var(--s-6) * -1); }
+  .track-form, .track-card, .track-banner, .track-wa { padding: var(--s-3); }
+  .track-banner { grid-template-columns: 1fr; gap: var(--s-2); }
+  .track-banner__meta { text-align: start; }
+  .track-actions .btn { width: 100%; }
+}
