@@ -1,0 +1,178 @@
+/* ============================================================
+   page-home.css — تنسيقات الصفحة الرئيسية (يوزرسيف)
+   ============================================================ */
+
+/* ---------- Hero Section ---------- */
+.home-hero {
+  padding-block: var(--s-10) var(--s-8);
+  background: linear-gradient(180deg, var(--teal-50) 0%, var(--paper) 100%);
+  border-block-end: 1px solid var(--border);
+  position: relative;
+}
+.home-hero__inner {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: var(--s-6);
+  align-items: center;
+}
+@media (max-width: 920px) {
+  .home-hero__inner {
+    grid-template-columns: 1fr;
+    gap: var(--s-4);
+  }
+}
+.home-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: 4px 12px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  color: var(--teal-800);
+}
+.home-hero__lead {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 58ch;
+  margin-block: var(--s-2) var(--s-4);
+}
+.home-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  align-items: center;
+}
+
+/* بطاقة التتبع السريع داخل الهيرو */
+.home-quick-track {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-4);
+  box-shadow: var(--shadow-2);
+  display: grid;
+  gap: var(--s-2);
+}
+.home-quick-track__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.home-quick-track__form {
+  display: grid;
+  gap: var(--s-2);
+}
+
+/* ---------- شريط ميزات المشغل (Craft Features Strip) ---------- */
+.home-features-strip {
+  padding-block: var(--s-6);
+  background: var(--white);
+  border-block-end: 1px solid var(--border);
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-3);
+}
+@media (max-width: 860px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.feature-box {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-2);
+}
+.feature-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-md);
+  background: var(--teal-50);
+  color: var(--teal-800);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-weight: var(--fw-bold);
+}
+.feature-text h3 {
+  font-size: 1rem;
+  margin: 0 0 4px;
+  color: var(--teal-900);
+}
+.feature-text p {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ---------- قسم الخدمات الرئيسي ---------- */
+.home-services-section {
+  padding-block: var(--s-10);
+}
+.section-header-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-block-end: var(--s-4);
+  flex-wrap: wrap;
+}
+
+/* بطاقة الدعوة للانتقال لصفحة الويزارد */
+.home-wizard-banner {
+  margin-block-start: var(--s-8);
+  background: var(--teal-900);
+  color: var(--white);
+  border-radius: var(--r-lg);
+  padding: var(--s-6) var(--s-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  position: relative;
+  overflow: hidden;
+}
+.home-wizard-banner h2,
+.home-wizard-banner h3 {
+  color: var(--white);
+}
+
+/* ---------- خطوات العمل (Workflow Steps) ---------- */
+.home-steps-section {
+  padding-block: var(--s-8) var(--s-12);
+  background: var(--teal-50);
+  border-block-start: 1px solid var(--border);
+}
+.step-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--s-3);
+  display: grid;
+  gap: var(--s-1);
+  position: relative;
+}
+.step-number-tag {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--teal-800);
+  color: var(--white);
+  display: grid;
+  place-items: center;
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-caption);
+}

@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>استوديو يوزرسيف | طباعة وتجليد وتطويع منتجات في أسوان</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/page-portfolio.css">
+  <link rel="stylesheet" href="assets/css/page-home.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="data/schema.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/layout.js" defer></script>
+  <script src="assets/js/page-home.js" defer></script>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main id="main">
+
+    <!-- الهيرو الرئيسي -->
+    <section class="home-hero grain">
+      <div class="container home-hero__inner">
+        <div>
+          <span class="home-hero__eyebrow">
+            <span>استوديو يوزرسيف — مشغل أسوان الحرفي</span>
+            <span class="tag-sample">تجريبي</span>
+          </span>
+          <h1 class="display" style="margin-block:var(--s-2)">حِرفة الطباعة الفاخرة والتجليد الأرشيفي</h1>
+          <p class="home-hero__lead">
+            نجمع بين دقة المعايير المطبعية وروح التصميم المعاصر في أسوان. نقدم حلول طباعة الأقمشة، الأكواب، كفرات الهواتف، والستيكرات المقاومة مع مساعد ذكي لفحص جاهزية ملفاتك قبل التنفيذ.
+          </p>
+          <div class="home-hero__actions">
+            <a class="btn btn--primary btn--lg" href="request.html">
+              <span>ابدأ طلبك (معالج المواصفات)</span>
+              <span class="icon-dir">←</span>
+            </a>
+            <a class="btn btn--secondary btn--lg" href="#home-services">استكشف الخدمات</a>
+          </div>
+        </div>
+
+        <!-- أداة التتبع السريع للطلبات السابقة -->
+        <div class="home-quick-track">
+          <div class="home-quick-track__head">
+            <h2 class="h4" style="margin:0">متابعة طلب سابق</h2>
+            <span class="badge badge--progress">لوحة التتبع</span>
+          </div>
+          <p class="caption">هل قدمت طلباً سابقاً؟ أدخل رقم الطلب للاطلاع على حالته ومرحلة التجهيز في المشغل.</p>
+          <form class="home-quick-track__form" id="home-track-form" novalidate>
+            <div class="field">
+              <label class="field__label" for="home-track-input">رقم الطلب</label>
+              <input class="input input--ltr num" id="home-track-input" type="text" placeholder="مثال: YS-1042" required>
+            </div>
+            <button type="submit" class="btn btn--secondary btn--block">
+              <span>تتبع الطلب</span>
+              <span class="icon-dir">←</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- شريط المعايير الفنية والميزات -->
+    <section class="home-features-strip">
+      <div class="container">
+        <div class="features-grid">
+          <div class="feature-box">
+            <div class="feature-icon-wrap">100%</div>
+            <div class="feature-text">
+              <h3>قطن مصري مسرّح</h3>
+              <p>أقمشة ثقيلة 300gsm معالجة ضد الانكماش تدوم طويلاً.</p>
+            </div>
+          </div>
+          <div class="feature-box">
+            <div class="feature-icon-wrap">0.1</div>
+            <div class="feature-text">
+              <h3>قص ليزري Die-Cut</h3>
+              <p>دقة متناهية لحواف الستيكرات والملصقات الفينيل العازلة.</p>
+            </div>
+          </div>
+          <div class="feature-box">
+            <div class="feature-icon-wrap">190°</div>
+            <div class="feature-text">
+              <h3>تثبيت حراري وتسامي</h3>
+              <p>أحبار مجهرية مقاومة للغسيل والخدش وأشعة الشمس.</p>
+            </div>
+          </div>
+          <div class="feature-box">
+            <div class="feature-icon-wrap">✓</div>
+            <div class="feature-text">
+              <h3>فحص آلي للجاهزية</h3>
+              <p>تنبيه لحظي بأي نواقص في المقاسات والملفات قبل الإرسال.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- قسم الخدمات المعتمدة (يُحمّل ديناميكياً من Supabase) -->
+    <section class="container home-services-section" id="home-services" aria-label="خدمات يوزرسيف">
+      <div class="section-header-row">
+        <div>
+          <span class="label" style="color:var(--teal-700)">CATALOGUE</span>
+          <h2 class="h2" style="margin:4px 0 0">خدماتنا المطبعية المعتمدة</h2>
+          <p class="muted" style="margin:0">اختر المنتج المطلوب للانتقال مباشرة لنموذج تخصيص المقاسات والألوان ورفع التصميم.</p>
+        </div>
+        <a class="btn btn--secondary" href="request.html">دليل المواصفات الكامل ←</a>
+      </div>
+
+      <div class="grid grid--3" id="home-services-grid">
+        <div class="skeleton" style="height:320px"></div>
+        <div class="skeleton" style="height:320px"></div>
+        <div class="skeleton" style="height:320px"></div>
+      </div>
+
+      <!-- بانر الدعوة للمعالج الشامل -->
+      <div class="home-wizard-banner grain">
+        <div>
+          <h2 class="h3">هل تبحث عن مواصفات خاصة أو طلب لشركتك؟</h2>
+          <p style="margin:4px 0 0; opacity:0.9">
+            افتح معالج الطلب المتكامل لاختيار توزيع المقاسات، وحساب الأبعاد، وتحديد مواضع الطباعة المتعددة مع فحص الجاهزية اللحظي.
+          </p>
+        </div>
+        <a class="btn btn--light btn--lg" href="request.html">
+          <span>دخول معالج المواصفات الذكي</span>
+          <span class="icon-dir">←</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- قسم الأرشيف البصري ومعرض الأعمال (مطابق للتصميم المرجعي تماماً) -->
+    <section class="container section" id="home-portfolio-section" aria-label="معرض الأعمال المميزة">
+      <div class="row" style="justify-content:space-between; align-items:flex-end; margin-bottom:var(--s-2)">
+        <div>
+          <span class="label" style="color:var(--teal-700); font-weight:700">الأرشيف البصري للاستوديو</span>
+          <h2 class="h2" style="margin:4px 0 0">نماذج من أعمال تم تنفيذها في أسوان</h2>
+        </div>
+        <a class="btn btn--secondary btn--sm" href="portfolio.html">استعراض الأرشيف الكامل ←</a>
+      </div>
+
+      <!-- شريط الفلاتر وعناصر التحكم في السلايدر -->
+      <div class="portfolio-controls-row">
+        
+        <!-- الفلاتر التفاعلية -->
+        <div class="portfolio-filters" id="home-portfolio-filters" role="tablist" aria-label="تصنيفات المعرض">
+          <button class="portfolio-filter-btn is-active" data-cat="all">الكل</button>
+        </div>
+
+        <!-- أزرار الأسهم والعداد 01 / 07 -->
+        <div class="portfolio-slider-nav">
+          <button type="button" class="portfolio-nav-btn is-primary" id="home-portfolio-next" aria-label="العمل التالي">
+            <span class="icon-dir">←</span>
+          </button>
+          <span class="portfolio-counter" id="home-portfolio-counter">00 / 00</span>
+          <button type="button" class="portfolio-nav-btn" id="home-portfolio-prev" aria-label="العمل السابق" disabled>
+            <span class="icon-dir">→</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- مسار كروت السلايدر -->
+      <div class="portfolio-carousel-wrapper">
+        <div class="portfolio-carousel-track" id="home-portfolio-track">
+          <div class="skeleton" style="min-width:300px; height:460px; border-radius:var(--r-lg)"></div>
+          <div class="skeleton" style="min-width:300px; height:460px; border-radius:var(--r-lg)"></div>
+          <div class="skeleton" style="min-width:300px; height:460px; border-radius:var(--r-lg)"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- قسم رحلة الطلب والخطوات -->
+    <section class="home-steps-section">
+      <div class="container">
+        <div style="text-align:center; max-width:600px; margin:0 auto var(--s-6)">
+          <span class="label" style="color:var(--teal-700)">HOW IT WORKS</span>
+          <h2 class="h2" style="margin:4px 0 var(--s-1)">كيف يعمل مشغل يوزرسيف؟</h2>
+          <p class="muted">أربع خطوات مدروسة تضمن خروج منتجك بأعلى معايير الحرفية والتسليم في الموعد.</p>
+        </div>
+
+        <div class="grid grid--4">
+          <div class="step-card">
+            <span class="step-number-tag">1</span>
+            <h3 class="h4" style="margin:0">اختر المنتج والمواصفات</h3>
+            <p class="caption">حدد الألوان، المقاسات، الأبعاد، وأماكن الطباعة بدقة عبر واجهة التخصيص.</p>
+          </div>
+
+          <div class="step-card">
+            <span class="step-number-tag">2</span>
+            <h3 class="h4" style="margin:0">ارفع التصميم أو اطلب مساعدة</h3>
+            <p class="caption">ارفع ملفاتك بصيغ PDF أو فكتور أو اطلب من الاستوديو المساعدة في التجهيز.</p>
+          </div>
+
+          <div class="step-card">
+            <span class="step-number-tag">3</span>
+            <h3 class="h4" style="margin:0">مراجعة المشغل وبدء التنفيذ</h3>
+            <p class="caption">نراجع تناسق الألوان والأبعاد، ونجهز ألواح الطباعة وتطريز الأقمشة في أسوان.</p>
+          </div>
+
+          <div class="step-card">
+            <span class="step-number-tag">4</span>
+            <h3 class="h4" style="margin:0">التتبع والاستلام المباشر</h3>
+            <p class="caption">تابع حالة طلبك لحظياً برقم الطلب واستلم من المشغل أو رتب التوصيل المحلي.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="site-footer"></div>
+</body>
+</html>

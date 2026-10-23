@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>دليل الخدمات وبدء الطلب | استوديو يوزرسيف</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/page-request.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="data/schema.js"></script>
+  <script src="assets/js/readiness.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/layout.js" defer></script>
+  <script src="assets/js/page-request.js" defer></script>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main id="main">
+
+    <!-- الشريط الأرشيفي وشريط المسار -->
+    <section class="request-archival-bar">
+      <div class="container request-archival-inner">
+        <nav aria-label="مسار التنقل">
+          <ol class="breadcrumb" style="margin-bottom:0">
+            <li><a href="index.html">استوديو يوزرسيف</a></li>
+            <li><a href="#services-catalog">دليل الخدمات والمواصفات</a></li>
+            <li aria-current="page" id="breadcrumb-current-service">الملابس والأقمشة الثقيلة</li>
+          </ol>
+        </nav>
+        <div class="row">
+          <span class="request-meta-badge">
+            <span class="meta-dot"></span>
+            <span>نسخة المواصفات: 2.4 أرشفة أسوان</span>
+          </span>
+          <span class="tag-sample">بيانات تجريبية</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- مقدمة الدليل والمؤشرات الفنية -->
+    <section class="container request-intro">
+      <div class="row" style="justify-content:space-between; align-items:flex-end;">
+        <div class="request-intro__header">
+          <div class="eyebrow-accent">
+            <span class="eyebrow-line"></span>
+            <span>CATALOGUE &amp; MATRIX</span>
+          </div>
+          <h1 class="h1">دليل التخصيص والمواصفات الفنية</h1>
+          <p class="muted">
+            استكشف المعايير الحرفية ومصفوفات التخصيص الدقيقة في مشغلنا بأسوان. اختر الخدمة لاستعراض نموذج الطلب والمقاييس الميكانيكية المعتمدة لتجهيز ألواح الطباعة والتطريز.
+          </p>
+        </div>
+
+        <div class="metrics-strip">
+          <div class="metric-item">
+            <span class="metric-val"><span class="num">100</span>%</span>
+            <span class="metric-lbl">قطن مصري 300gsm</span>
+          </div>
+          <div class="metric-div"></div>
+          <div class="metric-item">
+            <span class="metric-val"><span class="num">0.1</span> مم</span>
+            <span class="metric-lbl">دقة قص ليزري Die-Cut</span>
+          </div>
+          <div class="metric-div"></div>
+          <div class="metric-item">
+            <span class="metric-val"><span class="num">3-5</span> أيام</span>
+            <span class="metric-lbl">معدل الإنجاز والتسليم</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- القسم 1: كاتالوج الخدمات والفلاتر -->
+    <section class="container catalog-section" id="services-catalog" aria-label="دليل الخدمات">
+      
+      <!-- شريط مدمج يظهر عند اختيار خدمة ويطوي الكتالوج -->
+      <div class="selected-service-compact-bar" id="selected-service-compact-bar" style="display:none">
+        <div class="compact-service-info">
+          <img class="compact-service-thumb" id="compact-service-img" src="" alt="المنتج المختار">
+          <div class="compact-service-meta">
+            <span class="badge badge--received" id="compact-service-cat">ملابس</span>
+            <h3 class="compact-service-title" id="compact-service-title">هودي مطبوع</h3>
+            <span class="caption" id="compact-service-price" style="color:var(--teal-700); font-weight:600">ابتداءً من <span class="num">480</span> ج.م</span>
+          </div>
+        </div>
+        <button type="button" class="btn btn--secondary btn--sm" id="btn-change-service">
+          <span>تغيير الخدمة / اختيار منتج آخر</span>
+          <span class="icon-dir">←</span>
+        </button>
+      </div>
+
+      <!-- حاوية تصفح الكتالوج بالكامل (تختفي عند اختيار خدمة، وتظهر عند الرغبة في التغيير) -->
+      <div id="catalog-browser-wrap">
+        <div class="catalog-filters" id="catalog-category-filters" role="tablist" aria-label="تصنيفات الخدمات">
+          <button class="chip" id="filter-all-btn" aria-pressed="true" data-category="all">كافة التصنيفات</button>
+          <!-- التصنيفات تُحمّل ديناميكياً من Supabase عبر api.js -->
+        </div>
+
+        <!-- شبكة بطاقات الخدمات (تُحمّل ديناميكياً) -->
+        <div class="catalog-grid" id="catalog-services-grid">
+          <div class="skeleton" style="height:260px"></div>
+          <div class="skeleton" style="height:260px"></div>
+          <div class="skeleton" style="height:260px"></div>
+          <div class="skeleton" style="height:260px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- رسالة حث في حالة عدم اختيار خدمة -->
+    <section class="container choose-service-prompt" id="choose-service-prompt" style="display:none">
+      <div class="row">
+        <span class="meta-dot"></span>
+        <h3 class="h4" style="margin:0">اختر المنتج المطلوب من الكتالوج أعلاه</h3>
+      </div>
+      <p class="muted" style="margin:0">انقر على بطاقة الخدمة (مثل: تيشيرت، هودي، ستيكرات، كفر هاتف، إلخ) للانتقال إلى نموذج المواصفات والمقاسات الخاص بها.</p>
+    </section>
+
+    <!-- القسم 2: معالج الطلب والمواصفات الفنية (Wizard) -->
+    <section class="container wizard-section" id="wizard-section" aria-label="معالج تقديم الطلب" style="display:none">
+
+      <div class="wizard-header">
+        <div class="row" style="justify-content:space-between; align-items:baseline;">
+          <div>
+            <span class="eyebrow-accent">SPECIFICATION SHEET &amp; WIZARD</span>
+            <h2 class="h2" id="wizard-title">نموذج مواصفات الإنتاج الحرفي</h2>
+          </div>
+          <span class="tag-sample">طلب تجريبي — لا يُلزم بدفع</span>
+        </div>
+
+        <!-- مؤشر خطوات المعالج -->
+        <ol class="wizard-steps-nav" id="wizard-steps-nav">
+          <li class="wizard-step-item is-current" data-step="1" id="step-nav-1">
+            <span class="wizard-step-title">
+              <strong>1.</strong> المواصفات والخيارات
+            </span>
+          </li>
+          <li class="wizard-step-item" data-step="2" id="step-nav-2">
+            <span class="wizard-step-title">
+              <strong>2.</strong> التصميم والمرفقات
+            </span>
+          </li>
+          <li class="wizard-step-item" data-step="3" id="step-nav-3">
+            <span class="wizard-step-title">
+              <strong>3.</strong> بيانات العميل والاستلام
+            </span>
+          </li>
+        </ol>
+      </div>
+
+      <!-- تخطيط الخطوات: شاشة النموذج + شاشة الملخص والجاهزية -->
+      <div class="wizard-layout" id="wizard-form-container">
+
+        <!-- العمود الرئيسي: النماذج والخطوات -->
+        <div class="wizard-panel">
+
+          <!-- بطاقة المنتج المختار حالياً -->
+          <div class="selected-service-banner" id="selected-service-banner">
+            <div class="row">
+              <span class="meta-dot"></span>
+              <div>
+                <strong id="active-service-name">تيشيرت مطبوع فائق الجودة</strong>
+                <span class="caption" id="active-service-spec-id" style="margin-inline-start:8px; display:inline-block">مواصفة: AP-2024-NIL</span>
+              </div>
+            </div>
+            <div class="row">
+              <span class="service-card__price" id="active-service-price">ابتداءً من <span class="num">220</span> ج.م</span>
+              <button type="button" class="btn btn--ghost btn--sm" id="btn-change-service-inner">تغيير المنتج</button>
+            </div>
+          </div>
+
+          <!-- ==================== الخطوة 1: المواصفات والخيارات ==================== -->
+          <div class="step-pane is-active" id="step-pane-1" role="tabpanel">
+
+            <!-- أ) نموذج الملابس والأقمشة (Apparel Form) -->
+            <div class="variant-form-block" id="form-block-apparel">
+              
+              <!-- 1. سواتش الألوان -->
+              <div class="field" id="field-color">
+                <div class="row" style="justify-content:space-between">
+                  <label class="field__label">لون القماش المختار:</label>
+                  <span class="caption" id="selected-color-label">أسود داكن</span>
+                </div>
+                <div class="swatches-grid" id="apparel-colors-swatches">
+                  <!-- ألوان ديناميكية من options.colors -->
+                </div>
+              </div>
+
+              <!-- 2. الكمية الكلية وتوزيع المقاسات الذكي -->
+              <div class="size-breakdown-box" id="apparel-sizes-box">
+                <div class="row" style="justify-content:space-between; align-items:center">
+                  <div>
+                    <label class="field__label" for="apparel-target-qty">إجمالي عدد القطع المطلوب:</label>
+                    <p class="field__hint" style="margin:0">حدد الكمية الكلية لتوزيعها بدقة على المقاسات الحرفية</p>
+                  </div>
+                  <div class="stepper">
+                    <button type="button" aria-label="تقليل الكمية" onclick="adjustTotalQty(-1)">-</button>
+                    <input type="number" id="apparel-target-qty" min="1" max="1000" value="24" class="num">
+                    <button type="button" aria-label="زيادة الكمية" onclick="adjustTotalQty(1)">+</button>
+                  </div>
+                </div>
+
+                <!-- شبكة إدخال المقاسات -->
+                <div class="size-inputs-grid" id="sizes-inputs-grid">
+                  <div class="size-cell">
+                    <span class="size-cell__name">S</span>
+                    <span class="caption">صغير</span>
+                    <input type="number" class="size-cell__input num" data-size="S" min="0" value="4">
+                  </div>
+                  <div class="size-cell">
+                    <span class="size-cell__name">M</span>
+                    <span class="caption">متوسط</span>
+                    <input type="number" class="size-cell__input num" data-size="M" min="0" value="8">
+                  </div>
+                  <div class="size-cell">
+                    <span class="size-cell__name">L</span>
+                    <span class="caption">كبير</span>
+                    <input type="number" class="size-cell__input num" data-size="L" min="0" value="8">
+                  </div>
+                  <div class="size-cell">
+                    <span class="size-cell__name">XL</span>
+                    <span class="caption">كبير جداً</span>
+                    <input type="number" class="size-cell__input num" data-size="XL" min="0" value="4">
+                  </div>
+                  <div class="size-cell">
+                    <span class="size-cell__name">XXL</span>
+                    <span class="caption">مضاعف</span>
+                    <input type="number" class="size-cell__input num" data-size="XXL" min="0" value="0">
+                  </div>
+                </div>
+
+                <!-- شريط التوازن الذكي -->
+                <div class="size-balance-banner is-match" id="size-balance-banner">
+                  <span id="size-balance-text">توزيع المقاسات متطابق: <span class="num">24</span> من إجمالي <span class="num">24</span> قطعة</span>
+                  <span class="badge badge--ready" id="size-balance-badge">اكتمال 100%</span>
+                </div>
+              </div>
+
+              <!-- 3. مواضع الطباعة -->
+              <div class="field" id="field-placements">
+                <label class="field__label">مواضع ومساحات الطباعة المطلوبة:</label>
+                <div class="options-grid" id="apparel-placements-grid">
+                  <!-- مواضع ديناميكية -->
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ب) نموذج الهدايا وأغطية الهواتف (Gift / Phone Case Form) -->
+            <div class="variant-form-block" id="form-block-gift" style="display:none">
+              
+              <!-- اختيار طراز الهاتف (يظهر فقط إذا كانت الخدمة غطاء هاتف) -->
+              <div class="field" id="field-phone-model">
+                <label class="field__label" for="phone-model-select">طراز وموديل الهاتف المحدد:</label>
+                <select class="select" id="phone-model-select">
+                  <option value="">-- اختر طراز الهاتف --</option>
+                  <!-- خيارات ديناميكية من options.phoneModels -->
+                </select>
+                <p class="field__hint">إذا كان طراز هاتفك غير مدرج، اختر «طراز آخر» واكتبه في الملاحظات.</p>
+              </div>
+
+              <!-- النص المخصص أو المونوغرام -->
+              <div class="field" id="field-custom-text">
+                <div class="row" style="justify-content:space-between">
+                  <label class="field__label" for="custom-text-input">النص المخصص أو المونوغرام:</label>
+                  <span class="caption">حتى 30 حرف كحد أقصى</span>
+                </div>
+                <input type="text" class="input" id="custom-text-input" maxlength="30" placeholder="اكتب الاسم، العبارة، أو الرمز المراد طباعته...">
+              </div>
+
+              <!-- نمط الملمس والإنهاء -->
+              <div class="field">
+                <label class="field__label">نمط الملمس والإنهاء:</label>
+                <div class="options-grid">
+                  <label class="option-card is-checked">
+                    <input type="radio" name="gift-finish" value="matte" checked>
+                    <div class="option-card__text">
+                      <span class="option-card__title">مطفي ناعم (Matte)</span>
+                      <span class="option-card__subtitle">مقاوم لبصمات الأصابع</span>
+                    </div>
+                  </label>
+                  <label class="option-card">
+                    <input type="radio" name="gift-finish" value="glossy">
+                    <div class="option-card__text">
+                      <span class="option-card__title">لامع عاكس (Glossy)</span>
+                      <span class="option-card__subtitle">ألوان زاهية برّاقة</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- كمية الهدايا -->
+              <div class="row" style="justify-content:space-between; align-items:center; background:var(--teal-50); padding:var(--s-2); border-radius:var(--r-md)">
+                <div>
+                  <label class="field__label" for="gift-qty-input">الكمية المطلوبة:</label>
+                  <p class="field__hint" style="margin:0">الحد الأدنى قطعة واحدة</p>
+                </div>
+                <div class="stepper">
+                  <button type="button" aria-label="تقليل الكمية" onclick="adjustGiftQty(-1)">-</button>
+                  <input type="number" id="gift-qty-input" min="1" max="500" value="2" class="num">
+                  <button type="button" aria-label="زيادة الكمية" onclick="adjustGiftQty(1)">+</button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ج) نموذج الستيكرات والليبلز (Sticker Form) -->
+            <div class="variant-form-block" id="form-block-sticker" style="display:none">
+              
+              <!-- الأبعاد ووحدة القياس -->
+              <div class="field" id="field-dimensions">
+                <div class="row" style="justify-content:space-between; align-items:center">
+                  <label class="field__label">الأبعاد الدقيقة للقطعة:</label>
+                  <div class="unit-toggle" role="group" aria-label="وحدة القياس">
+                    <button type="button" class="unit-btn is-active" id="unit-cm-btn" onclick="setStickerUnit('cm')">سم (cm)</button>
+                    <button type="button" class="unit-btn" id="unit-mm-btn" onclick="setStickerUnit('mm')">مم (mm)</button>
+                  </div>
+                </div>
+
+                <div class="dimension-inputs">
+                  <div class="field">
+                    <span class="caption">العرض (Width):</span>
+                    <div class="dimension-field">
+                      <input type="number" id="sticker-width-input" min="1" step="0.5" value="6" class="num">
+                      <span class="dim-unit" id="sticker-width-unit">سم</span>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <span class="caption">الارتفاع (Height):</span>
+                    <div class="dimension-field">
+                      <input type="number" id="sticker-height-input" min="1" step="0.5" value="6" class="num">
+                      <span class="dim-unit" id="sticker-height-unit">سم</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- مسار وشكل القص -->
+              <div class="field" id="field-shape">
+                <label class="field__label">شكل ومسار القص (Die-Cut Profile):</label>
+                <div class="shape-grid" id="sticker-shapes-grid">
+                  <!-- أشكال القص -->
+                </div>
+              </div>
+
+              <!-- الاستخدام المقصود -->
+              <div class="field" id="field-use">
+                <label class="field__label" for="sticker-use-select">الاستخدام المقصود:</label>
+                <select class="select" id="sticker-use-select">
+                  <!-- استخدامات ديناميكية من options.uses -->
+                </select>
+              </div>
+
+              <!-- كمية الستيكرات -->
+              <div class="field">
+                <label class="field__label" for="sticker-qty-select">إجمالي عدد الستيكرات:</label>
+                <select class="select" id="sticker-qty-select">
+                  <option value="50">50 ستيكر (شيت تجريبي)</option>
+                  <option value="150" selected>150 ستيكر (3 شيتات)</option>
+                  <option value="500">500 ستيكر (10 شيتات - خصم 10%)</option>
+                  <option value="1000">1000 ستيكر (دفعة تجارية كاملة)</option>
+                </select>
+              </div>
+
+            </div>
+
+            <!-- د) نموذج التصميم المخصص (Custom Form) -->
+            <div class="variant-form-block" id="form-block-custom" style="display:none">
+              <div class="field">
+                <label class="field__label" for="custom-requirements-input">تفاصيل ومتطلبات طلبك المخصص:</label>
+                <textarea class="textarea" id="custom-requirements-input" placeholder="اشرح لنا نوع المنتج والخامة المطلوبة والأبعاد التقريبية وأي تفاصيل تساعدنا في تجهيز النموذج..."></textarea>
+              </div>
+              <div class="field">
+                <label class="field__label" for="custom-qty-input">الكمية المقترحة:</label>
+                <input type="number" id="custom-qty-input" min="1" value="10" class="input num" style="max-width:160px">
+              </div>
+            </div>
+
+            <!-- وصف مختصر إضافي للطلب (عام لكل الخدمات) -->
+            <div class="field" id="field-description">
+              <label class="field__label" for="order-desc-input">وصف مختصر للطلب أو فكرة التصميم: <span style="color:var(--error)">*</span></label>
+              <input type="text" class="input" id="order-desc-input" placeholder="مثال: تيشيرت أسود بطباعة شعار النادي على الصدر والظهر" required>
+              <p class="field__hint">يساعدنا الوصف في المراجعة السريعة لطلبك.</p>
+            </div>
+
+            <!-- أزرار التنقل -->
+            <div class="wizard-nav-actions">
+              <span></span>
+              <button type="button" class="btn btn--primary" onclick="goToStep(2)">
+                <span>التالي: التصميم والمرفقات</span>
+                <span class="icon-dir">←</span>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- ==================== الخطوة 2: التصميم والمرفقات ==================== -->
+          <div class="step-pane" id="step-pane-2" role="tabpanel">
+
+            <div>
+              <h3 class="h4">رفع ملفات التصميم والأعمال الفنية</h3>
+              <p class="muted">ارفع تصميمك بدقة عالية (Vector أو 300DPI) للحصول على أفضل جودة طباعة، أو اختر مساعدة في التصميم.</p>
+            </div>
+
+            <!-- منطقة السحب والإفلات -->
+            <div class="artwork-dropzone" id="artwork-dropzone" role="button" tabindex="0" aria-label="منطقة رفع الملفات">
+              <input type="file" id="artwork-file-input" multiple accept="image/png,image/jpeg,image/webp,application/pdf" style="display:none">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <div>
+                <strong>اسحب وأفلت الملفات هنا، أو انقر للاختيار</strong>
+                <p class="field__hint" style="margin:4px 0 0">الملفات المسموحة: PNG, JPG, WEBP, PDF بحد أقصى <span class="num">10</span> ميجابايت للملف.</p>
+              </div>
+            </div>
+
+            <!-- قائمة الملفات المرفوعة -->
+            <div class="uploaded-files-list" id="uploaded-files-list"></div>
+
+            <!-- خيار مساعدة في التصميم -->
+            <label class="design-help-card" id="design-help-card">
+              <input type="checkbox" id="design-help-checkbox" style="margin-top:4px; width:18px; height:18px">
+              <div>
+                <strong style="color:var(--teal-900)">أحتاج مساعدة في التصميم</strong>
+                <p class="caption" style="margin:4px 0 0">
+                  إذا لم يكن لديك تصميم جاهز أو تحتاج تعديل خطوط وشعارات، سيساعدك فريق الاستوديو في تجهيز التصميم قبل بدء الطباعة.
+                </p>
+              </div>
+            </label>
+
+            <!-- أزرار التنقل -->
+            <div class="wizard-nav-actions">
+              <button type="button" class="btn btn--secondary" onclick="goToStep(1)">
+                <span class="icon-dir">→</span>
+                <span>العودة للمواصفات</span>
+              </button>
+              <button type="button" class="btn btn--primary" onclick="goToStep(3)">
+                <span>التالي: بيانات العميل والاستلام</span>
+                <span class="icon-dir">←</span>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- ==================== الخطوة 3: بيانات العميل والاستلام ==================== -->
+          <div class="step-pane" id="step-pane-3" role="tabpanel">
+
+            <div>
+              <h3 class="h4">بيانات العميل وموعد الاستلام</h3>
+              <p class="muted">أدخل بيانات التواصل لتأكيد استلام الطلب ومتابعة التحديثات عبر لوحة التتبع أو واتساب.</p>
+            </div>
+
+            <!-- شبكة بيانات العميل -->
+            <div class="customer-grid">
+              <div class="field" id="field-name">
+                <label class="field__label" for="customer-name-input">الاسم الكامل: <span style="color:var(--error)">*</span></label>
+                <input type="text" class="input" id="customer-name-input" placeholder="اكتب اسمك الثلاثي أو الثنائي" required>
+                <span class="field__error" id="name-error">اكتب اسمك للمتابعة.</span>
+              </div>
+
+              <div class="field" id="field-phone">
+                <label class="field__label" for="customer-phone-input">رقم الهاتف (مصر): <span style="color:var(--error)">*</span></label>
+                <input type="tel" class="input input--ltr" id="customer-phone-input" placeholder="01012345678" dir="ltr" required>
+                <span class="field__error" id="phone-error">رقم الهاتف غير صحيح. مثال: 01012345678</span>
+              </div>
+            </div>
+
+            <div class="customer-grid">
+              <div class="field" id="field-email">
+                <label class="field__label" for="customer-email-input">البريد الإلكتروني (اختياري):</label>
+                <input type="email" class="input input--ltr" id="customer-email-input" placeholder="name@example.com" dir="ltr">
+              </div>
+
+              <div class="field" id="field-date">
+                <label class="field__label" for="requested-date-input">التاريخ المطلوب للاستلام: <span style="color:var(--error)">*</span></label>
+                <input type="date" class="input num" id="requested-date-input" required>
+                <p class="field__hint" style="color:var(--warning)">
+                  تنبيه: التاريخ المطلوب هو موعد مفضل للتجهيز وليس وعدًا قاطعًا بالتسليم.
+                </p>
+              </div>
+            </div>
+
+            <!-- طريقة الاستلام (استلام من المشغل / توصيل) -->
+            <div class="field" id="field-pickup">
+              <label class="field__label">طريقة الاستلام المفضلة:</label>
+              <div class="pickup-selector" id="pickup-selector">
+                <label class="pickup-option is-active" id="pickup-opt-pickup">
+                  <input type="radio" name="pickup-mode" value="pickup" checked>
+                  <div>
+                    <strong style="display:block">استلام من المشغل (أسوان)</strong>
+                    <span class="caption">معاينة القطع والتسليم المباشر</span>
+                  </div>
+                </label>
+                <label class="pickup-option" id="pickup-opt-delivery">
+                  <input type="radio" name="pickup-mode" value="delivery">
+                  <div>
+                    <strong style="display:block">توصيل محلي أو شحن</strong>
+                    <span class="caption">يُنسق الشحن مع الإدارة</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- ملاحظات إضافية -->
+            <div class="field">
+              <label class="field__label" for="order-notes-input">ملاحظات إضافية للمشغل (اختياري):</label>
+              <textarea class="textarea" id="order-notes-input" placeholder="أي تفاصيل خاصة بالتغليف أو مواعيد التسليم أو التخصيص..."></textarea>
+            </div>
+
+            <!-- أزرار التنقل والإرسال -->
+            <div class="wizard-nav-actions">
+              <button type="button" class="btn btn--secondary" onclick="goToStep(2)">
+                <span class="icon-dir">→</span>
+                <span>العودة للتصميم</span>
+              </button>
+              <button type="button" class="btn btn--primary btn--lg" id="submit-order-btn" onclick="handleOrderSubmit()">
+                <span>إرسال الطلب للاعتماد</span>
+                <span class="icon-dir">←</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- العمود الجانبي: ملخص الطلب + مساعد الجاهزية -->
+        <aside class="wizard-sidebar" aria-label="ملخص وجاهزية الطلب">
+
+          <!-- بطاقة ملخص المواصفات والأسعار -->
+          <div class="summary-card">
+            <h3 class="h4" style="margin-bottom:var(--s-2)">ملخص مواصفات الطلب</h3>
+
+            <div class="summary-row">
+              <span class="muted">المنتج المختار:</span>
+              <strong id="summary-service-name">تيشيرت مطبوع</strong>
+            </div>
+
+            <div class="summary-row">
+              <span class="muted">إجمالي الكمية:</span>
+              <strong id="summary-quantity"><span class="num">24</span> قطعة</strong>
+            </div>
+
+            <div class="summary-row" id="summary-spec-color-row">
+              <span class="muted">اللون المحدد:</span>
+              <span id="summary-color-val">أسود</span>
+            </div>
+
+            <div class="summary-row" id="summary-spec-detail-row">
+              <span class="muted">المواصفة:</span>
+              <span id="summary-spec-detail-val">الصدر والظهر</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="muted">الملفات المرفقة:</span>
+              <span id="summary-artwork-count">لا توجد ملفات</span>
+            </div>
+
+            <div class="summary-total">
+              <div>
+                <span class="caption" style="display:block">المجموع التقديري المبدئي</span>
+                <span class="tag-sample">سعر تجريبي</span>
+              </div>
+              <div class="summary-total-val" id="summary-total-price">
+                <span class="num">5,280</span> ج.م
+              </div>
+            </div>
+          </div>
+
+          <!-- لوحة مساعد جاهزية الطلب (Order Readiness Assistant) -->
+          <div class="readiness" id="readiness-panel">
+            <div class="row" style="justify-content:space-between; align-items:center">
+              <h4 style="margin:0">مساعد الجاهزية</h4>
+              <span class="badge badge--review" id="readiness-status-badge">جارٍ التحقق</span>
+            </div>
+            <p class="caption" style="margin:6px 0 0">
+              يفحص طلبك آلياً لتفادي أي نواقص قبل الإرسال للمشغل.
+            </p>
+
+            <ul class="readiness__list" id="readiness-issues-list">
+              <!-- بنود النواقص والجاهزية تُضاف آلياً عبر readiness.js -->
+            </ul>
+
+            <p class="caption" style="margin-top:var(--s-2); color:var(--text-muted); font-size:11px">
+              ملاحظة: فحص اكتمال البيانات لا يضمن ملاءمة التصميم للطباعة.
+            </p>
+          </div>
+
+        </aside>
+
+      </div>
+
+      <!-- شاشة النجاح (تظهر بعد إرسال الطلب بنجاح) -->
+      <div class="success-screen" id="success-screen" style="display:none">
+        <div class="success-icon-wrap">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+
+        <h2 class="h2" style="color:var(--success)">تم استلام طلبك بنجاح!</h2>
+        <p class="muted" style="max-width:540px">
+          تم تسجيل طلبك في نظام يوزرسيف وسيبدأ المشغل بمراجعته وتجهيز ألواح الطباعة. احتفظ برقم الطلب لتتبع حالته.
+        </p>
+
+        <div class="order-id-badge">
+          <span>رقم طلبك:</span>
+          <span class="num" id="success-order-id">YS-0000</span>
+        </div>
+
+        <div class="row" style="margin-top:var(--s-3); gap:var(--s-2)">
+          <a class="btn btn--primary" id="success-track-btn" href="track.html">
+            <span>تتبع حالة الطلب الآن</span>
+            <span class="icon-dir">←</span>
+          </a>
+          <a class="btn btn--secondary" id="success-whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer">
+            <span>متابعة عبر واتساب</span>
+          </a>
+          <button type="button" class="btn btn--ghost" onclick="resetRequestWizard()">
+            <span>تقديم طلب جديد</span>
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- شريط الإجراءات الثابت على الموبايل -->
+    <aside class="sticky-cta" id="mobile-sticky-cta" aria-label="شريط الطلب السريع">
+      <div class="sticky-cta__inner">
+        <div class="sticky-cta__meta">
+          <span class="sticky-cta__title" id="sticky-product-title">تيشيرت مطبوع</span>
+          <span class="sticky-cta__price" id="sticky-product-price">المجموع التقديري: <span class="num">5,280</span> ج.م</span>
+        </div>
+        <button type="button" class="btn btn--primary btn--sm" id="sticky-action-btn" onclick="handleStickyAction()">
+          <span>متابعة الطلب</span>
+          <span class="icon-dir">←</span>
+        </button>
+      </div>
+    </aside>
+
+  </main>
+
+  <div id="site-footer"></div>
+</body>
+</html>
