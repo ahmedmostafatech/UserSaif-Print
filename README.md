@@ -18,18 +18,18 @@ The owner can: review requests, approve or reject them, and update their status.
 
 **Pages**
 
-| Page | File | Owner |
-|---|---|---|
-| Home | `index.html` | Friend A |
-| Start a Request (wizard) | `request.html` | Friend A |
-| Services + details | `services.html` | Friend B |
-| Portfolio | `portfolio.html` | Friend B |
-| Contact + FAQ | `contact.html` | Friend B |
-| About | `about.html` | Friend B |
-| Policies | `policies.html` | Friend B |
-| Track a Request | `track.html` | Ahmed |
-| Admin | `admin.html` (+ `admin/` pages) | Ahmed |
-| Database, backend, deploy | Supabase | Ahmed |
+| Page | File | Owner | Status |
+|---|---|---|---|
+| Home | `index.html` | Friend A | in progress |
+| Start a Request (wizard) | `request.html` | Friend A | in progress |
+| Services + details | `services.html` | Friend B | in progress |
+| Portfolio | `portfolio.html` | Friend B | in progress |
+| Contact + FAQ | `contact.html` | Friend B | todo |
+| About | `about.html` | Friend B | todo |
+| Policies | `policies.html` | Friend B | todo |
+| Track a Request | `track.html` | Ahmed | **done** |
+| Admin | `admin.html` (+ `admin/` pages) | Ahmed | in progress |
+| Database, backend, deploy | Supabase | Ahmed | database done, deploy todo |
 
 ---
 
@@ -37,7 +37,7 @@ The owner can: review requests, approve or reject them, and update their status.
 
 - Plain **HTML, CSS, JavaScript** (no frameworks, no build step)
 - **IBM Plex Sans Arabic** (Google Fonts) for ALL text
-- **Supabase** for database, admin login, and file storage (connected later)
+- **Supabase** (live): database, admin login, private file storage, security rules
 - Full **RTL** Arabic layout, mobile first
 
 ---
@@ -46,13 +46,14 @@ The owner can: review requests, approve or reject them, and update their status.
 
 1. Clone the repo and open it in VS Code.
 2. Install the **Live Server** extension (by Ritwick Dey).
-3. Right click `test.html` -> **Open with Live Server**.
-4. You should see all checks passing. If yes, everything works on your machine.
+3. Right click `test.html` -> **Open with Live Server**. Everything should show a green check.
+4. Open `test-supabase.html` the same way. It should show **21 of 21** passing.
 
-> Do NOT open pages by double clicking the file. The browser blocks `fetch()` on `file://`,
-> so the data will not load. Always use Live Server.
+> Do NOT open pages by double clicking the file. The browser blocks `fetch()` on `file://`.
+> Always use Live Server.
 
-Also open `test-api.html` to check the data functions (it should show 25 of 25 passing).
+You do NOT need any keys or `.env` file to work on pages.
+`assets/js/config.js` already contains the public Supabase key, which is safe to be public.
 
 ---
 
@@ -62,37 +63,53 @@ Also open `test-api.html` to check the data functions (it should show 25 of 25 p
 UserSaif-Print/
 ├── assets/
 │   ├── css/
-│   │   ├── tokens.css       <- colors, fonts, spacing (variables only)
-│   │   ├── base.css         <- reset, text styles, RTL, grid, accessibility
-│   │   └── components.css   <- buttons, cards, inputs, timeline, table...
+│   │   ├── tokens.css        <- colors, fonts, spacing (variables only)
+│   │   ├── base.css          <- reset, text styles, RTL, grid, accessibility
+│   │   ├── components.css    <- buttons, cards, inputs, timeline, table...
+│   │   └── page-*.css        <- one file per page (your own styles go here)
 │   └── js/
-│       ├── layout.js        <- shared header + footer + menu + reduce-motion toggle
-│       ├── readiness.js     <- order readiness checker
-│       └── api.js           <- ALL data access goes through here
+│       ├── config.js         <- Supabase URL + public key
+│       ├── api.js            <- ALL data access (Supabase version)
+│       ├── api-local.js      <- offline version (reads data.json), for tests only
+│       ├── readiness.js      <- order readiness checker
+│       ├── layout.js         <- shared header + footer + menu + reduce-motion toggle
+│       └── page-*.js         <- one file per page (your own logic goes here)
 ├── data/
-│   ├── schema.js            <- statuses, labels, timeline helpers
-│   └── data.json            <- sample data (services, portfolio, orders...)
-├── img/                     <- images (services/, portfolio/, samples/)
+│   ├── schema.js             <- statuses, labels, timeline helpers
+│   └── data.json             <- sample data (used by the seed and offline mode only)
+├── tools/
+│   └── seed.js               <- uploads data.json to Supabase (Ahmed only)
+├── img/                      <- images (services/, portfolio/, samples/)
 ├── index.html  services.html  portfolio.html  request.html
 ├── track.html  contact.html   about.html      policies.html
 ├── admin.html
-├── test.html                <- checks CSS + layout + data
-├── test-api.html            <- checks api.js + readiness
+├── test.html                 <- checks CSS + layout + data
+├── test-api.html             <- checks offline api + readiness (uses api-local.js)
+├── test-supabase.html        <- checks live Supabase + security (as a visitor)
+├── .env                      <- SECRET keys, never committed (Ahmed only)
 └── README.md
 ```
 
+> `data.json` is only the starting data. The live site reads from Supabase.
+> Changing `data.json` does NOT change the site.
+
 ---
 
-## 5. The 3 golden rules
+## 5. The golden rules
 
 1. **Never edit the shared files.** These belong to Ahmed:
-   `tokens.css`, `base.css`, `components.css`, `layout.js`, `schema.js`, `readiness.js`, `api.js`, `data.json`.
+   `tokens.css`, `base.css`, `components.css`, `layout.js`, `schema.js`, `readiness.js`, `api.js`, `api-local.js`, `config.js`, `data.json`.
    If you need something new, ask Ahmed and he will add it.
 2. **Never hardcode a color, font size, or spacing.** Use the CSS variables.
    - Good: `color: var(--teal-800); padding: var(--s-3);`
    - Bad: `color: #114850; padding: 24px;`
 3. **Your own page styles go in your own file:** `assets/css/page-NAME.css`
-   (example: `page-home.css`, `page-request.css`).
+   (example: `page-home.css`, `page-request.css`). Your page logic goes in `assets/js/page-NAME.js`.
+4. **Never talk to Supabase directly from a page.** No `db.from("orders")` or `db.rpc(...)`.
+   Use only the functions in section 8. They are the safe doors.
+5. **Never commit secrets.** `.env` and the Supabase secret key must never reach GitHub.
+   Only Ahmed has them. Do not run `tools/seed.js`, it resets the live data.
+6. **Test orders:** when you test, write the word **اختبار** in the order description so Ahmed can clean them later.
 
 Other rules:
 
@@ -102,6 +119,7 @@ Other rules:
 - Use Western digits (0-9) everywhere. Price format: `350 ج.م`.
 - One primary button per screen. Use plain Arabic for labels and error messages.
 - Every image needs an `alt` text.
+- Escape any text that comes from the database before putting it in `innerHTML` (descriptions, notes, names). Use `textContent` when you can.
 - The requested date is a **preferred date, not a delivery promise**. Always show that note.
 - Do not invent: prices, delivery times, policies, statistics, testimonials, address, map, email, working hours.
 
@@ -109,7 +127,7 @@ Other rules:
 
 ## 6. Page template
 
-Copy this for every new page. Change the title and the page CSS file name.
+Copy this for every new page. Change the title and the page CSS/JS names.
 
 ```html
 <!doctype html>
@@ -128,13 +146,13 @@ Copy this for every new page. Change the title and the page CSS file name.
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/page-NAME.css">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/js/config.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/config.js"></script>
   <script src="data/schema.js"></script>
   <script src="assets/js/readiness.js"></script>
   <script src="assets/js/api.js"></script>
   <script src="assets/js/layout.js" defer></script>
+  <script src="assets/js/page-NAME.js" defer></script>
 </head>
 <body>
   <div id="site-header"></div>
@@ -148,9 +166,10 @@ Copy this for every new page. Change the title and the page CSS file name.
 </html>
 ```
 
-Only include `schema.js`, `readiness.js`, and `api.js` if your page needs data.
-If your page is inside a sub folder, fix the file paths (add `../`).
-Also set `DATA_URL` in `api.js` usage accordingly (ask Ahmed).
+- The script order matters: `supabase-js` -> `config.js` -> `schema.js` -> `readiness.js` -> `api.js`.
+- Pages that do not need data (about, policies) can skip `supabase-js`, `config.js`, `readiness.js`, and `api.js`.
+- If your page is inside a sub folder, fix the file paths (add `../`).
+- Reference page: **`track.html`** (with `page-track.css` and `page-track.js`). Copy its structure and style.
 
 ---
 
@@ -174,11 +193,11 @@ Do NOT add orange, blue, gold, or any other brand color. Status colors (`--succe
 
 | Component | Classes |
 |---|---|
-| Buttons | `.btn .btn--primary / --secondary / --ghost / --light / --danger`, sizes `.btn--sm / --lg`, `.btn--block` |
-| Inputs | `.field` > `.field__label`, `.input / .select / .textarea`, `.field__hint`, `.field__error` (add `.has-error` to `.field`) |
+| Buttons | `.btn .btn--primary / --secondary / --ghost / --light / --danger`, sizes `.btn--sm / --lg`, `.btn--block`, loading: add `.is-loading` |
+| Inputs | `.field` > `.field__label`, `.input / .select / .textarea`, `.field__hint`, `.field__error` (add `.has-error` to `.field`), `.input--ltr` for phone/email |
 | Color picker | `.swatches` > `.swatch` (`aria-checked="true"` for selected) |
 | Cards | `.card`, `.card--hover`, `.card--dark`, `.card__media`, `.card__body` |
-| Badges | `.badge` + `.badge--received / --review / --approved / --rejected / --progress / --ready` |
+| Badges | `.badge` + `.badge--received / --review / --approved / --rejected / --progress / --ready` (use `STATUS_BADGE[status]`) |
 | Sample tag | `.tag-sample` |
 | Filter chips | `.chip` (`aria-pressed="true"` for selected) |
 | Breadcrumb | `.breadcrumb` |
@@ -211,13 +230,15 @@ Do NOT add orange, blue, gold, or any other brand color. Status colors (`--succe
 </article>
 ```
 
-**Motion:** keep it gentle. The footer has a "تقليل الحركة" toggle, and the CSS already respects it. Any new animation must work with it (use the existing variables `--dur`, `--ease`).
+Images in `img/` may not exist yet. Show a soft teal box with the label "صورة تجريبية" when an image is missing.
+
+**Motion:** keep it gentle. The footer has a "تقليل الحركة" toggle, and the CSS already respects it. Any new animation must work with it (use the variables `--dur` and `--ease`).
 
 ---
 
-## 8. Data layer (use these functions, never read `data.json` directly)
+## 8. Data layer (use these functions only)
 
-Load order in the page: `schema.js` -> `readiness.js` -> `api.js`.
+Load order: `supabase-js` -> `config.js` -> `schema.js` -> `readiness.js` -> `api.js`.
 All functions are `async`, use `await`.
 
 | I need... | Use |
@@ -229,28 +250,99 @@ All functions are `async`, use `await`.
 | Form options (colors, sizes, shapes, phone models...) | `getOptions()` |
 | FAQ | `getFaq()` |
 | Settings (WhatsApp number) | `getSettings()` |
-| Upload artwork file | `uploadArtwork(file)` |
+| Upload an artwork file | `uploadArtwork(file)` |
 | Check an order before sending | `checkReadiness(order, service)` |
 | Send a new order | `submitOrder(draft)` |
 | Track an order | `trackOrder(number, phone)` |
-| Resubmit a rejected order | `resubmitOrder(id, changes)` |
+| Resubmit a rejected order | `resubmitOrder(id, changes, phone)` |
+| Admin: log in / out / check | `adminLogin(email, password)` / `adminLogout()` / `isAdmin()` |
 | Admin: list / search / filter | `getOrders({ status, search })` |
 | Admin: one order | `getOrder(id)` |
 | Admin: approve / reject / set status | `approveOrder(id, note)` / `rejectOrder(id, reason)` / `updateOrderStatus(id, status, note)` |
+| Admin: temporary link to a customer file | `getArtworkUrl(item)` |
 
-Example:
+`getOrders`, `getOrder`, and the approve/reject functions work for a logged in admin only.
+
+### Uploading artwork
 
 ```js
-// تحميل الخدمات وعرضها
-async function showServices() {
-  let services = await getServices();
-  console.log("Services loaded:", services.length);
+// رفع الملف وحفظ النتيجة كما هي داخل المسودة
+async function onFileChosen(file) {
+  try {
+    let item = await uploadArtwork(file);
+    // item = { name, path, type, url }
+    draft.artwork.push(item); // لا تعدّل شيئًا داخل item
+    console.log("Artwork added:", item.name);
+  } catch (err) {
+    console.log("Upload failed:", err.message);
+  }
 }
 ```
 
-**Current mode:** data comes from `data/data.json`. New orders are saved in the browser (`localStorage`) of the device that sent them.
-This means the admin and tracking pages see new orders only on the same browser until Supabase is connected.
-When Supabase is ready, Ahmed will switch `api.js` to `api-supabase.js` with the same function names. **Your pages will not change.**
+- Allowed types: PNG, JPG, WEBP, PDF. Max size: 10MB per file.
+- Errors thrown: `file-type-not-allowed`, `file-too-large`. Show a friendly Arabic message.
+- `item.url` is only a local preview (for thumbnails). It disappears after a page reload.
+- Do not invent your own `path`. The server only accepts paths created by `uploadArtwork`.
+
+### Sending an order
+
+```js
+// شكل الطلب
+let draft = {
+  serviceId: "tshirt",
+  quantity: 24,
+  description: "...",
+  customer: { name: "...", phone: "01012345678", email: "" },
+  requestedDate: "2026-11-10",     // YYYY-MM-DD
+  pickup: "pickup",                // pickup | delivery
+  designHelp: false,
+  artwork: [],                     // items returned by uploadArtwork
+  specs: {
+    color: "teal",
+    sizes: { S: 4, M: 8, L: 8, XL: 4, XXL: 0 },
+    placements: ["chest"]
+  }
+};
+
+let result = await submitOrder(draft);
+if (result.ok) {
+  console.log("Order number:", result.order.id);
+} else if (result.issues) {
+  // نواقص من مساعد الجاهزية (اعرضها في لوحة الجاهزية)
+} else {
+  // خطأ من السيرفر: result.error
+}
+```
+
+- `specs` contains ONLY the keys that apply to the service (see section 9).
+- The server checks everything again. Even if the form is bypassed, a bad order is rejected.
+- Server error text contains a code such as `sizes-mismatch`, `missing-sizes`, `missing-color`, `missing-placement`, `missing-phone-model`, `missing-dimensions`, `missing-unit`, `missing-shape`, `missing-use`, `artwork-required`, `invalid-artwork`, `invalid-phone`, `invalid-date`, `invalid-quantity`. Show a clear Arabic message, and a generic one for unknown codes.
+- The price is calculated on the server. Never send a price.
+
+### Tracking
+
+- `trackOrder(number, phone)` returns the order, or `null` when the number or phone is wrong.
+- After too many wrong tries it **throws** `too-many-attempts` (15 minutes lock). Wrap it in `try/catch`.
+- Always show the same message for "not found" and "wrong phone". Do not reveal which one is wrong.
+- Reference implementation: `assets/js/page-track.js`.
+
+### Test orders for the tracking page
+
+| Order | Phone | Status |
+|---|---|---|
+| `YS-1042` | `01000001042` | قيد المراجعة |
+| `YS-1039` | `01000001039` | مقبول |
+| `YS-1037` | `01000001037` | مرفوض (with a reason) |
+| `YS-1036` | `01000001036` | قيد التنفيذ |
+| `YS-1034` | `01000001034` | جاهز للاستلام |
+| `YS-1045` | `01000001045` | تم الاستلام (design help) |
+
+Please do not test "resubmit" on these without telling Ahmed. It changes live data.
+
+### Offline mode
+
+`api-local.js` has the same function names but reads from `data.json` and saves new orders in the browser (`localStorage`).
+Use it only for tests: replace `api.js` with `api-local.js` in your `<script>` tag (`test-api.html` already does).
 
 ---
 
@@ -274,8 +366,9 @@ Rules:
 - **Stickers and labels:** dimensions must have a unit (cm / mm).
 - The link from a service card to the wizard: `request.html?service=SERVICE_ID`
 - The link from a portfolio item to the wizard: `request.html?ref=PORTFOLIO_ID`
+- The link to track a specific order: `track.html?order=YS-1042`
 
-Every order specs object only contains the keys that apply to its service
+The `specs` object only contains the keys that apply to the service
 (`color`, `sizes`, `placements`, `customText`, `phoneModel`, `width`, `height`, `unit`, `shape`, `use`).
 
 ---
@@ -295,11 +388,11 @@ Every order specs object only contains the keys that apply to its service
 ```
 
 - Show `issues` in the `.readiness` panel as the user fills the form. Show a "ready" state when `ready` is true.
-- If an issue has a `fix`, show a one tap button with `fix.label`. When clicked, merge `fix.patch` into the order (example: set quantity to the size total).
-- `submitOrder()` runs this check again and refuses incomplete orders.
+- If an issue has a `fix`, show a one tap button with `fix.label`. When clicked, merge `fix.patch` into the order (example: set the quantity to the size total).
+- `submitOrder()` runs this check again and refuses incomplete orders. The server runs its own check too.
 - Add this small note near the panel: "فحص اكتمال البيانات لا يضمن ملاءمة التصميم للطباعة".
 
-Test orders in the sample data:
+Sample orders to try it on (these are in the live data):
 
 - `YS-1041`: sizes total 20, quantity 24 (mismatch)
 - `YS-1044`: phone case with no phone model
@@ -324,7 +417,18 @@ Helpers: `STATUS_LABELS`, `STATUS_BADGE` (badge class), `NEXT_STEP` (plain Arabi
 
 ---
 
-## 12. Git workflow
+## 12. Security (how the backend protects us)
+
+- Visitors can read services and portfolio, send an order, and track an order (number + phone). Nothing else.
+- Visitors cannot read, edit, or delete orders. This is enforced in the database, not in JavaScript.
+- Customer files are in a private storage bucket. Only the admin can open them.
+- The admin area is protected by a real login. A normal user cannot become an admin.
+- `config.js` contains only the public key. The secret key lives in `.env` on Ahmed's machine.
+- Hiding a button in the page does not protect anything. Never rely on the frontend for security.
+
+---
+
+## 13. Git workflow
 
 - One repo, one branch per person: `ahmed`, `friend-a`, `friend-b` (use real names).
 - **Only touch your own files** (see the page table above). This avoids conflicts.
@@ -350,12 +454,13 @@ git pull origin main
 
 ---
 
-## 13. Delivery checklist (before the demo)
+## 14. Delivery checklist (before the demo)
 
 - [ ] Full order goes from the wizard to the admin dashboard
 - [ ] Missing or inconsistent details are caught before sending
 - [ ] Approve and reject show correctly to the customer on the tracking page
 - [ ] Customer files and order access stay private
+- [ ] A normal (non admin) user cannot open the admin area
 - [ ] Works on mobile (test at 390px width)
 - [ ] RTL is correct everywhere (arrows and icons mirrored)
 - [ ] All sample content is marked "تجريبي"
@@ -364,20 +469,23 @@ git pull origin main
 - [ ] Two social media designs are ready
 - [ ] Short demo video recorded
 - [ ] Setup and run notes + safe demo admin login written
+- [ ] Test orders (description contains "اختبار") cleaned from the database
 
 ---
 
-## 14. Known TODOs
+## 15. Known TODOs
 
 - Replace provisional teal colors with the official brand values from the logo.
 - Replace the text logo with the real logo file.
 - Add real or clearly labeled sample images in `img/`.
-- Connect Supabase (tables, privacy rules, file storage) and switch `api.js`.
+- Admin content management: needs a public storage bucket for service and portfolio images.
+- Deploy the site (Netlify or Vercel).
 - Confirm the WhatsApp number before launch.
 - Prices, delivery, and payment details must be confirmed with the client before launch.
+- Anti-spam for order submission (for example CAPTCHA) if the site stays public after the event.
 
 ---
 
-## 15. Questions?
+## 16. Questions?
 
 Ask Ahmed before changing any shared file.
