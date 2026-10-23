@@ -195,7 +195,7 @@ function renderPortfolioCards() {
   updateCounterDisplay(items.length);
 
   let html = items.map(function (item, index) {
-    let reqUrl = "request.html?ref=" + encodeURIComponent(item.id) + "&service=" + encodeURIComponent(item.serviceId);
+    let reqUrl = "services.html?service=" + encodeURIComponent(item.serviceId || "") + "&ref=" + encodeURIComponent(item.id) + "#wizard-section";
 
     return (
       '<article class="portfolio-card reveal" data-item-id="' + escapeHtml(item.id) + '" data-index="' + index + '">' +
@@ -370,7 +370,7 @@ function openPortfolioModal(itemId) {
   if (modalSpec) modalSpec.textContent = item.specBadge;
 
   if (modalReqBtn) {
-    modalReqBtn.href = "request.html?ref=" + encodeURIComponent(item.id) + "&service=" + encodeURIComponent(item.serviceId);
+    modalReqBtn.href = "services.html?service=" + encodeURIComponent(item.serviceId || "") + "&ref=" + encodeURIComponent(item.id) + "#wizard-section";
   }
 
   if (typeof modal.showModal === "function") {

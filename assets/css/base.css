@@ -76,18 +76,44 @@ p { margin: 0 0 var(--s-2); max-width: 65ch; }
   mix-blend-mode: overlay;
 }
 
-/* ظهور تدريجي عند التمرير (يشتغل فقط لو JS شغال) */
-.js .reveal { opacity: 0; transform: translateY(16px); transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease); }
-.js .reveal.is-visible { opacity: 1; transform: none; }
+/* ظهور تدريجي وسلس عند التمرير (يشتغل فقط لو JS شغال) */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* حركة طفيفة للعداد عند إتمام العد */
+.counter-done {
+  animation: counterPop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes counterPop {
+  0% { transform: scale(0.96); }
+  50% { transform: scale(1.04); color: var(--teal-300, #8fc6ca); }
+  100% { transform: scale(1); }
+}
+
+/* نبض نقطة الحالة التفاعلية */
+@keyframes subtlePulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: 0.75; }
+}
 
 /* تقليل الحركة: من إعداد الجهاز أو من الزر الظاهر في الموقع */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .js .reveal { opacity: 1; transform: none; }
+  .counter-done { animation: none !important; }
 }
 html[data-motion="reduced"] { scroll-behavior: auto; }
 html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-motion="reduced"] *::after {
   animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important;
 }
 html[data-motion="reduced"].js .reveal { opacity: 1; transform: none; }
+html[data-motion="reduced"] .counter-done { animation: none !important; }

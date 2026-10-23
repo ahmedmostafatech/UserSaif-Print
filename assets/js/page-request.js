@@ -84,12 +84,13 @@ async function initRequestPage() {
     let preServiceId = params.get("service");
     let refId = params.get("ref");
 
+    let matchedRefItem = null;
     if (refId) {
       try {
         let portfolioList = await getPortfolio();
-        let refItem = portfolioList.find(function (p) { return p.id === refId; });
-        if (refItem && refItem.serviceId) {
-          preServiceId = refItem.serviceId;
+        matchedRefItem = portfolioList.find(function (p) { return p.id === refId; });
+        if (matchedRefItem && (matchedRefItem.serviceId || matchedRefItem.service_id)) {
+          preServiceId = matchedRefItem.serviceId || matchedRefItem.service_id;
         }
       } catch (e) {
         console.log("Portfolio ref check error:", e);
@@ -99,7 +100,20 @@ async function initRequestPage() {
     if (preServiceId) {
       let initialService = allServices.find(function (s) { return s.id === preServiceId; });
       if (initialService) {
-        selectService(initialService, false);
+        selectService(initialService, true);
+        if (matchedRefItem) {
+          let specIdElem = document.getElementById("active-service-spec-id");
+          if (specIdElem) {
+            specIdElem.innerHTML = 'مواصفة مطابقة لعمل: <strong style="color:var(--teal-900)">' + escapeHtml(matchedRefItem.title) + '</strong>';
+          }
+        }
+      } else {
+        showServiceSelectionPrompt();
+      }
+    } else if (window.location.hash === "#wizard-section") {
+      let defaultService = allServices[0];
+      if (defaultService) {
+        selectService(defaultService, true);
       } else {
         showServiceSelectionPrompt();
       }
@@ -309,7 +323,15 @@ function selectService(service, scrollIntoWizard) {
   // تمرير سلس إلى المعالج عند اختيار المنتج
   if (scrollIntoWizard) {
     if (wizardSection) {
-      wizardSection.scrollIntoView({ behavior: "smooth" });
+      setTimeout(function () {
+        let headerOffset = 90;
+        let elementPosition = wizardSection.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: Math.max(0, offsetPosition),
+          behavior: "smooth"
+        });
+      }, 80);
     }
   }
 }
@@ -1069,7 +1091,7 @@ function showOrderSuccessScreen(order) {
 }
 
 function resetRequestWizard() {
-  window.location.href = "request.html";
+  window.location.href = "services.html";
 }
 
 // -------------------------------------------------------------
