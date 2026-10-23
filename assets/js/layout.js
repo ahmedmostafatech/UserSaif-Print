@@ -4,8 +4,8 @@ let NAV_LINKS = [
   { href: "index.html", label: "الرئيسية" },
   { href: "services.html", label: "الخدمات" },
   { href: "portfolio.html", label: "أعمالنا" },
-  { href: "track.html", label: "تتبع طلبك" },
-  { href: "contact.html", label: "تواصل معنا" }
+  { href: "about.html", label: "عن يوزرسيف" },
+  { href: "track.html", label: "تتبع طلبك" }
 ];
 
 // رقم الواتساب المنشور في البريف، ويجب تأكيده قبل الإطلاق
@@ -43,6 +43,7 @@ function renderFooter() {
     "<p>استوديو للطباعة وتخصيص المنتجات في أسوان.</p></div>" +
     '<div><h4>روابط</h4><div class="stack">' +
     '<a href="services.html">الخدمات</a><br><a href="portfolio.html">أعمالنا</a><br>' +
+    '<a href="about.html">عن يوزرسيف</a><br>' +
     '<a href="track.html">تتبع طلبك</a></div></div>' +
     '<div><h4>تواصل</h4>' +
     '<a href="https://wa.me/2' + WHATSAPP_NUMBER + '" class="num">' + WHATSAPP_NUMBER + "</a>" +

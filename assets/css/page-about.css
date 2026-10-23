@@ -1,0 +1,518 @@
+/* ============================================================
+   page-about.css — تنسيقات صفحة "عن يوزرسيف" واستوديو الطباعة بأسوان
+   مبني بالكامل على tokens.css وبدون أي فريمورك خارجي
+   ============================================================ */
+
+/* ---------- 1. قسم البداية والهيرو (Hero & Story) ---------- */
+.about-hero {
+  padding-block: var(--s-8) var(--s-10);
+  background: linear-gradient(180deg, var(--teal-50) 0%, var(--paper) 100%);
+  border-block-end: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.about-hero__grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: var(--s-6);
+  align-items: center;
+}
+
+.about-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-bold);
+  color: var(--teal-700);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-block-end: var(--s-1);
+}
+
+.about-eyebrow__line {
+  display: inline-block;
+  width: 28px;
+  height: 2px;
+  background: var(--teal-500);
+  border-radius: var(--r-pill);
+}
+
+.about-hero__lead {
+  font-size: 1.15rem;
+  line-height: var(--lh-body);
+  color: var(--text);
+  margin-block: var(--s-2) var(--s-4);
+}
+
+.about-hero__media-wrap {
+  position: relative;
+}
+
+.about-hero__media {
+  position: relative;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-3);
+  border: 1px solid rgba(17, 72, 80, 0.15);
+  background: var(--teal-900);
+  aspect-ratio: 16 / 10;
+}
+
+.about-hero__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--dur-slow) var(--ease);
+}
+
+.about-hero__media:hover img {
+  transform: scale(1.03);
+}
+
+.about-hero__media-badge {
+  position: absolute;
+  inset-block-start: var(--s-2);
+  inset-inline-start: var(--s-2);
+  background: rgba(14, 59, 64, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--white);
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: var(--shadow-2);
+}
+
+/* بطاقة الإشعار العائم فوق الصورة */
+.about-floating-card {
+  position: absolute;
+  inset-block-end: calc(-1 * var(--s-3));
+  inset-inline-end: calc(-1 * var(--s-2));
+  background: var(--white);
+  border: 1px solid var(--border);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-3);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  max-width: 280px;
+}
+
+.about-floating-card__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--teal-50);
+  color: var(--teal-800);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+/* شريط الإحصائيات السريعة */
+.about-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-3);
+  margin-block-start: var(--s-5);
+  padding-block-start: var(--s-4);
+  border-block-start: 1px solid var(--border);
+}
+
+.about-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.about-stat-item__num {
+  font-size: 2rem;
+  font-weight: var(--fw-bold);
+  color: var(--teal-800);
+  line-height: 1.1;
+  font-family: var(--font);
+}
+
+.about-stat-item__label {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  margin-block-start: 4px;
+  font-weight: var(--fw-medium);
+}
+
+/* ---------- 2. أركان الجودة والحرفة (Pillars & Values) ---------- */
+.about-pillars-section {
+  padding-block: var(--s-10);
+  background: var(--white);
+  border-block-end: 1px solid var(--border);
+}
+
+.about-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--s-3);
+  margin-block-start: var(--s-6);
+}
+
+.about-pillar-card {
+  padding: var(--s-4);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  background: var(--paper);
+  transition: all var(--dur) var(--ease);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.about-pillar-card:hover {
+  background: var(--white);
+  border-color: var(--teal-500);
+  box-shadow: var(--shadow-2);
+  transform: translateY(-4px);
+}
+
+.about-pillar-card__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-md);
+  background: var(--teal-50);
+  color: var(--teal-800);
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  transition: all var(--dur-fast);
+}
+
+.about-pillar-card:hover .about-pillar-card__icon {
+  background: var(--teal-800);
+  color: var(--white);
+}
+
+.about-pillar-card__title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--teal-900);
+}
+
+.about-pillar-card__desc {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+/* ---------- 3. شبكات التواصل الاجتماعي (Social Media Hub) ---------- */
+.about-social-section {
+  padding-block: var(--s-10);
+  background: var(--paper);
+  border-block-end: 1px solid var(--border);
+}
+
+.about-social-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: var(--s-3);
+  margin-block-start: var(--s-6);
+}
+
+.social-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--dur) var(--ease);
+  box-shadow: var(--shadow-1);
+}
+
+.social-card::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 4px;
+  background: var(--card-accent, var(--teal-500));
+}
+
+.social-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-3);
+}
+
+.social-card--tiktok {
+  --card-accent: #000000;
+}
+.social-card--instagram {
+  --card-accent: linear-gradient(90deg, #833ab4, #fd1d1d, #fcb045);
+}
+.social-card--facebook {
+  --card-accent: #1877F2;
+}
+.social-card--whatsapp {
+  --card-accent: #25D366;
+}
+
+.social-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.social-card__icon-box {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--r-md);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--teal-50);
+  color: var(--teal-900);
+  transition: transform var(--dur-fast);
+}
+
+.social-card:hover .social-card__icon-box {
+  transform: scale(1.08);
+}
+
+.social-card__meta h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.social-card__handle {
+  font-family: var(--font);
+  direction: ltr;
+  display: inline-block;
+  font-size: var(--fs-caption);
+  color: var(--teal-700);
+  font-weight: var(--fw-semibold);
+}
+
+.social-card__desc {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  flex-grow: 1;
+}
+
+.social-card__btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--r-md);
+  font-size: 0.95rem;
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+  transition: all var(--dur-fast);
+  border: 1px solid var(--border-strong);
+  background: var(--paper);
+  color: var(--text);
+}
+
+.social-card:hover .social-card__btn {
+  background: var(--teal-800);
+  color: var(--white);
+  border-color: var(--teal-800);
+}
+
+/* ---------- 4. خريطة المقر والمكتب (Map & Location) ---------- */
+.about-location-section {
+  padding-block: var(--s-10);
+  background: var(--white);
+  border-block-end: 1px solid var(--border);
+}
+
+.about-location-grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: var(--s-5);
+  align-items: stretch;
+  margin-block-start: var(--s-6);
+}
+
+.location-info-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  box-shadow: var(--shadow-1);
+}
+
+.location-detail-row {
+  display: flex;
+  gap: var(--s-2);
+  align-items: flex-start;
+}
+
+.location-detail-row .material-symbols-outlined {
+  color: var(--teal-700);
+  font-size: 26px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.location-detail-row h4 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  color: var(--teal-900);
+}
+
+.location-detail-row p {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.map-embed-wrapper {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-2);
+  min-height: 380px;
+  height: 100%;
+  position: relative;
+  background: var(--teal-50);
+}
+
+.map-embed-wrapper iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 380px;
+  border: 0;
+  display: block;
+}
+
+/* ---------- 5. نموذج "عندك استفسار؟" (Inquiry Form) ---------- */
+.about-inquiry-section {
+  padding-block: var(--s-10) var(--s-12);
+  background: linear-gradient(180deg, var(--paper) 0%, var(--teal-50) 100%);
+}
+
+.about-inquiry-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-6);
+  box-shadow: var(--shadow-3);
+  max-width: 820px;
+  margin-inline: auto;
+}
+
+.inquiry-grid-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-3);
+}
+
+.inquiry-buttons-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  margin-block-start: var(--s-2);
+}
+
+.whatsapp-fast-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #25D366;
+  color: var(--white);
+  padding: 12px 20px;
+  border-radius: var(--r-md);
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+  font-size: 0.95rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: all var(--dur-fast);
+}
+
+.whatsapp-fast-btn:hover {
+  background: #1EBE5D;
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+/* التنبيه التفاعلي بعد الإرسال */
+.inquiry-feedback {
+  padding: var(--s-3);
+  border-radius: var(--r-md);
+  margin-block-start: var(--s-3);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-weight: var(--fw-medium);
+  animation: fadeIn var(--dur) var(--ease);
+}
+.inquiry-feedback.is-success {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid rgba(27, 107, 69, 0.2);
+}
+.inquiry-feedback.is-error {
+  background: var(--error-bg);
+  color: var(--error);
+  border: 1px solid rgba(165, 32, 25, 0.2);
+}
+
+/* ---------- 6. التجاوب مع الشاشات الصغيرة (Media Queries) ---------- */
+@media (max-width: 860px) {
+  .about-hero__grid {
+    grid-template-columns: 1fr;
+  }
+  .about-location-grid {
+    grid-template-columns: 1fr;
+  }
+  .inquiry-grid-fields {
+    grid-template-columns: 1fr;
+  }
+  .about-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .about-floating-card {
+    position: relative;
+    inset-block-end: auto;
+    inset-inline-end: auto;
+    margin-block-start: var(--s-2);
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .inquiry-buttons-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .inquiry-buttons-row .btn,
+  .inquiry-buttons-row .whatsapp-fast-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
