@@ -229,3 +229,107 @@ async function rejectOrder(id, reason) {
   if (!hasValue(reason)) return { ok: false, error: "reason-required" };
   return adminSetStatus(id, "rejected", null, reason);
 }
+
+// ---------- إدارة المحتوى (الأدمن) ----------
+
+async function uploadContentImage(file, folder) {
+  if (ALLOWED_TYPES.indexOf(file.type) === -1) {
+    throw new Error("file-type-not-allowed");
+  }
+  if (file.size > MAX_FILE_BYTES) {
+    throw new Error("file-too-large");
+  }
+  folder = folder || "general";
+  let ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 8) || "jpg";
+  let path = folder + "/" + crypto.randomUUID() + "." + ext;
+
+  let result = await db.storage.from("content").upload(path, file, { contentType: file.type, upsert: true });
+  if (result.error) {
+    console.log("Content image upload failed:", result.error.message);
+    throw new Error(result.error.message);
+  }
+  let pub = db.storage.from("content").getPublicUrl(path);
+  return { path: path, url: pub.data.publicUrl, name: file.name };
+}
+
+async function adminSaveService(service) {
+  let row = {
+    id: service.id,
+    name: service.name,
+    category: service.category,
+    form_type: service.formType,
+    fields: service.fields || [],
+    placements: service.placements || [],
+    description: service.description || "",
+    image: service.image || "",
+    price_mode: service.priceMode || "from",
+    price_from: (service.priceFrom !== null && service.priceFrom !== undefined && service.priceFrom !== "") ? Number(service.priceFrom) : null,
+    sample: service.sample !== false,
+    active: service.active !== false
+  };
+  if (service.sortOrder !== undefined && service.sortOrder !== null) {
+    row.sort_order = Number(service.sortOrder);
+  }
+  let res = await db.from("services").upsert(row, { onConflict: "id" }).select().single();
+  let data = unwrap(res, "adminSaveService");
+  return mapService(data);
+}
+
+async function adminDeleteService(id) {
+  let res = await db.from("services").delete().eq("id", id);
+  unwrap(res, "adminDeleteService");
+  return true;
+}
+
+async function adminToggleServiceActive(id, active) {
+  let res = await db.from("services").update({ active: !!active }).eq("id", id).select().single();
+  let data = unwrap(res, "adminToggleServiceActive");
+  return mapService(data);
+}
+
+async function adminSaveCategory(category) {
+  let row = {
+    id: category.id,
+    name: category.name
+  };
+  if (category.sortOrder !== undefined && category.sortOrder !== null) {
+    row.sort_order = Number(category.sortOrder);
+  }
+  let res = await db.from("categories").upsert(row, { onConflict: "id" }).select().single();
+  return unwrap(res, "adminSaveCategory");
+}
+
+async function adminDeleteCategory(id) {
+  let res = await db.from("categories").delete().eq("id", id);
+  unwrap(res, "adminDeleteCategory");
+  return true;
+}
+
+async function adminSaveOption(key, value) {
+  let res = await db.from("options").upsert({ key: key, value: value }, { onConflict: "key" });
+  unwrap(res, "adminSaveOption");
+  return true;
+}
+
+async function adminSavePortfolio(item) {
+  let row = {
+    id: item.id,
+    title: item.title,
+    category: item.category,
+    service_id: item.serviceId,
+    image: item.image || "",
+    sample: item.sample !== false
+  };
+  if (item.sortOrder !== undefined && item.sortOrder !== null) {
+    row.sort_order = Number(item.sortOrder);
+  }
+  let res = await db.from("portfolio").upsert(row, { onConflict: "id" }).select().single();
+  let data = unwrap(res, "adminSavePortfolio");
+  return mapPortfolio(data);
+}
+
+async function adminDeletePortfolio(id) {
+  let res = await db.from("portfolio").delete().eq("id", id);
+  unwrap(res, "adminDeletePortfolio");
+  return true;
+}

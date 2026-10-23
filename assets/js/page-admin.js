@@ -27,13 +27,22 @@
     orders: [],
     services: [],
     options: null,
+    categories: [],
+    portfolio: [],
     filter: "all",
     query: "",
     sort: "newest",
     order: null,     // الطلب المفتوح حاليًا
     openId: null,    // رقم الطلب المطلوب فتحه (لتجاهل الردود المتأخرة)
     artwork: [],     // ملفات الطلب المفتوح مع روابطها
-    zoom: 1
+    zoom: 1,
+    contentTab: "services", // التاب النشط في إدارة المحتوى: services, categories, options, portfolio
+    serviceCategoryFilter: "all",
+    portfolioCategoryFilter: "all",
+    editingService: null,
+    editingCategory: null,
+    editingPortfolio: null,
+    confirmAction: null
   };
 
   // ---------- أدوات صغيرة ----------
@@ -145,17 +154,31 @@
     $("nav-count").textContent = String(needDecisionCount());
   }
 
+  function updateContentCounts() {
+    let sCount = $("services-count");
+    let cCount = $("categories-count");
+    let pCount = $("portfolio-count");
+    if (sCount) sCount.textContent = String(state.services.length);
+    if (cCount) cCount.textContent = String(state.categories.length);
+    if (pCount) pCount.textContent = String(state.portfolio.length);
+  }
+
   async function loadAll() {
     let loaded = await Promise.all([
       getOrders(),
       getServices({ includeInactive: true }),
-      getOptions()
+      getOptions(),
+      getCategories(),
+      getPortfolio()
     ]);
     state.orders = loaded[0];
     state.services = loaded[1];
     state.options = loaded[2];
+    state.categories = loaded[3] || [];
+    state.portfolio = loaded[4] || [];
     updateNavCount();
-    console.log("Admin data loaded:", state.orders.length, "orders");
+    updateContentCounts();
+    console.log("Admin data loaded:", state.orders.length, "orders,", state.services.length, "services,", state.categories.length, "categories,", state.portfolio.length, "portfolio items");
   }
 
   // ---------- الدخول والخروج ----------
@@ -251,15 +274,35 @@
   // ---------- التنقل (hash routing) ----------
 
   function parseRoute() {
-    let match = (location.hash || "").match(/^#\/orders\/(.+)$/);
-    if (match) return { view: "detail", id: decodeURIComponent(match[1]) };
+    let hash = location.hash || "";
+    let matchDetail = hash.match(/^#\/orders\/(.+)$/);
+    if (matchDetail) return { view: "detail", id: decodeURIComponent(matchDetail[1]) };
+    let matchContent = hash.match(/^#\/content(?:\/([a-z]+))?$/);
+    if (matchContent) return { view: "content", tab: matchContent[1] || "services" };
     return { view: "list" };
+  }
+
+  function updateActiveNav(view) {
+    let isOrders = view === "list" || view === "detail";
+    let linkOrders = $("nav-link-orders");
+    let linkContent = $("nav-link-content");
+    if (linkOrders) {
+      if (isOrders) linkOrders.setAttribute("aria-current", "page");
+      else linkOrders.removeAttribute("aria-current");
+    }
+    if (linkContent) {
+      if (!isOrders) linkContent.setAttribute("aria-current", "page");
+      else linkContent.removeAttribute("aria-current");
+    }
   }
 
   async function renderRoute() {
     let route = parseRoute();
+    updateActiveNav(route.view);
     if (route.view === "detail") {
       await showDetail(route.id);
+    } else if (route.view === "content") {
+      showContent(route.tab);
     } else {
       showList();
     }
@@ -377,6 +420,7 @@
     state.order = null;
     state.openId = null;
     $("detail-view").hidden = true;
+    $("content-view").hidden = true;
     $("orders-view").hidden = false;
     document.title = "لوحة الإدارة | يوزرسيف";
     renderOrders();
@@ -638,6 +682,7 @@
     state.openId = id;
     state.order = null;
     $("orders-view").hidden = true;
+    $("content-view").hidden = true;
     $("detail-view").hidden = false;
     $("detail-body").innerHTML = '<div class="skeleton admin-skel admin-skel--tall"></div><div class="skeleton admin-skel admin-skel--tall"></div>';
     window.scrollTo(0, 0);
@@ -818,6 +863,718 @@
     applyZoom();
   }
 
+  // ============================================================
+  // إدارة المحتوى (4 تابات: الخدمات، التصنيفات، الخيارات، المعرض)
+  // ============================================================
+
+  let FORM_TYPES = {
+    apparel: "ملابس (apparel)",
+    gift: "هدايا ومجات (gift)",
+    sticker: "ستيكرات وليبلز (sticker)",
+    custom: "تصميم مخصص (custom)"
+  };
+
+  function getCatName(id) {
+    let c = state.categories.find(function (cat) { return cat.id === id; });
+    return c ? c.name : id;
+  }
+
+  function getServiceName(id) {
+    let s = state.services.find(function (svc) { return svc.id === id; });
+    return s ? s.name : id;
+  }
+
+  function showContent(tab) {
+    state.order = null;
+    state.openId = null;
+    $("orders-view").hidden = true;
+    $("detail-view").hidden = true;
+    $("content-view").hidden = false;
+    document.title = "إدارة المحتوى | لوحة الإدارة";
+    switchContentTab(tab || state.contentTab || "services");
+  }
+
+  function switchContentTab(tab) {
+    let tabs = ["services", "categories", "options", "portfolio"];
+    if (tabs.indexOf(tab) === -1) tab = "services";
+    state.contentTab = tab;
+
+    tabs.forEach(function (t) {
+      let btn = $("tab-btn-" + t);
+      let panel = $("panel-" + t);
+      let active = (t === tab);
+      if (btn) btn.setAttribute("aria-selected", String(active));
+      if (panel) panel.hidden = !active;
+    });
+
+    updateContentCounts();
+
+    if (tab === "services") renderServicesTab();
+    else if (tab === "categories") renderCategoriesTab();
+    else if (tab === "options") renderOptionsTab();
+    else if (tab === "portfolio") renderPortfolioTab();
+
+    if (location.hash !== "#/content/" + tab && location.hash !== "#/content") {
+      history.replaceState(null, "", "#/content/" + tab);
+    }
+  }
+
+  // ---------- 1. تاب الخدمات ----------
+
+  function renderServicesTab() {
+    renderServiceCatChips();
+    let body = $("services-body");
+    let filter = state.serviceCategoryFilter;
+    let list = state.services.filter(function (s) {
+      return filter === "all" || s.category === filter;
+    });
+
+    if (list.length === 0) {
+      body.innerHTML = emptyHtml(
+        "لا توجد خدمات في هذا التصنيف",
+        "أضف خدمة جديدة أو اختر تصنيفًا آخر من الفلاتر بالأعلى.",
+        '<button class="btn btn--primary" type="button" data-act="open-add-service">+ إضافة خدمة جديدة</button>'
+      );
+      return;
+    }
+
+    let rowsHtml = list.map(function (s) {
+      let imgHtml = s.image
+        ? '<img class="admin-thumb" src="' + esc(s.image) + '" alt="' + esc(s.name) + '" loading="lazy">'
+        : '<div class="admin-thumb admin-thumb--missing">صورة تجريبية</div>';
+
+      let priceText = s.priceMode === "from"
+        ? 'ابتداءً من ' + numHtml(formatMoney(s.priceFrom || 0)) + ' ج.م'
+        : 'حسب المعاينة والطلب';
+
+      let formTypeLabel = FORM_TYPES[s.formType] || s.formType;
+
+      let statusBadge = s.active
+        ? '<button class="badge badge--active" type="button" data-act="toggle-svc-active" data-id="' + esc(s.id) + '" data-active="true" title="اضغط للتعطيل">مفعلة ✓</button>'
+        : '<button class="badge badge--inactive" type="button" data-act="toggle-svc-active" data-id="' + esc(s.id) + '" data-active="false" title="اضغط للتفعيل">معطلة ✗</button>';
+
+      return '<tr>' +
+        '<td data-label="الصورة">' + imgHtml + '</td>' +
+        '<td data-label="الخدمة">' +
+          '<div class="cell">' +
+            '<strong>' + esc(s.name) + '</strong> <span class="tag-sample">تجريبي</span>' +
+            '<span class="cell-sub"><span class="num">' + esc(s.id) + '</span></span>' +
+          '</div>' +
+        '</td>' +
+        '<td data-label="التصنيف">' + esc(getCatName(s.category)) + '</td>' +
+        '<td data-label="نوع النموذج"><span class="badge">' + esc(formTypeLabel) + '</span></td>' +
+        '<td data-label="السعر">' + priceText + '</td>' +
+        '<td data-label="الحالة">' + statusBadge + '</td>' +
+        '<td data-label="إجراءات">' +
+          '<div class="table-actions">' +
+            '<button class="btn btn--secondary btn--sm" type="button" data-act="edit-svc" data-id="' + esc(s.id) + '">تعديل</button>' +
+            '<button class="btn btn--ghost btn--sm" type="button" data-act="delete-svc" data-id="' + esc(s.id) + '" style="color:var(--error);">حذف</button>' +
+          '</div>' +
+        '</td>' +
+      '</tr>';
+    }).join("");
+
+    body.innerHTML = '<div class="table-wrap"><table class="table admin-table">' +
+      '<thead><tr>' +
+        '<th>الصورة</th><th>الخدمة</th><th>التصنيف</th><th>نوع النموذج</th><th>السعر</th><th>الحالة</th><th><span class="sr-only">إجراءات</span></th>' +
+      '</tr></thead>' +
+      '<tbody>' + rowsHtml + '</tbody>' +
+      '</table></div>';
+  }
+
+  function renderServiceCatChips() {
+    let container = $("service-cat-chips");
+    if (!container) return;
+    let chips = [{ id: "all", name: "الكل (" + state.services.length + ")" }];
+    state.categories.forEach(function (c) {
+      let count = state.services.filter(function (s) { return s.category === c.id; }).length;
+      chips.push({ id: c.id, name: c.name + " (" + count + ")" });
+    });
+
+    container.innerHTML = chips.map(function (chip) {
+      let selected = state.serviceCategoryFilter === chip.id;
+      return '<button class="chip" type="button" data-cat="' + esc(chip.id) + '" aria-pressed="' + String(selected) + '">' +
+        esc(chip.name) + '</button>';
+    }).join("");
+  }
+
+  // ---------- 2. تاب التصنيفات ----------
+
+  function renderCategoriesTab() {
+    let body = $("categories-body");
+    if (state.categories.length === 0) {
+      body.innerHTML = emptyHtml(
+        "لا توجد تصنيفات بعد",
+        "التصنيفات تساعد على تنظيم الخدمات والمعرض.",
+        '<button class="btn btn--primary" type="button" data-act="open-add-category">+ إضافة تصنيف جديد</button>'
+      );
+      return;
+    }
+
+    let rowsHtml = state.categories.map(function (c) {
+      let svcCount = state.services.filter(function (s) { return s.category === c.id; }).length;
+      let portCount = state.portfolio.filter(function (p) { return p.category === c.id; }).length;
+
+      return '<tr>' +
+        '<td data-label="المعرّف"><span class="num font-bold">' + esc(c.id) + '</span></td>' +
+        '<td data-label="الاسم بالعربي"><strong>' + esc(c.name) + '</strong></td>' +
+        '<td data-label="الخدمات التابعة"><span class="num">' + svcCount + '</span> خدمات</td>' +
+        '<td data-label="أعمال المعرض"><span class="num">' + portCount + '</span> أعمال</td>' +
+        '<td data-label="الترتيب"><span class="num">' + (c.sort_order || 0) + '</span></td>' +
+        '<td data-label="إجراءات">' +
+          '<div class="table-actions">' +
+            '<button class="btn btn--secondary btn--sm" type="button" data-act="edit-cat" data-id="' + esc(c.id) + '">تعديل</button>' +
+            '<button class="btn btn--ghost btn--sm" type="button" data-act="delete-cat" data-id="' + esc(c.id) + '" style="color:var(--error);">حذف</button>' +
+          '</div>' +
+        '</td>' +
+      '</tr>';
+    }).join("");
+
+    body.innerHTML = '<div class="table-wrap"><table class="table admin-table">' +
+      '<thead><tr>' +
+        '<th>المعرّف (slug)</th><th>اسم التصنيف</th><th>الخدمات التابعة</th><th>أعمال المعرض</th><th>الترتيب</th><th><span class="sr-only">إجراءات</span></th>' +
+      '</tr></thead>' +
+      '<tbody>' + rowsHtml + '</tbody>' +
+      '</table></div>';
+  }
+
+  // ---------- 3. تاب الخيارات ----------
+
+  function renderOptionsTab() {
+    let body = $("options-body");
+    let opt = state.options || {};
+
+    let colors = opt.colors || [];
+    let sizes = opt.sizes || [];
+    let placements = opt.placements || [];
+    let phoneModels = opt.phoneModels || [];
+    let shapes = opt.shapes || [];
+    let units = opt.units || [];
+    let uses = opt.uses || [];
+
+    let colorsHtml = colors.map(function (c, idx) {
+      return '<div class="options-swatch-item">' +
+        '<div class="row align-center gap-s1">' +
+          '<span class="swatch-color-box" style="background:' + esc(c.hex) + '"></span>' +
+          '<strong>' + esc(c.name) + '</strong>' +
+          '<span class="num text-muted" dir="ltr">' + esc(c.hex) + '</span>' +
+        '</div>' +
+        '<button class="option-tag-remove" type="button" data-act="del-opt-item" data-group="colors" data-idx="' + idx + '" title="حذف">×</button>' +
+      '</div>';
+    }).join("");
+
+    function renderTagList(group, list, idProp, nameProp) {
+      return list.map(function (item, idx) {
+        let label = (typeof item === "string") ? item : (item[nameProp || "name"] + " (" + item[idProp || "id"] + ")");
+        return '<span class="option-tag">' +
+          esc(label) +
+          '<button class="option-tag-remove" type="button" data-act="del-opt-item" data-group="' + group + '" data-idx="' + idx + '" title="حذف">×</button>' +
+        '</span>';
+      }).join("");
+    }
+
+    body.innerHTML = '<div class="options-grid">' +
+
+      // كارت الألوان
+      '<div class="options-card">' +
+        '<h3>الألوان المتاحة (' + colors.length + ')</h3>' +
+        '<p class="caption muted">تظهر للعميل في خدمات الملابس والمنتجات التي تدعم الألوان.</p>' +
+        '<div class="options-swatch-list">' + (colorsHtml || '<p class="caption muted">لا توجد ألوان.</p>') + '</div>' +
+        '<div class="option-add-inline">' +
+          '<input type="color" id="opt-color-pick" value="#114850" class="swatch-color-box" style="cursor:pointer; padding:0; border:0;">' +
+          '<input class="input" id="opt-color-name" placeholder="اسم اللون بالعربي">' +
+          '<input class="input input--ltr num" id="opt-color-hex" value="#114850" placeholder="#HEX">' +
+          '<button class="btn btn--secondary btn--sm" type="button" id="opt-add-color-btn">+ إضافة</button>' +
+        '</div>' +
+      '</div>' +
+
+      // كارت المقاسات
+      '<div class="options-card">' +
+        '<h3>المقاسات (' + sizes.length + ')</h3>' +
+        '<p class="caption muted">مقاسات التيشيرتات والهوديز والسويت شيرت.</p>' +
+        '<div class="options-tags-list">' + (renderTagList("sizes", sizes) || '<p class="caption muted">لا توجد مقاسات.</p>') + '</div>' +
+        '<div class="option-add-inline">' +
+          '<input class="input num input--ltr" id="opt-size-val" placeholder="المقاس (مثال: 3XL)">' +
+          '<button class="btn btn--secondary btn--sm" type="button" id="opt-add-size-btn">+ إضافة</button>' +
+        '</div>' +
+      '</div>' +
+
+      // كارت أماكن الطباعة
+      '<div class="options-card">' +
+        '<h3>أماكن الطباعة (' + placements.length + ')</h3>' +
+        '<p class="caption muted">أماكن الطباعة على الملابس والكابات (الصدر، الظهر، الكم...).</p>' +
+        '<div class="options-tags-list">' + (renderTagList("placements", placements, "id", "name") || '<p class="caption muted">لا توجد أماكن.</p>') + '</div>' +
+        '<div class="option-add-inline">' +
+          '<input class="input input--ltr" id="opt-place-id" placeholder="slug (pocket)">' +
+          '<input class="input" id="opt-place-name" placeholder="الاسم (الجيب)">' +
+          '<button class="btn btn--secondary btn--sm" type="button" id="opt-add-place-btn">+ إضافة</button>' +
+        '</div>' +
+      '</div>' +
+
+      // كارت موديلات الهواتف
+      '<div class="options-card">' +
+        '<h3>طرازات الهواتف (' + phoneModels.length + ')</h3>' +
+        '<p class="caption muted">الطرازات المتاحة في خدمة أغطية الموبايل.</p>' +
+        '<div class="options-tags-list">' + (renderTagList("phoneModels", phoneModels) || '<p class="caption muted">لا توجد طرازات.</p>') + '</div>' +
+        '<div class="option-add-inline">' +
+          '<input class="input input--ltr" id="opt-phone-val" placeholder="الطراز (مثال: iPhone 16)">' +
+          '<button class="btn btn--secondary btn--sm" type="button" id="opt-add-phone-btn">+ إضافة</button>' +
+        '</div>' +
+      '</div>' +
+
+      // كارت أشكال الستيكرات
+      '<div class="options-card">' +
+        '<h3>أشكال الستيكرات (' + shapes.length + ')</h3>' +
+        '<p class="caption muted">الأشكال المتوفرة لقص الستيكرات والليبلز.</p>' +
+        '<div class="options-tags-list">' + (renderTagList("shapes", shapes, "id", "name") || '<p class="caption muted">لا توجد أشكال.</p>') + '</div>' +
+        '<div class="option-add-inline">' +
+          '<input class="input input--ltr" id="opt-shape-id" placeholder="slug (oval)">' +
+          '<input class="input" id="opt-shape-name" placeholder="الاسم (بيضاوي)">' +
+          '<button class="btn btn--secondary btn--sm" type="button" id="opt-add-shape-btn">+ إضافة</button>' +
+        '</div>' +
+      '</div>' +
+
+      // كارت وحدات القياس
+      '<div class="options-card">' +
+        '<h3>وحدات القياس (' + units.length + ')</h3>' +
+        '<p class="caption muted">وحدات تحديد أبعاد الستيكرات.</p>' +
+        '<div class="options-tags-list">' + (renderTagList("units", units, "id", "name") || '<p class="caption muted">لا توجد وحدات.</p>') + '</div>' +
+        '<div class="option-add-inline">' +
+          '<input class="input input--ltr" id="opt-unit-id" placeholder="slug (m)">' +
+          '<input class="input" id="opt-unit-name" placeholder="الاسم (متر)">' +
+          '<button class="btn btn--secondary btn--sm" type="button" id="opt-add-unit-btn">+ إضافة</button>' +
+        '</div>' +
+      '</div>' +
+
+      // كارت استخدامات الستيكر
+      '<div class="options-card">' +
+        '<h3>طبيعة الاستخدام (' + uses.length + ')</h3>' +
+        '<p class="caption muted">أسباب طلب الستيكرات (تغليف، علامة تجارية...).</p>' +
+        '<div class="options-tags-list">' + (renderTagList("uses", uses, "id", "name") || '<p class="caption muted">لا توجد خيارات.</p>') + '</div>' +
+        '<div class="option-add-inline">' +
+          '<input class="input input--ltr" id="opt-use-id" placeholder="slug">' +
+          '<input class="input" id="opt-use-name" placeholder="الاسم">' +
+          '<button class="btn btn--secondary btn--sm" type="button" id="opt-add-use-btn">+ إضافة</button>' +
+        '</div>' +
+      '</div>' +
+
+    '</div>';
+
+    let hexPick = $("opt-color-pick");
+    let hexInp = $("opt-color-hex");
+    if (hexPick && hexInp) {
+      hexPick.addEventListener("input", function () { hexInp.value = hexPick.value.toUpperCase(); });
+      hexInp.addEventListener("input", function () {
+        if (/^#[0-9A-Fa-f]{6}$/.test(hexInp.value)) hexPick.value = hexInp.value;
+      });
+    }
+  }
+
+  // ---------- 4. تاب المعرض ----------
+
+  function renderPortfolioTab() {
+    renderPortfolioCatChips();
+    let body = $("portfolio-body");
+    let filter = state.portfolioCategoryFilter;
+    let list = state.portfolio.filter(function (p) {
+      return filter === "all" || p.category === filter;
+    });
+
+    if (list.length === 0) {
+      body.innerHTML = emptyHtml(
+        "لا توجد أعمال في هذا التصنيف",
+        "أضف عملاً جديداً للمعرض ليظهر للزوار في صفحة أعمالنا.",
+        '<button class="btn btn--primary" type="button" data-act="open-add-portfolio">+ إضافة عمل للمعرض</button>'
+      );
+      return;
+    }
+
+    let cardsHtml = list.map(function (p) {
+      let imgHtml = p.image
+        ? '<img src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy">'
+        : '<div class="art__missing">صورة تجريبية</div>';
+
+      return '<article class="portfolio-admin-card">' +
+        '<div class="portfolio-admin-card__media">' +
+          imgHtml +
+          '<span class="tag-sample" style="position:absolute; inset-block-start:var(--s-1); inset-inline-start:var(--s-1);">تجريبي</span>' +
+        '</div>' +
+        '<div class="portfolio-admin-card__body">' +
+          '<h3 class="h4">' + esc(p.title) + '</h3>' +
+          '<div class="portfolio-admin-card__meta">' +
+            '<span>الخدمة: <strong>' + esc(getServiceName(p.serviceId)) + '</strong></span>' +
+            '<span class="badge">' + esc(getCatName(p.category)) + '</span>' +
+          '</div>' +
+          '<span class="caption cell-sub"><span class="num">' + esc(p.id) + '</span></span>' +
+        '</div>' +
+        '<div class="portfolio-admin-card__foot">' +
+          '<button class="btn btn--secondary btn--sm" type="button" data-act="edit-port" data-id="' + esc(p.id) + '">تعديل</button>' +
+          '<button class="btn btn--ghost btn--sm" type="button" data-act="delete-port" data-id="' + esc(p.id) + '" style="color:var(--error);">حذف</button>' +
+        '</div>' +
+      '</article>';
+    }).join("");
+
+    body.innerHTML = '<div class="portfolio-admin-grid">' + cardsHtml + '</div>';
+  }
+
+  function renderPortfolioCatChips() {
+    let container = $("portfolio-cat-chips");
+    if (!container) return;
+    let chips = [{ id: "all", name: "الكل (" + state.portfolio.length + ")" }];
+    state.categories.forEach(function (c) {
+      let count = state.portfolio.filter(function (p) { return p.category === c.id; }).length;
+      chips.push({ id: c.id, name: c.name + " (" + count + ")" });
+    });
+
+    container.innerHTML = chips.map(function (chip) {
+      let selected = state.portfolioCategoryFilter === chip.id;
+      return '<button class="chip" type="button" data-cat="' + esc(chip.id) + '" aria-pressed="' + String(selected) + '">' +
+        esc(chip.name) + '</button>';
+    }).join("");
+  }
+
+  // ---------- نوافذ إضافة وتعديل المحتوى ----------
+
+  function openServiceModal(service) {
+    state.editingService = service;
+    $("svc-alert").hidden = true;
+    $("svc-alert").textContent = "";
+
+    // تعبئة قائمة التصنيفات
+    $("svc-category").innerHTML = state.categories.map(function (c) {
+      return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>';
+    }).join("");
+
+    if (service) {
+      $("service-dlg-title").textContent = "تعديل خدمة: " + service.name;
+      $("svc-id").value = service.id;
+      $("svc-id").readOnly = true;
+      $("svc-name").value = service.name;
+      $("svc-category").value = service.category;
+      $("svc-formtype").value = service.formType || "apparel";
+      $("svc-desc").value = service.description || "";
+      $("svc-pricemode").value = service.priceMode || "from";
+      $("svc-pricefrom").value = service.priceFrom != null ? service.priceFrom : "";
+      $("svc-image").value = service.image || "";
+      $("svc-active").checked = service.active !== false;
+
+      let fields = service.fields || [];
+      document.querySelectorAll("#svc-fields-checks input").forEach(function (chk) {
+        chk.checked = fields.indexOf(chk.value) !== -1;
+      });
+
+      let placements = service.placements || [];
+      document.querySelectorAll("#svc-placements-checks input").forEach(function (chk) {
+        chk.checked = placements.indexOf(chk.value) !== -1;
+      });
+
+      updateSvcPreview();
+      updateSvcPriceMode();
+    } else {
+      $("service-dlg-title").textContent = "إضافة خدمة جديدة";
+      $("svc-id").value = "";
+      $("svc-id").readOnly = false;
+      $("svc-name").value = "";
+      if (state.categories.length > 0) $("svc-category").value = state.categories[0].id;
+      $("svc-formtype").value = "apparel";
+      $("svc-desc").value = "";
+      $("svc-pricemode").value = "from";
+      $("svc-pricefrom").value = "200";
+      $("svc-image").value = "";
+      $("svc-active").checked = true;
+
+      document.querySelectorAll("#svc-fields-checks input").forEach(function (chk) {
+        chk.checked = (["color", "sizes", "placement"].indexOf(chk.value) !== -1);
+      });
+      document.querySelectorAll("#svc-placements-checks input").forEach(function (chk) {
+        chk.checked = (["chest", "back", "sleeve"].indexOf(chk.value) !== -1);
+      });
+
+      updateSvcPreview();
+      updateSvcPriceMode();
+    }
+
+    $("service-dialog").showModal();
+  }
+
+  function updateSvcPriceMode() {
+    let mode = $("svc-pricemode").value;
+    $("svc-pricefrom-wrap").style.display = (mode === "from") ? "" : "none";
+  }
+
+  function updateSvcPreview() {
+    let url = $("svc-image").value.trim();
+    let box = $("svc-preview-box");
+    let img = $("svc-image-preview");
+    if (url) {
+      img.src = url;
+      box.hidden = false;
+      $("svc-image-status").textContent = "";
+    } else {
+      box.hidden = true;
+    }
+  }
+
+  async function handleServiceSubmit(event) {
+    event.preventDefault();
+    $("svc-alert").hidden = true;
+
+    let id = $("svc-id").value.trim().toLowerCase();
+    let name = $("svc-name").value.trim();
+    if (!id || !name) {
+      $("svc-alert").textContent = "المعرّف واسم الخدمة مطلوبان.";
+      $("svc-alert").hidden = false;
+      return;
+    }
+
+    let fields = [];
+    document.querySelectorAll("#svc-fields-checks input:checked").forEach(function (chk) {
+      fields.push(chk.value);
+    });
+
+    let placements = [];
+    document.querySelectorAll("#svc-placements-checks input:checked").forEach(function (chk) {
+      placements.push(chk.value);
+    });
+
+    let priceMode = $("svc-pricemode").value;
+    let priceFromVal = $("svc-pricefrom").value;
+    let priceFrom = priceMode === "from" && priceFromVal ? Number(priceFromVal) : null;
+
+    let payload = {
+      id: id,
+      name: name,
+      category: $("svc-category").value,
+      formType: $("svc-formtype").value,
+      description: $("svc-desc").value.trim(),
+      priceMode: priceMode,
+      priceFrom: priceFrom,
+      image: $("svc-image").value.trim(),
+      active: $("svc-active").checked,
+      fields: fields,
+      placements: placements,
+      sample: true
+    };
+
+    let btn = $("svc-submit");
+    setLoading(btn, true);
+    try {
+      let saved = await adminSaveService(payload);
+      let idx = state.services.findIndex(function (s) { return s.id === saved.id; });
+      if (idx !== -1) state.services[idx] = saved;
+      else state.services.push(saved);
+
+      updateContentCounts();
+      renderServicesTab();
+      $("service-dialog").close();
+      showToast("تم حفظ الخدمة «" + saved.name + "» بنجاح");
+    } catch (err) {
+      console.log("Save service error:", err);
+      $("svc-alert").textContent = "تعذر الحفظ: " + friendlyError(err.message);
+      $("svc-alert").hidden = false;
+    } finally {
+      setLoading(btn, false);
+    }
+  }
+
+  function openCategoryModal(cat) {
+    state.editingCategory = cat;
+    $("cat-alert").hidden = true;
+    if (cat) {
+      $("cat-dlg-title").textContent = "تعديل تصنيف: " + cat.name;
+      $("cat-id").value = cat.id;
+      $("cat-id").readOnly = true;
+      $("cat-name").value = cat.name;
+      $("cat-sort").value = cat.sort_order || 0;
+    } else {
+      $("cat-dlg-title").textContent = "إضافة تصنيف جديد";
+      $("cat-id").value = "";
+      $("cat-id").readOnly = false;
+      $("cat-name").value = "";
+      $("cat-sort").value = String(state.categories.length);
+    }
+    $("category-dialog").showModal();
+  }
+
+  async function handleCategorySubmit(event) {
+    event.preventDefault();
+    $("cat-alert").hidden = true;
+    let id = $("cat-id").value.trim().toLowerCase();
+    let name = $("cat-name").value.trim();
+    let sort = Number($("cat-sort").value) || 0;
+
+    if (!id || !name) {
+      $("cat-alert").textContent = "المعرّف واسم التصنيف مطلوبان.";
+      $("cat-alert").hidden = false;
+      return;
+    }
+
+    let btn = $("cat-submit");
+    setLoading(btn, true);
+    try {
+      let saved = await adminSaveCategory({ id: id, name: name, sortOrder: sort });
+      let idx = state.categories.findIndex(function (c) { return c.id === saved.id; });
+      if (idx !== -1) state.categories[idx] = saved;
+      else state.categories.push(saved);
+
+      state.categories.sort(function (a, b) { return (a.sort_order || 0) - (b.sort_order || 0); });
+      updateContentCounts();
+      renderCategoriesTab();
+      $("category-dialog").close();
+      showToast("تم حفظ التصنيف «" + saved.name + "»");
+    } catch (err) {
+      console.log("Save category error:", err);
+      $("cat-alert").textContent = "تعذر الحفظ: " + friendlyError(err.message);
+      $("cat-alert").hidden = false;
+    } finally {
+      setLoading(btn, false);
+    }
+  }
+
+  function openPortfolioModal(port) {
+    state.editingPortfolio = port;
+    $("port-alert").hidden = true;
+
+    $("port-category").innerHTML = state.categories.map(function (c) {
+      return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>';
+    }).join("");
+
+    $("port-service").innerHTML = state.services.map(function (s) {
+      return '<option value="' + esc(s.id) + '">' + esc(s.name) + '</option>';
+    }).join("");
+
+    if (port) {
+      $("port-dlg-title").textContent = "تعديل عمل بالمعرض: " + port.title;
+      $("port-id").value = port.id;
+      $("port-id").readOnly = true;
+      $("port-title").value = port.title;
+      $("port-category").value = port.category;
+      $("port-service").value = port.serviceId;
+      $("port-image").value = port.image || "";
+      updatePortPreview();
+    } else {
+      $("port-dlg-title").textContent = "إضافة عمل للمعرض";
+      $("port-id").value = "p" + String(state.portfolio.length + 1).padStart(2, "0");
+      $("port-id").readOnly = false;
+      $("port-title").value = "";
+      if (state.categories.length > 0) $("port-category").value = state.categories[0].id;
+      if (state.services.length > 0) $("port-service").value = state.services[0].id;
+      $("port-image").value = "";
+      updatePortPreview();
+    }
+
+    $("portfolio-dialog").showModal();
+  }
+
+  function updatePortPreview() {
+    let url = $("port-image").value.trim();
+    let box = $("port-preview-box");
+    let img = $("port-image-preview");
+    if (url) {
+      img.src = url;
+      box.hidden = false;
+      $("port-image-status").textContent = "";
+    } else {
+      box.hidden = true;
+    }
+  }
+
+  async function handlePortfolioSubmit(event) {
+    event.preventDefault();
+    $("port-alert").hidden = true;
+
+    let id = $("port-id").value.trim();
+    let title = $("port-title").value.trim();
+    let img = $("port-image").value.trim();
+
+    if (!id || !title || !img) {
+      $("port-alert").textContent = "المعرف والعنوان والصورة مطلوبة.";
+      $("port-alert").hidden = false;
+      return;
+    }
+
+    let payload = {
+      id: id,
+      title: title,
+      category: $("port-category").value,
+      serviceId: $("port-service").value,
+      image: img,
+      sample: true
+    };
+
+    let btn = $("port-submit");
+    setLoading(btn, true);
+    try {
+      let saved = await adminSavePortfolio(payload);
+      let idx = state.portfolio.findIndex(function (p) { return p.id === saved.id; });
+      if (idx !== -1) state.portfolio[idx] = saved;
+      else state.portfolio.push(saved);
+
+      updateContentCounts();
+      renderPortfolioTab();
+      $("portfolio-dialog").close();
+      showToast("تم حفظ عمل المعرض بنجاح");
+    } catch (err) {
+      console.log("Save portfolio error:", err);
+      $("port-alert").textContent = "تعذر الحفظ: " + friendlyError(err.message);
+      $("port-alert").hidden = false;
+    } finally {
+      setLoading(btn, false);
+    }
+  }
+
+  function openConfirm(title, message, onOk) {
+    $("confirm-title").textContent = title;
+    $("confirm-message").textContent = message;
+    state.confirmAction = onOk;
+    $("confirm-dialog").showModal();
+  }
+
+  async function handleImageUpload(event, folder) {
+    let file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    let isSvc = folder === "services";
+    let statusEl = isSvc ? $("svc-image-status") : $("port-image-status");
+    let inputEl = isSvc ? $("svc-image") : $("port-image");
+    let boxEl = isSvc ? $("svc-preview-box") : $("port-preview-box");
+    let previewEl = isSvc ? $("svc-image-preview") : $("port-image-preview");
+
+    boxEl.hidden = false;
+    statusEl.textContent = "جارٍ رفع الصورة إلى السحابة...";
+    try {
+      let res = await uploadContentImage(file, folder);
+      inputEl.value = res.url;
+      previewEl.src = res.url;
+      statusEl.textContent = "تم الرفع بنجاح ✓";
+      showToast("تم رفع الصورة: " + file.name);
+    } catch (err) {
+      console.log("Upload image failed:", err);
+      statusEl.textContent = "فشل الرفع: " + friendlyError(err.message);
+      showToast("فشل رفع الصورة: " + friendlyError(err.message), "error");
+    } finally {
+      event.target.value = "";
+    }
+  }
+
+  async function saveAllOptions(btn) {
+    if (btn && btn.target) btn = btn.target;
+    if (btn) setLoading(btn, true);
+    try {
+      let opt = state.options || {};
+      let keys = Object.keys(opt);
+      for (let i = 0; i < keys.length; i++) {
+        let k = keys[i];
+        await adminSaveOption(k, opt[k]);
+      }
+      showToast("تم حفظ خيارات النماذج بنجاح");
+    } catch (err) {
+      handleError(err);
+    } finally {
+      if (btn) setLoading(btn, false);
+    }
+  }
+
   // ---------- القائمة الجانبية والحركة ----------
 
   function setMenu(open) {
@@ -870,6 +1627,241 @@
     $("zoom-in").addEventListener("click", function () { changeZoom(ZOOM_STEP); });
     $("zoom-out").addEventListener("click", function () { changeZoom(-ZOOM_STEP); });
     $("zoom-close").addEventListener("click", function () { $("zoom-dialog").close(); });
+
+    // تابات إدارة المحتوى
+    $("content-tabs").addEventListener("click", function (event) {
+      let btn = event.target.closest("button.tab");
+      if (btn && btn.dataset.tab) {
+        switchContentTab(btn.dataset.tab);
+      }
+    });
+
+    // أحداث الخدمات
+    $("add-service-btn").addEventListener("click", function () { openServiceModal(null); });
+    $("service-cat-chips").addEventListener("click", function (event) {
+      let chip = event.target.closest("button.chip");
+      if (chip && chip.dataset.cat) {
+        state.serviceCategoryFilter = chip.dataset.cat;
+        renderServicesTab();
+      }
+    });
+    $("services-body").addEventListener("click", async function (event) {
+      let btn = event.target.closest("button");
+      if (!btn) return;
+      let act = btn.dataset.act;
+      let id = btn.dataset.id;
+      if (act === "open-add-service") {
+        openServiceModal(null);
+      } else if (act === "edit-svc") {
+        let svc = state.services.find(function (s) { return s.id === id; });
+        if (svc) openServiceModal(svc);
+      } else if (act === "toggle-svc-active") {
+        let currentActive = btn.dataset.active === "true";
+        setLoading(btn, true);
+        try {
+          let updated = await adminToggleServiceActive(id, !currentActive);
+          let idx = state.services.findIndex(function (s) { return s.id === id; });
+          if (idx !== -1) state.services[idx] = updated;
+          renderServicesTab();
+          showToast("الخدمة الآن " + (updated.active ? "مفعلة ✓" : "معطلة ✗"));
+        } catch (err) {
+          handleError(err);
+        } finally {
+          setLoading(btn, false);
+        }
+      } else if (act === "delete-svc") {
+        let svc = state.services.find(function (s) { return s.id === id; });
+        let title = svc ? svc.name : id;
+        openConfirm("حذف الخدمة", "هل أنت متأكد من حذف خدمة «" + title + "»؟ لن يتمكن العملاء من طلبها بعد الآن.", async function () {
+          try {
+            await adminDeleteService(id);
+            state.services = state.services.filter(function (s) { return s.id !== id; });
+            updateContentCounts();
+            renderServicesTab();
+            showToast("تم حذف الخدمة بنجاح");
+          } catch (err) {
+            handleError(err);
+          }
+        });
+      }
+    });
+
+    // أحداث التصنيفات
+    $("add-category-btn").addEventListener("click", function () { openCategoryModal(null); });
+    $("categories-body").addEventListener("click", async function (event) {
+      let btn = event.target.closest("button");
+      if (!btn) return;
+      let act = btn.dataset.act;
+      let id = btn.dataset.id;
+      if (act === "open-add-category") {
+        openCategoryModal(null);
+      } else if (act === "edit-cat") {
+        let cat = state.categories.find(function (c) { return c.id === id; });
+        if (cat) openCategoryModal(cat);
+      } else if (act === "delete-cat") {
+        let svcCount = state.services.filter(function (s) { return s.category === id; }).length;
+        if (svcCount > 0) {
+          showToast("لا يمكن حذف التصنيف لوجود " + svcCount + " خدمات مرتبطة به.", "error");
+          return;
+        }
+        let cat = state.categories.find(function (c) { return c.id === id; });
+        let title = cat ? cat.name : id;
+        openConfirm("حذف التصنيف", "هل أنت متأكد من حذف تصنيف «" + title + "»؟", async function () {
+          try {
+            await adminDeleteCategory(id);
+            state.categories = state.categories.filter(function (c) { return c.id !== id; });
+            updateContentCounts();
+            renderCategoriesTab();
+            showToast("تم حذف التصنيف بنجاح");
+          } catch (err) {
+            handleError(err);
+          }
+        });
+      }
+    });
+
+    // أحداث الخيارات
+    $("save-options-btn").addEventListener("click", function () { saveAllOptions($("save-options-btn")); });
+    $("options-body").addEventListener("click", function (event) {
+      let btn = event.target.closest("button");
+      if (!btn) return;
+      let id = btn.id;
+      let act = btn.dataset.act;
+
+      if (act === "del-opt-item") {
+        let group = btn.dataset.group;
+        let idx = Number(btn.dataset.idx);
+        if (state.options && state.options[group] && state.options[group][idx] !== undefined) {
+          state.options[group].splice(idx, 1);
+          renderOptionsTab();
+          showToast("تم حذف العنصر (اضغط «حفظ جميع الخيارات» لتأكيد التغيير)");
+        }
+        return;
+      }
+
+      if (id === "opt-add-color-btn") {
+        let name = $("opt-color-name").value.trim();
+        let hex = $("opt-color-hex").value.trim();
+        if (!name || !hex) { showToast("اكتب اسم اللون وكود الـ HEX", "error"); return; }
+        state.options.colors = state.options.colors || [];
+        state.options.colors.push({ id: crypto.randomUUID().slice(0, 8), name: name, hex: hex });
+        renderOptionsTab();
+        showToast("تمت إضافة اللون للقائمة");
+      } else if (id === "opt-add-size-btn") {
+        let val = $("opt-size-val").value.trim().toUpperCase();
+        if (!val) { showToast("اكتب المقاس", "error"); return; }
+        state.options.sizes = state.options.sizes || [];
+        if (state.options.sizes.indexOf(val) !== -1) { showToast("المقاس موجود بالفعل", "error"); return; }
+        state.options.sizes.push(val);
+        renderOptionsTab();
+        showToast("تمت إضافة المقاس للقائمة");
+      } else if (id === "opt-add-place-btn") {
+        let pId = $("opt-place-id").value.trim();
+        let pName = $("opt-place-name").value.trim();
+        if (!pId || !pName) { showToast("المعرف والاسم مطلوبان", "error"); return; }
+        state.options.placements = state.options.placements || [];
+        state.options.placements.push({ id: pId, name: pName });
+        renderOptionsTab();
+        showToast("تمت إضافة مكان الطباعة للقائمة");
+      } else if (id === "opt-add-phone-btn") {
+        let val = $("opt-phone-val").value.trim();
+        if (!val) { showToast("اكتب طراز الهاتف", "error"); return; }
+        state.options.phoneModels = state.options.phoneModels || [];
+        state.options.phoneModels.push(val);
+        renderOptionsTab();
+        showToast("تمت إضافة الهاتف للقائمة");
+      } else if (id === "opt-add-shape-btn") {
+        let sId = $("opt-shape-id").value.trim();
+        let sName = $("opt-shape-name").value.trim();
+        if (!sId || !sName) { showToast("المعرف والاسم مطلوبان", "error"); return; }
+        state.options.shapes = state.options.shapes || [];
+        state.options.shapes.push({ id: sId, name: sName });
+        renderOptionsTab();
+        showToast("تمت إضافة الشكل للقائمة");
+      } else if (id === "opt-add-unit-btn") {
+        let uId = $("opt-unit-id").value.trim();
+        let uName = $("opt-unit-name").value.trim();
+        if (!uId || !uName) { showToast("المعرف والاسم مطلوبان", "error"); return; }
+        state.options.units = state.options.units || [];
+        state.options.units.push({ id: uId, name: uName });
+        renderOptionsTab();
+        showToast("تمت إضافة الوحدة للقائمة");
+      } else if (id === "opt-add-use-btn") {
+        let uId = $("opt-use-id").value.trim();
+        let uName = $("opt-use-name").value.trim();
+        if (!uId || !uName) { showToast("المعرف والاسم مطلوبان", "error"); return; }
+        state.options.uses = state.options.uses || [];
+        state.options.uses.push({ id: uId, name: uName });
+        renderOptionsTab();
+        showToast("تمت إضافة الاستخدام للقائمة");
+      }
+    });
+
+    // أحداث المعرض
+    $("add-portfolio-btn").addEventListener("click", function () { openPortfolioModal(null); });
+    $("portfolio-cat-chips").addEventListener("click", function (event) {
+      let chip = event.target.closest("button.chip");
+      if (chip && chip.dataset.cat) {
+        state.portfolioCategoryFilter = chip.dataset.cat;
+        renderPortfolioTab();
+      }
+    });
+    $("portfolio-body").addEventListener("click", async function (event) {
+      let btn = event.target.closest("button");
+      if (!btn) return;
+      let act = btn.dataset.act;
+      let id = btn.dataset.id;
+      if (act === "open-add-portfolio") {
+        openPortfolioModal(null);
+      } else if (act === "edit-port") {
+        let item = state.portfolio.find(function (p) { return p.id === id; });
+        if (item) openPortfolioModal(item);
+      } else if (act === "delete-port") {
+        let item = state.portfolio.find(function (p) { return p.id === id; });
+        let title = item ? item.title : id;
+        openConfirm("حذف عمل المعرض", "هل أنت متأكد من حذف العمل «" + title + "»؟", async function () {
+          try {
+            await adminDeletePortfolio(id);
+            state.portfolio = state.portfolio.filter(function (p) { return p.id !== id; });
+            updateContentCounts();
+            renderPortfolioTab();
+            showToast("تم حذف العمل من المعرض بنجاح");
+          } catch (err) {
+            handleError(err);
+          }
+        });
+      }
+    });
+
+    // نماذج النوافذ
+    $("service-form").addEventListener("submit", handleServiceSubmit);
+    $("svc-cancel").addEventListener("click", function () { $("service-dialog").close(); });
+    $("svc-pricemode").addEventListener("change", updateSvcPriceMode);
+    $("svc-image").addEventListener("input", updateSvcPreview);
+    $("svc-image-file").addEventListener("change", function (e) { handleImageUpload(e, "services"); });
+
+    $("category-form").addEventListener("submit", handleCategorySubmit);
+    $("cat-cancel").addEventListener("click", function () { $("category-dialog").close(); });
+
+    $("portfolio-form").addEventListener("submit", handlePortfolioSubmit);
+    $("port-cancel").addEventListener("click", function () { $("portfolio-dialog").close(); });
+    $("port-image").addEventListener("input", updatePortPreview);
+    $("port-image-file").addEventListener("change", function (e) { handleImageUpload(e, "portfolio"); });
+
+    $("confirm-ok-btn").addEventListener("click", async function () {
+      if (typeof state.confirmAction === "function") {
+        let action = state.confirmAction;
+        state.confirmAction = null;
+        $("confirm-dialog").close();
+        await action();
+      } else {
+        $("confirm-dialog").close();
+      }
+    });
+    $("confirm-cancel-btn").addEventListener("click", function () {
+      state.confirmAction = null;
+      $("confirm-dialog").close();
+    });
 
     $("menu-btn").addEventListener("click", function () {
       setMenu(!$("admin-side").classList.contains("is-open"));

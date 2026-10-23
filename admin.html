@@ -67,9 +67,12 @@
           <span class="admin-brand__sub">لوحة الإدارة</span>
         </a>
         <nav class="admin-nav" aria-label="أقسام الإدارة">
-          <a href="#/orders" aria-current="page">
+          <a href="#/orders" id="nav-link-orders" aria-current="page">
             <span>الطلبات</span>
             <span class="admin-count num" id="nav-count" title="طلبات تحتاج قرارًا">0</span>
+          </a>
+          <a href="#/content" id="nav-link-content">
+            <span>إدارة المحتوى</span>
           </a>
         </nav>
       </div>
@@ -84,7 +87,7 @@
         <button class="btn btn--secondary btn--sm admin-menu-btn" id="menu-btn" type="button"
                 aria-expanded="false" aria-controls="admin-side">القائمة</button>
         <div class="admin-search">
-          <label class="sr-only" for="admin-search">بحث في الطلبات</label>
+          <label class="sr-only" for="admin-search">بحث</label>
           <input class="input" id="admin-search" type="search" autocomplete="off"
                  placeholder="ابحث برقم الطلب أو اسم العميل أو الهاتف">
         </div>
@@ -126,6 +129,71 @@
         <!-- تفاصيل الطلب -->
         <section id="detail-view" aria-label="تفاصيل الطلب" hidden>
           <div id="detail-body"></div>
+        </section>
+
+        <!-- إدارة المحتوى (4 تابات) -->
+        <section id="content-view" aria-label="إدارة المحتوى" hidden>
+          <div class="admin-head">
+            <div>
+              <h1 class="h2">إدارة المحتوى</h1>
+              <p class="muted">التحكم في الخدمات المعروضة، التصنيفات، خيارات النماذج، ومعرض الأعمال.</p>
+            </div>
+          </div>
+
+          <!-- التابات الأربعة -->
+          <div class="tabs content-nav-tabs" role="tablist" aria-label="أقسام إدارة المحتوى" id="content-tabs">
+            <button class="tab" role="tab" id="tab-btn-services" aria-selected="true" data-tab="services">
+              الخدمات (<span class="num" id="services-count">0</span>)
+            </button>
+            <button class="tab" role="tab" id="tab-btn-categories" aria-selected="false" data-tab="categories">
+              التصنيفات (<span class="num" id="categories-count">0</span>)
+            </button>
+            <button class="tab" role="tab" id="tab-btn-options" aria-selected="false" data-tab="options">
+              الخيارات
+            </button>
+            <button class="tab" role="tab" id="tab-btn-portfolio" aria-selected="false" data-tab="portfolio">
+              المعرض (<span class="num" id="portfolio-count">0</span>)
+            </button>
+          </div>
+
+          <!-- تاب 1: الخدمات -->
+          <div class="tab-panel" id="panel-services" role="tabpanel" aria-labelledby="tab-btn-services">
+            <div class="admin-toolbar">
+              <div class="row align-center wrap gap-s2">
+                <button class="btn btn--primary btn--sm" type="button" id="add-service-btn">+ إضافة خدمة جديدة</button>
+                <div class="admin-chips" id="service-cat-chips" role="group" aria-label="تصفية حسب التصنيف"></div>
+              </div>
+            </div>
+            <div id="services-body"></div>
+          </div>
+
+          <!-- تاب 2: التصنيفات -->
+          <div class="tab-panel" id="panel-categories" role="tabpanel" aria-labelledby="tab-btn-categories" hidden>
+            <div class="admin-toolbar">
+              <button class="btn btn--primary btn--sm" type="button" id="add-category-btn">+ إضافة تصنيف جديد</button>
+            </div>
+            <div id="categories-body"></div>
+          </div>
+
+          <!-- تاب 3: الخيارات -->
+          <div class="tab-panel" id="panel-options" role="tabpanel" aria-labelledby="tab-btn-options" hidden>
+            <div class="admin-toolbar">
+              <p class="caption muted">خيارات النماذج المتاحة للعميل في صفحة ابدأ طلبك.</p>
+              <button class="btn btn--primary btn--sm" type="button" id="save-options-btn">حفظ جميع الخيارات</button>
+            </div>
+            <div id="options-body"></div>
+          </div>
+
+          <!-- تاب 4: المعرض -->
+          <div class="tab-panel" id="panel-portfolio" role="tabpanel" aria-labelledby="tab-btn-portfolio" hidden>
+            <div class="admin-toolbar">
+              <div class="row align-center wrap gap-s2">
+                <button class="btn btn--primary btn--sm" type="button" id="add-portfolio-btn">+ إضافة عمل للمعرض</button>
+                <div class="admin-chips" id="portfolio-cat-chips" role="group" aria-label="تصفية حسب التصنيف"></div>
+              </div>
+            </div>
+            <div id="portfolio-body"></div>
+          </div>
         </section>
 
       </main>
@@ -174,6 +242,213 @@
       </div>
     </div>
     <div class="zoom-stage"><img id="zoom-img" alt=""></div>
+  </dialog>
+
+  <!-- نافذة إضافة / تعديل خدمة -->
+  <dialog class="dialog dialog--wide" id="service-dialog" aria-labelledby="service-dlg-title">
+    <form id="service-form" novalidate>
+      <h2 class="h3" id="service-dlg-title">بيانات الخدمة</h2>
+      <p class="muted">أدخل تفاصيل الخدمة ونوع النموذج الذي يظهر للعميل عند الطلب.</p>
+
+      <div class="dialog-grid-2">
+        <div class="field">
+          <label class="field__label" for="svc-id">معرّف الخدمة (slug إنجليزي)</label>
+          <input class="input input--ltr" id="svc-id" required placeholder="مثال: tshirt" pattern="^[a-z0-9-]+$">
+          <span class="field__hint">حروف إنجليزية وأرقام وشرطات فقط. لا يتغير بعد الإنشاء.</span>
+        </div>
+        <div class="field">
+          <label class="field__label" for="svc-name">اسم الخدمة بالعربي</label>
+          <input class="input" id="svc-name" required placeholder="مثال: تيشيرت مطبوع">
+        </div>
+      </div>
+
+      <div class="dialog-grid-2">
+        <div class="field">
+          <label class="field__label" for="svc-category">التصنيف</label>
+          <select class="select" id="svc-category" required></select>
+        </div>
+        <div class="field">
+          <label class="field__label" for="svc-formtype">نوع النموذج في شاشة الطلب</label>
+          <select class="select" id="svc-formtype">
+            <option value="apparel">ملابس (apparel) — مقاسات وأماكن طباعة وألوان</option>
+            <option value="gift">هدايا ومجات (gift) — نصوص تخصيص وموديلات</option>
+            <option value="sticker">ستيكرات وليبلز (sticker) — أبعاد وأشكال واستخدامات</option>
+            <option value="custom">تصميم مخصص (custom) — وصف حر ومرفقات فقط</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="svc-desc">وصف الخدمة</label>
+        <textarea class="textarea" id="svc-desc" rows="2" placeholder="وصف مبسط يوضح للعميل طبيعة الخدمة والمواصفات..."></textarea>
+      </div>
+
+      <div class="dialog-grid-2">
+        <div class="field">
+          <label class="field__label" for="svc-pricemode">نوع التسعير</label>
+          <select class="select" id="svc-pricemode">
+            <option value="from">ابتداءً من سعر محدد</option>
+            <option value="quote">حسب المعاينة والاتفاق</option>
+          </select>
+        </div>
+        <div class="field" id="svc-pricefrom-wrap">
+          <label class="field__label" for="svc-pricefrom">السعر المبدئي (ج.م)</label>
+          <input class="input num" id="svc-pricefrom" type="number" min="0" step="1" placeholder="220">
+        </div>
+      </div>
+
+      <!-- الصورة العامة للخدمة -->
+      <div class="field">
+        <label class="field__label" for="svc-image">مسار أو رابط الصورة</label>
+        <div class="image-field-row">
+          <input class="input input--ltr" id="svc-image" placeholder="img/services/tshirt.jpg">
+          <label class="btn btn--secondary btn--sm upload-btn-label">
+            <span>رفع صورة جديدة</span>
+            <input type="file" id="svc-image-file" accept="image/png,image/jpeg,image/webp" hidden>
+          </label>
+        </div>
+        <div class="image-preview-box" id="svc-preview-box" hidden>
+          <img id="svc-image-preview" alt="معاينة صورة الخدمة">
+          <span class="caption muted" id="svc-image-status"></span>
+        </div>
+      </div>
+
+      <!-- الحقول المطلوبة للنموذج -->
+      <fieldset class="field form-options-fieldset">
+        <legend class="field__label">الحقول المعروضة في نموذج طلب هذه الخدمة:</legend>
+        <div class="checkbox-grid" id="svc-fields-checks">
+          <label class="check-label"><input type="checkbox" value="color"> <span>اللون (color)</span></label>
+          <label class="check-label"><input type="checkbox" value="sizes"> <span>المقاسات وكمياتها (sizes)</span></label>
+          <label class="check-label"><input type="checkbox" value="placement"> <span>أماكن الطباعة (placement)</span></label>
+          <label class="check-label"><input type="checkbox" value="customText"> <span>نص التخصيص (customText)</span></label>
+          <label class="check-label"><input type="checkbox" value="phoneModel"> <span>طراز الهاتف (phoneModel)</span></label>
+          <label class="check-label"><input type="checkbox" value="dimensions"> <span>الأبعاد والوحدة (dimensions)</span></label>
+          <label class="check-label"><input type="checkbox" value="shape"> <span>شكل الستيكر (shape)</span></label>
+          <label class="check-label"><input type="checkbox" value="use"> <span>طبيعة الاستخدام (use)</span></label>
+        </div>
+      </fieldset>
+
+      <!-- أماكن الطباعة (إذا كانت الخدمة ملابس أو كابات) -->
+      <fieldset class="field form-options-fieldset" id="svc-placements-wrap">
+        <legend class="field__label">أماكن الطباعة المتاحة لهذه الخدمة:</legend>
+        <div class="checkbox-grid" id="svc-placements-checks">
+          <label class="check-label"><input type="checkbox" value="chest"> <span>الصدر</span></label>
+          <label class="check-label"><input type="checkbox" value="back"> <span>الظهر</span></label>
+          <label class="check-label"><input type="checkbox" value="sleeve"> <span>الكم</span></label>
+          <label class="check-label"><input type="checkbox" value="capFront"> <span>أمام الكاب</span></label>
+          <label class="check-label"><input type="checkbox" value="capSide"> <span>جانب الكاب</span></label>
+          <label class="check-label"><input type="checkbox" value="capBack"> <span>خلف الكاب</span></label>
+        </div>
+      </fieldset>
+
+      <div class="row align-center gap-s2">
+        <label class="check-label">
+          <input type="checkbox" id="svc-active" checked>
+          <strong>الخدمة مفعلة وتظهر في الموقع</strong>
+        </label>
+      </div>
+
+      <div class="admin-alert" id="svc-alert" role="alert" hidden></div>
+
+      <div class="admin-actions">
+        <button class="btn btn--primary" type="submit" id="svc-submit">حفظ الخدمة</button>
+        <button class="btn btn--secondary" type="button" id="svc-cancel">إلغاء</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- نافذة إضافة / تعديل تصنيف -->
+  <dialog class="dialog" id="category-dialog" aria-labelledby="cat-dlg-title">
+    <form id="category-form" novalidate>
+      <h2 class="h3" id="cat-dlg-title">بيانات التصنيف</h2>
+      <p class="muted">التصنيفات تنظم الخدمات والمعرض وتظهر كفلاتر للعميل.</p>
+
+      <div class="field">
+        <label class="field__label" for="cat-id">معرّف التصنيف (slug إنجليزي)</label>
+        <input class="input input--ltr" id="cat-id" required placeholder="مثال: apparel" pattern="^[a-z0-9-]+$">
+        <span class="field__hint">حروف إنجليزية وشرطات فقط (مثل: apparel, caps, mugs-gifts).</span>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="cat-name">اسم التصنيف بالعربي</label>
+        <input class="input" id="cat-name" required placeholder="مثال: ملابس">
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="cat-sort">الترتيب في العرض</label>
+        <input class="input num" id="cat-sort" type="number" min="0" value="0">
+      </div>
+
+      <div class="admin-alert" id="cat-alert" role="alert" hidden></div>
+
+      <div class="admin-actions">
+        <button class="btn btn--primary" type="submit" id="cat-submit">حفظ التصنيف</button>
+        <button class="btn btn--secondary" type="button" id="cat-cancel">إلغاء</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- نافذة إضافة / تعديل عمل بالمعرض -->
+  <dialog class="dialog" id="portfolio-dialog" aria-labelledby="port-dlg-title">
+    <form id="portfolio-form" novalidate>
+      <h2 class="h3" id="port-dlg-title">بيانات عمل المعرض</h2>
+      <p class="muted">يظهر هذا العمل في معرض الأعمال portfolio ويمكن للعميل بدء طلب منه.</p>
+
+      <div class="field">
+        <label class="field__label" for="port-id">معرّف العمل</label>
+        <input class="input input--ltr" id="port-id" required placeholder="مثال: p13">
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="port-title">عنوان العمل</label>
+        <input class="input" id="port-title" required placeholder="مثال: تيشيرت بطبعة ملونة">
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="port-category">التصنيف</label>
+        <select class="select" id="port-category" required></select>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="port-service">الخدمة المرتبطة</label>
+        <select class="select" id="port-service" required></select>
+      </div>
+
+      <!-- الصورة -->
+      <div class="field">
+        <label class="field__label" for="port-image">مسار أو رابط الصورة</label>
+        <div class="image-field-row">
+          <input class="input input--ltr" id="port-image" required placeholder="img/portfolio/p01.jpg">
+          <label class="btn btn--secondary btn--sm upload-btn-label">
+            <span>رفع صورة</span>
+            <input type="file" id="port-image-file" accept="image/png,image/jpeg,image/webp" hidden>
+          </label>
+        </div>
+        <div class="image-preview-box" id="port-preview-box" hidden>
+          <img id="port-image-preview" alt="معاينة صورة المعرض">
+          <span class="caption muted" id="port-image-status"></span>
+        </div>
+      </div>
+
+      <div class="admin-alert" id="port-alert" role="alert" hidden></div>
+
+      <div class="admin-actions">
+        <button class="btn btn--primary" type="submit" id="port-submit">حفظ العمل</button>
+        <button class="btn btn--secondary" type="button" id="port-cancel">إلغاء</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- نافذة تأكيد الحذف / الإجراء -->
+  <dialog class="dialog" id="confirm-dialog" aria-labelledby="confirm-title">
+    <div class="stack">
+      <h2 class="h3" id="confirm-title">تأكيد الحذف</h2>
+      <p class="muted" id="confirm-message">هل أنت متأكد من رغبتك في هذا الإجراء؟ لا يمكن التراجع عنه.</p>
+      <div class="admin-actions">
+        <button class="btn btn--danger" type="button" id="confirm-ok-btn">نعم، حذف</button>
+        <button class="btn btn--secondary" type="button" id="confirm-cancel-btn">إلغاء</button>
+      </div>
+    </div>
   </dialog>
 
   <div class="toasts" id="toasts" aria-live="polite"></div>

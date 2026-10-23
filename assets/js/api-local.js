@@ -285,11 +285,80 @@ async function approveOrder(id, note) {
   });
 }
 
-// الرفض لازم يكون له سبب، لأن العميل هيشوفه
 async function rejectOrder(id, reason) {
   if (!hasValue(reason)) return { ok: false, error: "reason-required" };
   return applyStatus(id, "rejected", "تم رفض الطلب", {
     rejectionReason: reason,
     ownerNote: reason
   });
+}
+
+// ---------- إدارة المحتوى (الأوفلاين) ----------
+
+async function uploadContentImage(file, folder) {
+  return { path: "local/" + file.name, url: URL.createObjectURL(file), name: file.name };
+}
+
+async function adminSaveService(service) {
+  let data = await loadData();
+  let idx = data.services.findIndex(function (s) { return s.id === service.id; });
+  if (idx !== -1) {
+    data.services[idx] = Object.assign({}, data.services[idx], service);
+  } else {
+    data.services.push(service);
+  }
+  return service;
+}
+
+async function adminDeleteService(id) {
+  let data = await loadData();
+  data.services = data.services.filter(function (s) { return s.id !== id; });
+  return true;
+}
+
+async function adminToggleServiceActive(id, active) {
+  let data = await loadData();
+  let found = data.services.find(function (s) { return s.id === id; });
+  if (found) found.active = !!active;
+  return found;
+}
+
+async function adminSaveCategory(category) {
+  let data = await loadData();
+  let idx = data.categories.findIndex(function (c) { return c.id === category.id; });
+  if (idx !== -1) {
+    data.categories[idx] = Object.assign({}, data.categories[idx], category);
+  } else {
+    data.categories.push(category);
+  }
+  return category;
+}
+
+async function adminDeleteCategory(id) {
+  let data = await loadData();
+  data.categories = data.categories.filter(function (c) { return c.id !== id; });
+  return true;
+}
+
+async function adminSaveOption(key, value) {
+  let data = await loadData();
+  data.options[key] = value;
+  return true;
+}
+
+async function adminSavePortfolio(item) {
+  let data = await loadData();
+  let idx = data.portfolio.findIndex(function (p) { return p.id === item.id; });
+  if (idx !== -1) {
+    data.portfolio[idx] = Object.assign({}, data.portfolio[idx], item);
+  } else {
+    data.portfolio.push(item);
+  }
+  return item;
+}
+
+async function adminDeletePortfolio(id) {
+  let data = await loadData();
+  data.portfolio = data.portfolio.filter(function (p) { return p.id !== id; });
+  return true;
 }

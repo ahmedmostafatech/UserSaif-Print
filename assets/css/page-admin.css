@@ -312,3 +312,280 @@ body.admin .dialog p { margin: 0; }
   .status-row { grid-template-columns: 1fr; }
   .admin-actions .btn { width: 100%; }
 }
+
+/* ============================================================
+   إدارة المحتوى (الخدمات، التصنيفات، الخيارات، المعرض)
+   ============================================================ */
+
+.content-nav-tabs {
+  margin-block-end: var(--s-3);
+  border-block-end: 2px solid var(--border);
+}
+
+.content-nav-tabs .tab {
+  font-size: var(--fs-body);
+  padding: var(--s-2) var(--s-3);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+
+.tab-panel {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.admin-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-sm);
+  object-fit: cover;
+  background: var(--teal-50);
+  border: 1px solid var(--border);
+  display: block;
+}
+
+.admin-thumb--missing {
+  display: grid;
+  place-items: center;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.1;
+  padding: var(--s-half);
+}
+
+.badge--active {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
+}
+
+.badge--inactive {
+  background: var(--teal-50);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  justify-content: flex-end;
+}
+
+/* شبكة معرض الأعمال في الإدارة */
+.portfolio-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--s-3);
+}
+
+.portfolio-admin-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: var(--white);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-1);
+}
+
+.portfolio-admin-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--teal-50);
+  overflow: hidden;
+}
+
+.portfolio-admin-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portfolio-admin-card__body {
+  padding: var(--s-3);
+  display: grid;
+  gap: var(--s-1);
+  flex: 1;
+}
+
+.portfolio-admin-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-1);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+
+.portfolio-admin-card__foot {
+  padding: var(--s-2) var(--s-3);
+  border-block-start: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-1);
+  background: var(--paper);
+}
+
+/* شبكة محرر الخيارات */
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--s-3);
+}
+
+.options-card {
+  padding: var(--s-4);
+  background: var(--white);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-1);
+  display: grid;
+  gap: var(--s-2);
+  align-content: start;
+}
+
+.options-card h3 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.options-swatch-list {
+  display: grid;
+  gap: var(--s-1);
+}
+
+.options-swatch-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding: var(--s-1) var(--s-2);
+  border-radius: var(--r-sm);
+  background: var(--paper);
+  border: 1px solid var(--border);
+}
+
+.swatch-color-box {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(0, 0, 0, .15);
+  flex-shrink: 0;
+}
+
+.options-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1);
+}
+
+.option-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: var(--s-half) var(--s-2);
+  border-radius: var(--r-pill);
+  background: var(--teal-50);
+  border: 1px solid var(--teal-100);
+  font-size: var(--fs-caption);
+  color: var(--teal-900);
+}
+
+.option-tag-remove {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--error);
+  font-weight: var(--fw-bold);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+.option-tag-remove:hover {
+  transform: scale(1.2);
+}
+
+.option-add-inline {
+  display: flex;
+  gap: var(--s-1);
+  align-items: center;
+  margin-block-start: var(--s-1);
+}
+
+.option-add-inline .input {
+  min-height: 38px;
+  padding-block: var(--s-1);
+}
+
+/* ستايلات النوافذ الإضافية */
+.dialog-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+}
+
+.image-field-row {
+  display: flex;
+  gap: var(--s-1);
+  align-items: center;
+}
+
+.image-preview-box {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2);
+  background: var(--teal-50);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--teal-100);
+  margin-block-start: var(--s-1);
+}
+
+.image-preview-box img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--r-sm);
+  background: var(--white);
+  border: 1px solid var(--border);
+}
+
+.form-options-fieldset {
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--s-2) var(--s-3);
+  margin-block-start: var(--s-1);
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--s-1);
+  margin-block-start: var(--s-1);
+}
+
+.check-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  font-size: 0.9375rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.upload-btn-label {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .dialog-grid-2 { grid-template-columns: 1fr; }
+  .image-field-row { flex-direction: column; align-items: stretch; }
+  .checkbox-grid { grid-template-columns: 1fr; }
+}
