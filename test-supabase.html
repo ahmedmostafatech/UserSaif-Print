@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>اختبار Supabase | يوزرسيف</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="data/schema.js"></script>
+  <script src="assets/js/readiness.js"></script>
+  <script src="assets/js/api-supabase.js"></script>
+  <style>
+    .test-list { list-style: none; padding: 0; display: grid; gap: var(--s-1); }
+    .test-list li { padding: var(--s-1) var(--s-2); border-radius: var(--r-sm); }
+    .test-list .pass { background: var(--success-bg); color: var(--success); }
+    .test-list .fail { background: var(--error-bg); color: var(--error); }
+  </style>
+</head>
+<body>
+  <main class="container section stack-lg">
+    <h1>اختبار Supabase والأمان (كزائر)</h1>
+    <p id="summary" style="font-weight:700">جارٍ التشغيل...</p>
+    <ul class="test-list" id="results"></ul>
+  </main>
+
+  <script>
+    let results = [];
+
+    function check(name, ok, detail) {
+      results.push({ name: name, ok: ok, detail: detail || "" });
+      console.log((ok ? "PASS" : "FAIL") + " - " + name, detail || "");
+    }
+
+    function render() {
+      let passed = results.filter(function (r) { return r.ok; }).length;
+      document.getElementById("results").innerHTML = results.map(function (r) {
+        return '<li class="' + (r.ok ? "pass" : "fail") + '">' + (r.ok ? "✔ " : "✘ ") +
+          r.name + (r.detail ? " — " + r.detail : "") + "</li>";
+      }).join("");
+      document.getElementById("summary").textContent = "نجح " + passed + " من " + results.length + " فحص";
+    }
+
+    function futureDate(days) {
+      let d = new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString().slice(0, 10);
+    }
+
+    async function run() {
+      // --- القراءة العامة ---
+      let services = await getServices();
+      check("getServices ترجع 10 خدمات", services.length === 10, String(services.length));
+      let caps = await getPortfolio("caps");
+      check("getPortfolio('caps') ترجع عملين", caps.length === 2, String(caps.length));
+      let options = await getOptions();
+      check("getOptions فيها الألوان", Array.isArray(options.colors) && options.colors.length > 0);
+      let settings = await getSettings();
+      check("رقم الواتساب موجود", settings.whatsapp === "01116891025");
+      let faq = await getFaq();
+      check("الأسئلة الشائعة 6", faq.length === 6, String(faq.length));
+
+      // --- الزائر ممنوع من جدول الطلبات ---
+      let direct = await db.from("orders").select("id");
+      check("الزائر مش بيقرأ جدول الطلبات مباشرة",
+        !!direct.error || (direct.data && direct.data.length === 0),
+        direct.error ? direct.error.message : "rows: " + direct.data.length);
+
+      let ins = await db.from("orders").insert({
+        id: "YS-9999", service_id: "tshirt", quantity: 1, description: "x",
+        customer_name: "x", customer_phone: "01000000000"
+      });
+      check("الزائر مش بيقدر يضيف طلب مباشرة", !!ins.error, ins.error ? "blocked" : "INSERT WORKED!");
+
+      let upd = await db.from("orders").update({ status: "approved" }).eq("id", "YS-1042").select();
+      check("الزائر مش بيقدر يعدّل طلب مباشرة",
+        !!upd.error || (upd.data && upd.data.length === 0));
+
+      let adminRpc = await db.rpc("admin_get_orders", {});
+      check("دوال الأدمن مرفوضة للزائر", !!adminRpc.error, adminRpc.error ? adminRpc.error.message : "");
+
+      let fakeStatus = await db.rpc("admin_set_status", { p_id: "YS-1042", p_status: "approved" });
+      check("الزائر مش بيقدر يوافق على طلب", !!fakeStatus.error, fakeStatus.error ? fakeStatus.error.message : "");
+
+      // --- التتبع ---
+      let t1 = await trackOrder("YS-1042", "01000001042");
+      check("التتبع بالرقم والهاتف الصح", t1 && t1.id === "YS-1042");
+      check("حالة YS-1042 ما اتغيرتش (قيد المراجعة)", t1 && t1.status === "review");
+      let t2 = await trackOrder("YS-1042", "01099999999");
+      check("التتبع بهاتف غلط يرجع null", t2 === null);
+      let t3 = await trackOrder("1042", "٠١٠٠٠٠٠١٠٤٢");
+      check("التتبع يقبل الرقم بدون YS- وأرقام عربية", t3 && t3.id === "YS-1042");
+      let leak = t1 && JSON.stringify(t1.artwork).indexOf("path") !== -1;
+      check("التتبع ما بيكشفش مسارات الملفات", !leak);
+
+      // --- الإرسال ---
+      let bad = await submitOrder({ serviceId: "tshirt", quantity: 10 });
+      check("submitOrder يرفض طلب ناقص (الفرونت)", bad.ok === false && bad.issues && bad.issues.length > 0);
+
+      // نتخطى فحص الفرونت ونكلم الدالة مباشرة، علشان نتأكد إن السيرفر بيتحقق بنفسه
+      let rawBad = await db.rpc("submit_order", { p: {
+        serviceId: "tshirt", quantity: 10, description: "اختبار تلقائي",
+        customer: { name: "اختبار", phone: "01012345678" },
+        requestedDate: futureDate(14), pickup: "pickup", designHelp: true,
+        specs: { color: "teal", sizes: { S: 2, M: 3, L: 0, XL: 0, XXL: 0 }, placements: ["chest"] }
+      } });
+      check("السيرفر نفسه يرفض مقاسات غير مطابقة",
+        !!rawBad.error && rawBad.error.message.indexOf("sizes-mismatch") !== -1,
+        rawBad.error ? rawBad.error.message : "ACCEPTED!");
+
+      let rawFake = await db.rpc("submit_order", { p: {
+        serviceId: "tshirt", quantity: 4, description: "اختبار تلقائي",
+        customer: { name: "اختبار", phone: "01012345678" },
+        requestedDate: futureDate(14), pickup: "pickup",
+        artwork: [{ name: "x.png", path: "../../secret.png", type: "image/png" }],
+        specs: { color: "teal", sizes: { S: 4 }, placements: ["chest"] }
+      } });
+      check("السيرفر يرفض مسار ملف غير مرفوع من النظام", !!rawFake.error,
+        rawFake.error ? rawFake.error.message : "ACCEPTED!");
+
+      let good = await submitOrder({
+        serviceId: "tshirt", quantity: 10, description: "اختبار تلقائي",
+        customer: { name: "اختبار", phone: "01012345678" },
+        requestedDate: futureDate(14), pickup: "pickup", designHelp: true, artwork: [],
+        specs: { color: "teal", sizes: { S: 2, M: 4, L: 4, XL: 0, XXL: 0 }, placements: ["chest"] }
+      });
+      check("submitOrder يقبل طلب كامل", good.ok === true, good.ok ? good.order.id : (good.error || ""));
+      check("الإجمالي التجريبي = 220 × 10", good.ok && Number(good.order.estimatedTotal) === 2200);
+
+      // --- التخزين ---
+      let list = await db.storage.from("artwork").list("uploads");
+      check("الزائر مش بيشوف ملفات العملاء",
+        !!list.error || (list.data && list.data.length === 0));
+
+      render();
+    }
+
+    run().catch(function (err) {
+      console.log("Test crashed:", err);
+      check("الاختبار اشتغل بدون أخطاء", false, String(err));
+      render();
+    });
+  </script>
+</body>
+</html>

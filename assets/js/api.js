@@ -1,295 +1,231 @@
-// api.js — كل الصفحات بتتعامل مع البيانات من هنا فقط
-// الوضع الحالي: بيانات تجريبية من data.json + طلبات جديدة في localStorage
-// لاحقًا: api-supabase.js بنفس أسماء الدوال، وبنبدّل السكريبت في الصفحات
-// ترتيب التحميل: schema.js ← readiness.js ← api.js
+// api-supabase.js — نسخة Supabase من api.js بنفس أسماء الدوال
+let db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let DATA_URL = "data/data.json";   // لو الصفحة داخل مجلد فرعي عدّل المسار
-let LOCAL_KEY = "ys-orders-local";
-let dataCache = null;
+let MAX_FILE_BYTES = 10 * 1024 * 1024;
+let ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
 
-// ---------- أدوات داخلية ----------
-
-async function loadData() {
-  if (dataCache) return dataCache;
-  let res = await fetch(DATA_URL);
-  if (!res.ok) {
-    throw new Error("Failed to load " + DATA_URL + " (" + res.status + ")");
+function unwrap(result, label) {
+  if (result.error) {
+    console.log("Supabase error [" + label + "]:", result.error.message);
+    throw new Error(result.error.message);
   }
-  dataCache = await res.json();
-  console.log("Data loaded:", dataCache.services.length, "services");
-  return dataCache;
+  return result.data;
 }
 
-function clone(obj) {
-  return JSON.parse(JSON.stringify(obj));
+function mapService(r) {
+  return {
+    id: r.id, name: r.name, category: r.category, formType: r.form_type,
+    fields: r.fields || [], placements: r.placements || [],
+    description: r.description, image: r.image,
+    priceMode: r.price_mode, priceFrom: r.price_from,
+    sample: r.sample, active: r.active
+  };
 }
 
-function nowIso() {
-  return new Date().toISOString();
+function mapPortfolio(r) {
+  return {
+    id: r.id, title: r.title, category: r.category,
+    serviceId: r.service_id, image: r.image, sample: r.sample
+  };
 }
 
-function readLocalOrders() {
-  try {
-    let raw = localStorage.getItem(LOCAL_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    console.log("Local read failed:", e);
-    return [];
-  }
+function keyValueToObject(rows) {
+  let out = {};
+  rows.forEach(function (r) { out[r.key] = r.value; });
+  return out;
 }
 
-function writeLocalOrders(list) {
-  try {
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(list));
-    return true;
-  } catch (e) {
-    console.log("Local write failed:", e);
-    return false;
-  }
-}
-
-// حفظ طلب (جديد أو معدّل) في التخزين المحلي
-function saveLocalOrder(order) {
-  let list = readLocalOrders();
-  let found = false;
-  for (let i = 0; i < list.length; i++) {
-    if (list[i].id === order.id) {
-      list[i] = order;
-      found = true;
-    }
-  }
-  if (!found) list.push(order);
-  return writeLocalOrders(list);
-}
-
-function resetLocalData() {
-  try { localStorage.removeItem(LOCAL_KEY); } catch (e) { /* تجاهل */ }
-  console.log("Local orders cleared");
-}
-
-async function nextOrderId() {
-  let all = await getOrders();
-  let max = 1000;
-  all.forEach(function (o) {
-    let n = Number(String(o.id).replace(/\D/g, ""));
-    if (n > max) max = n;
-  });
-  return "YS-" + (max + 1);
-}
-
-// ---------- المحتوى (قراءة) ----------
+// ---------- المحتوى ----------
 
 async function getSettings() {
-  let data = await loadData();
-  return clone(data.settings);
-}
-
-async function getCategories() {
-  let data = await loadData();
-  return clone(data.categories);
+  let rows = unwrap(await db.from("settings").select("key, value"), "settings");
+  return keyValueToObject(rows);
 }
 
 async function getOptions() {
-  let data = await loadData();
-  return clone(data.options);
+  let rows = unwrap(await db.from("options").select("key, value"), "options");
+  return keyValueToObject(rows);
+}
+
+async function getCategories() {
+  let rows = unwrap(await db.from("categories").select("id, name").order("sort_order"), "categories");
+  return rows;
 }
 
 async function getFaq() {
-  let data = await loadData();
-  return clone(data.faq);
+  let rows = unwrap(await db.from("faq").select("q, a").order("sort_order").order("id"), "faq");
+  return rows;
 }
 
-// filters: { category, includeInactive }
 async function getServices(filters) {
-  let data = await loadData();
   filters = filters || {};
-  let list = data.services.filter(function (s) {
-    if (!filters.includeInactive && !s.active) return false;
-    if (filters.category && s.category !== filters.category) return false;
-    return true;
-  });
-  return clone(list);
+  let query = db.from("services").select("*").order("sort_order");
+  if (filters.category) query = query.eq("category", filters.category);
+  if (!filters.includeInactive) query = query.eq("active", true);
+  let rows = unwrap(await query, "services");
+  return rows.map(mapService);
 }
 
 async function getService(id) {
-  let data = await loadData();
-  let found = data.services.filter(function (s) { return s.id === id; })[0];
-  return found ? clone(found) : null;
+  let row = unwrap(await db.from("services").select("*").eq("id", id).maybeSingle(), "service");
+  return row ? mapService(row) : null;
 }
 
 async function getPortfolio(category) {
-  let data = await loadData();
-  let list = data.portfolio.filter(function (p) {
-    return !category || p.category === category;
-  });
-  return clone(list);
+  let query = db.from("portfolio").select("*").order("sort_order");
+  if (category) query = query.eq("category", category);
+  let rows = unwrap(await query, "portfolio");
+  return rows.map(mapPortfolio);
 }
 
-// ---------- الطلبات ----------
-
-// filters: { status, search }
-async function getOrders(filters) {
-  let data = await loadData();
-  filters = filters || {};
-  let map = {};
-  data.orders.forEach(function (o) { map[o.id] = o; });
-  readLocalOrders().forEach(function (o) { map[o.id] = o; }); // المحلي يغلب الأصلي
-
-  let list = Object.keys(map).map(function (k) { return map[k]; });
-
-  if (filters.status) {
-    list = list.filter(function (o) { return o.status === filters.status; });
-  }
-  if (filters.search) {
-    let q = toWesternDigits(filters.search).toLowerCase().trim();
-    list = list.filter(function (o) {
-      let hay = (o.id + " " + o.customer.name + " " + o.customer.phone).toLowerCase();
-      return hay.indexOf(q) !== -1;
-    });
-  }
-
-  list.sort(function (a, b) { return a.createdAt < b.createdAt ? 1 : -1; });
-  return clone(list);
-}
-
-async function getOrder(id) {
-  let list = await getOrders();
-  let found = list.filter(function (o) { return o.id === id; })[0];
-  return found || null;
-}
-
-// رفع ملف التصميم (محليًا: data URL للملفات الصغيرة، وإلا رابط مؤقت)
-function readAsDataUrl(file) {
-  return new Promise(function (resolve, reject) {
-    let reader = new FileReader();
-    reader.onload = function () { resolve(reader.result); };
-    reader.onerror = function () { reject(reader.error); };
-    reader.readAsDataURL(file);
-  });
-}
+// ---------- رفع الملفات ----------
 
 async function uploadArtwork(file) {
-  let url;
-  if (file.size <= 1024 * 1024) {
-    url = await readAsDataUrl(file);
-  } else {
-    url = URL.createObjectURL(file); // يختفي بعد إعادة تحميل الصفحة
+  if (ALLOWED_TYPES.indexOf(file.type) === -1) {
+    throw new Error("file-type-not-allowed");
   }
-  console.log("Artwork prepared:", file.name);
-  return { name: file.name, url: url, type: file.type || "" };
+  if (file.size > MAX_FILE_BYTES) {
+    throw new Error("file-too-large");
+  }
+  let ext = (file.name.split(".").pop() || "bin").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 8) || "bin";
+  let path = "uploads/" + crypto.randomUUID() + "/" + Date.now() + "." + ext;
+
+  let result = await db.storage.from("artwork").upload(path, file, { contentType: file.type, upsert: false });
+  if (result.error) {
+    console.log("Upload failed:", result.error.message);
+    throw new Error(result.error.message);
+  }
+  console.log("Artwork uploaded:", file.name);
+  return { name: file.name, path: path, type: file.type, url: URL.createObjectURL(file) };
 }
 
-// إرسال طلب جديد. الناتج: { ok:true, order } أو { ok:false, issues }
+async function getArtworkUrl(item) {
+  if (item.path) {
+    let result = await db.storage.from("artwork").createSignedUrl(item.path, 3600);
+    if (result.error) {
+      console.log("Signed url failed:", result.error.message);
+      return "";
+    }
+    return result.data.signedUrl;
+  }
+  return item.url || "";
+}
+
+// ---------- الطلبات (الزوار) ----------
+
 async function submitOrder(draft) {
   let service = await getService(draft.serviceId);
-  let result = checkReadiness(draft, service);
-  if (!result.ready) {
-    console.log("Submit blocked:", result.errorCount, "errors");
-    return { ok: false, issues: result.issues };
+  let check = checkReadiness(draft, service);
+  if (!check.ready) {
+    console.log("Submit blocked:", check.errorCount, "errors");
+    return { ok: false, issues: check.issues };
   }
 
-  let id = await nextOrderId();
-  let qty = Number(draft.quantity);
-  let now = nowIso();
-
-  let order = {
-    id: id,
-    status: "received",
+  let payload = {
     serviceId: draft.serviceId,
-    quantity: qty,
+    quantity: Number(draft.quantity),
     description: draft.description,
-    customer: {
-      name: draft.customer.name,
-      phone: normalizePhone(draft.customer.phone),
-      email: draft.customer.email || null
-    },
+    customer: draft.customer,
     requestedDate: draft.requestedDate,
     pickup: draft.pickup,
     designHelp: !!draft.designHelp,
-    artwork: draft.artwork || [],
-    specs: draft.specs || {},
-    estimatedTotal: service.priceMode === "from" ? service.priceFrom * qty : null,
-    ownerNote: null,
-    rejectionReason: null,
-    createdAt: now,
-    log: [{ at: now, status: "received", text: "تم استلام طلبك" }]
+    artwork: (draft.artwork || []).map(function (a) { return { name: a.name, path: a.path, type: a.type }; }),
+    specs: draft.specs || {}
   };
 
-  saveLocalOrder(order);
-  console.log("Order submitted:", id);
-  return { ok: true, order: clone(order) };
+  let res = await db.rpc("submit_order", { p: payload });
+  if (res.error) {
+    console.log("submit_order failed:", res.error.message);
+    return { ok: false, error: res.error.message };
+  }
+  console.log("Order submitted:", res.data.id);
+  return { ok: true, order: res.data };
 }
 
-// تتبع الطلب برقم الطلب + الهاتف. بيرجع الطلب أو null (من غير ما نكشف أي الاتنين غلط)
 async function trackOrder(number, phone) {
-  let id = toWesternDigits(number).toUpperCase().trim();
-  if (/^\d+$/.test(id)) id = "YS-" + id;
-
-  let order = await getOrder(id);
-  if (!order) return null;
-  if (normalizePhone(order.customer.phone) !== normalizePhone(phone)) return null;
-  return order;
+  let res = await db.rpc("track_order", { p_id: number, p_phone: phone });
+  if (res.error) {
+    console.log("track_order failed:", res.error.message);
+    throw new Error(res.error.message.indexOf("too-many-attempts") !== -1 ? "too-many-attempts" : res.error.message);
+  }
+  return res.data || null;
 }
 
-// إعادة إرسال طلب مرفوض بعد التعديل. changes: حقول معدّلة (specs و customer بيندمجوا)
-async function resubmitOrder(id, changes) {
-  let order = await getOrder(id);
-  if (!order) return { ok: false, error: "not-found" };
-  if (order.status !== "rejected") return { ok: false, error: "not-rejected" };
-
+async function resubmitOrder(id, changes, phone) {
+  if (!phone) return { ok: false, error: "phone-required" };
   changes = changes || {};
-  Object.keys(changes).forEach(function (key) {
-    if (key === "specs" || key === "customer") {
-      order[key] = Object.assign({}, order[key], changes[key]);
-    } else {
-      order[key] = changes[key];
-    }
-  });
-
-  let service = await getService(order.serviceId);
-  let result = checkReadiness(order, service);
-  if (!result.ready) return { ok: false, issues: result.issues };
-
-  order.status = "received";
-  order.rejectionReason = null;
-  order.ownerNote = null;
-  order.log.push({ at: nowIso(), status: "received", text: "أُعيد إرسال الطلب بعد التعديل" });
-  saveLocalOrder(order);
-  console.log("Order resubmitted:", id);
-  return { ok: true, order: clone(order) };
+  if (changes.artwork) {
+    changes.artwork = changes.artwork.map(function (a) { return { name: a.name, path: a.path, type: a.type }; });
+  }
+  let res = await db.rpc("resubmit_order", { p_id: id, p_phone: phone, p_changes: changes });
+  if (res.error) {
+    console.log("resubmit_order failed:", res.error.message);
+    return { ok: false, error: res.error.message };
+  }
+  return { ok: true, order: res.data };
 }
 
 // ---------- الأدمن ----------
 
-async function applyStatus(id, status, text, extra) {
-  let order = await getOrder(id);
-  if (!order) return { ok: false, error: "not-found" };
-  order.status = status;
-  Object.assign(order, extra || {});
-  order.log.push({ at: nowIso(), status: status, text: text });
-  saveLocalOrder(order);
+async function adminLogin(email, password) {
+  let res = await db.auth.signInWithPassword({ email: email, password: password });
+  if (res.error) return { ok: false, error: res.error.message };
+  let admin = await isAdmin();
+  if (!admin) {
+    await db.auth.signOut();
+    return { ok: false, error: "not-admin" };
+  }
+  console.log("Admin logged in");
+  return { ok: true };
+}
+
+async function adminLogout() {
+  await db.auth.signOut();
+}
+
+async function isAdmin() {
+  let session = await db.auth.getSession();
+  if (!session.data.session) return false;
+  let res = await db.rpc("is_admin");
+  return res.data === true;
+}
+
+async function getOrders(filters) {
+  filters = filters || {};
+  let res = await db.rpc("admin_get_orders", {
+    p_status: filters.status || null,
+    p_search: filters.search || null
+  });
+  return unwrap(res, "admin_get_orders") || [];
+}
+
+async function getOrder(id) {
+  let res = await db.rpc("admin_get_order", { p_id: id });
+  return unwrap(res, "admin_get_order");
+}
+
+async function adminSetStatus(id, status, note, reason) {
+  let res = await db.rpc("admin_set_status", {
+    p_id: id, p_status: status, p_text: null, p_note: note || null, p_reason: reason || null
+  });
+  if (res.error) {
+    console.log("admin_set_status failed:", res.error.message);
+    return { ok: false, error: res.error.message };
+  }
   console.log("Status updated:", id, "->", status);
-  return { ok: true, order: clone(order) };
+  return { ok: true, order: res.data };
 }
 
 async function updateOrderStatus(id, status, note) {
   if (STATUSES.indexOf(status) === -1) return { ok: false, error: "invalid-status" };
-  let extra = hasValue(note) ? { ownerNote: note } : {};
-  return applyStatus(id, status, "تم تحديث الحالة: " + STATUS_LABELS[status], extra);
+  return adminSetStatus(id, status, note, null);
 }
 
 async function approveOrder(id, note) {
-  return applyStatus(id, "approved", "تمت الموافقة على الطلب", {
-    ownerNote: hasValue(note) ? note : "تمت الموافقة على الطلب.",
-    rejectionReason: null
-  });
+  return adminSetStatus(id, "approved", hasValue(note) ? note : "تمت الموافقة على الطلب.", null);
 }
 
-// الرفض لازم يكون له سبب، لأن العميل هيشوفه
 async function rejectOrder(id, reason) {
   if (!hasValue(reason)) return { ok: false, error: "reason-required" };
-  return applyStatus(id, "rejected", "تم رفض الطلب", {
-    rejectionReason: reason,
-    ownerNote: reason
-  });
+  return adminSetStatus(id, "rejected", null, reason);
 }

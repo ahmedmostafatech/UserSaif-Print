@@ -128,6 +128,9 @@ Copy this for every new page. Change the title and the page CSS file name.
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/page-NAME.css">
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+
   <script src="data/schema.js"></script>
   <script src="assets/js/readiness.js"></script>
   <script src="assets/js/api.js"></script>

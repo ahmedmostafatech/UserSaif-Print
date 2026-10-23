@@ -1,0 +1,24 @@
+{
+  "name": "usersaif-print",
+  "version": "1.0.0",
+  "description": "A website for **يوزرسيف**, a custom printing and personalized products business in Aswan, Egypt.\r Built for the IEEE Aswan Student Branch **Brand & Build** challenge.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahmedmostafatech/UserSaif-Print.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ahmedmostafatech/UserSaif-Print/issues"
+  },
+  "homepage": "https://github.com/ahmedmostafatech/UserSaif-Print#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0"
+  }
+}
