@@ -185,7 +185,7 @@
     if (order.estimatedTotal !== null && order.estimatedTotal !== undefined) {
       rows.push([
         "الإجمالي التقديري",
-        numHtml(formatMoney(order.estimatedTotal)) + " ج.م " + '<span class="tag-sample">تجريبي</span>'
+        numHtml(formatMoney(order.estimatedTotal)) + " ج.م"
       ]);
     } else {
       rows.push(["السعر", "حسب الطلب"]);

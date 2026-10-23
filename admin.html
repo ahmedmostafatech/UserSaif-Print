@@ -50,7 +50,7 @@
       <button class="btn btn--primary btn--lg btn--block" type="submit" id="login-btn">دخول</button>
 
       <p class="caption">
-        الدخول متاح للحسابات المصرّح لها فقط. بيانات تجريبية للعرض فقط.
+        الدخول متاح للحسابات المصرّح لها فقط.
         <a href="index.html">العودة للموقع</a>
       </p>
     </form>
@@ -70,6 +70,10 @@
           <a href="#/orders" id="nav-link-orders" aria-current="page">
             <span>الطلبات</span>
             <span class="admin-count num" id="nav-count" title="طلبات تحتاج قرارًا">0</span>
+          </a>
+          <a href="#/inquiries" id="nav-link-inquiries">
+            <span>الاستفسارات والرسائل</span>
+            <span class="admin-count num" id="nav-inquiries-count" title="رسائل جديدة">0</span>
           </a>
           <a href="#/content" id="nav-link-content">
             <span>إدارة المحتوى</span>
@@ -91,7 +95,6 @@
           <input class="input" id="admin-search" type="search" autocomplete="off"
                  placeholder="ابحث برقم الطلب أو اسم العميل أو الهاتف">
         </div>
-        <span class="tag-sample admin-top__note">بيانات تجريبية للعرض فقط</span>
         <button class="btn btn--secondary btn--sm" id="motion-toggle" type="button" aria-pressed="false">تقليل الحركة</button>
       </header>
 
@@ -129,6 +132,31 @@
         <!-- تفاصيل الطلب -->
         <section id="detail-view" aria-label="تفاصيل الطلب" hidden>
           <div id="detail-body"></div>
+        </section>
+
+        <!-- الاستفسارات ورسائل العملاء -->
+        <section id="inquiries-view" aria-label="استفسارات ورسائل العملاء" hidden>
+          <div class="admin-head">
+            <div>
+              <h1 class="h2">استفسارات ورسائل العملاء</h1>
+              <p class="muted">الرسائل الواردة من قسم «عندك استفسار؟ ابعته لينا فوراً» مع إمكانية الرد والتواصل الفوري عبر الواتساب.</p>
+            </div>
+            <div class="row align-center gap-s1">
+              <button class="btn btn--secondary btn--sm" id="refresh-inquiries-btn" type="button">تحديث الرسائل</button>
+            </div>
+          </div>
+
+          <div class="stats" id="inquiries-stats"></div>
+
+          <div class="admin-toolbar">
+            <div class="admin-chips" id="inquiries-chips" role="group" aria-label="تصفية الرسائل">
+              <button type="button" class="chip is-active" data-inq-filter="all">الكل (<span id="inq-count-all">0</span>)</button>
+              <button type="button" class="chip" data-inq-filter="new">جديدة لم يُرد عليها (<span id="inq-count-new">0</span>)</button>
+              <button type="button" class="chip" data-inq-filter="replied">تم الرد (<span id="inq-count-replied">0</span>)</button>
+            </div>
+          </div>
+
+          <div id="inquiries-body" style="display:grid; gap:var(--s-3); margin-top:var(--s-3)"></div>
         </section>
 
         <!-- إدارة المحتوى (4 تابات) -->

@@ -92,11 +92,8 @@
 
 /* علامة المحتوى التجريبي */
 .tag-sample {
-  display: inline-block; padding: 1px 8px; border-radius: var(--r-pill);
-  font-size: 11px; font-weight: var(--fw-medium); color: var(--text-muted);
-  background: rgba(255,255,255,.85); border: 1px dashed var(--border-strong); line-height: 1.6;
+  display: none !important;
 }
-.card__media .tag-sample { position: absolute; inset-block-start: var(--s-1); inset-inline-start: var(--s-1); }
 
 /* ---------- Chips للفلاتر ---------- */
 .chip {

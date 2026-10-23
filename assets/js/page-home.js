@@ -136,7 +136,7 @@ function initImageFallbacks() {
         var placeholder = document.createElement("div");
         placeholder.className = "card__media-fallback";
         placeholder.style.cssText = "width:100%;height:100%;min-height:160px;background:var(--teal-50);display:grid;place-items:center;color:var(--teal-800);font-size:12px;font-weight:600;padding:12px;text-align:center;";
-        placeholder.innerHTML = '<span class="tag-sample">صورة تجريبية</span>';
+        placeholder.innerHTML = '<span>استوديو يوزرسيف • عمل منفّذ</span>';
         container.appendChild(placeholder);
       }
     });

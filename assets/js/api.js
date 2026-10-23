@@ -333,3 +333,119 @@ async function adminDeletePortfolio(id) {
   unwrap(res, "adminDeletePortfolio");
   return true;
 }
+
+// ---------- 6. الاستفسارات ورسائل العملاء ----------
+
+let DEFAULT_INQUIRIES = [
+  {
+    id: "INQ-1001",
+    name: "أحمد عثمان",
+    phone: "01123456780",
+    topic: "استفسار عن خامات وتفاصيل الطباعة",
+    message: "السلام عليكم، هل متاح طباعة سلك سكرين 4 ألوان على 50 تيشيرت أسود أوفر سايز؟ ومحتاج أعرف مدة التجهيز التقريبية للاستلام بأسوان.",
+    status: "new",
+    createdAt: new Date(Date.now() - 3600000 * 3).toISOString()
+  },
+  {
+    id: "INQ-1002",
+    name: "سارة كمال",
+    phone: "01098765432",
+    topic: "طلب كميات خاصة لشركة أو فعالية",
+    message: "محتاجين عرض أسعار لـ 100 مج سيراميك مطفي مع طباعة الشعار وبوكس التغليف لمؤتمر استثمار بأسوان الأسبوع القادم.",
+    status: "replied",
+    createdAt: new Date(Date.now() - 3600000 * 24).toISOString()
+  }
+];
+
+function getLocalInquiries() {
+  try {
+    let raw = localStorage.getItem("ys_inquiries");
+    if (!raw) {
+      localStorage.setItem("ys_inquiries", JSON.stringify(DEFAULT_INQUIRIES));
+      return DEFAULT_INQUIRIES;
+    }
+    return JSON.parse(raw) || [];
+  } catch (e) {
+    return DEFAULT_INQUIRIES;
+  }
+}
+
+function setLocalInquiries(list) {
+  try {
+    localStorage.setItem("ys_inquiries", JSON.stringify(list));
+  } catch (e) {}
+}
+
+async function submitInquiry(inquiry) {
+  inquiry.id = inquiry.id || ("INQ-" + Date.now().toString().slice(-4));
+  inquiry.status = inquiry.status || "new";
+  inquiry.createdAt = inquiry.createdAt || new Date().toISOString();
+
+  let list = getLocalInquiries();
+  list.unshift(inquiry);
+  setLocalInquiries(list);
+
+  try {
+    await db.from("inquiries").insert([{
+      id: inquiry.id,
+      name: inquiry.name,
+      phone: inquiry.phone,
+      topic: inquiry.topic,
+      message: inquiry.message,
+      status: inquiry.status,
+      created_at: inquiry.createdAt
+    }]);
+  } catch (e) {
+    console.log("Supabase inquiries notice (saved locally):", e);
+  }
+
+  return { ok: true, inquiry: inquiry };
+}
+
+async function getInquiries() {
+  let localList = getLocalInquiries();
+  try {
+    let res = await db.from("inquiries").select("*").order("created_at", { ascending: false });
+    if (res.data && res.data.length > 0) {
+      let supaIds = new Set(res.data.map(function (r) { return r.id; }));
+      let mappedSupa = res.data.map(function (r) {
+        return {
+          id: r.id,
+          name: r.name,
+          phone: r.phone,
+          topic: r.topic,
+          message: r.message,
+          status: r.status,
+          createdAt: r.created_at
+        };
+      });
+      let combined = mappedSupa.concat(localList.filter(function (l) { return !supaIds.has(l.id); }));
+      return combined;
+    }
+  } catch (e) {
+    console.log("Supabase getInquiries notice (using local):", e);
+  }
+  return localList;
+}
+
+async function updateInquiryStatus(id, status) {
+  let list = getLocalInquiries();
+  let item = list.find(function (it) { return it.id === id; });
+  if (item) {
+    item.status = status;
+    setLocalInquiries(list);
+  }
+  try {
+    await db.from("inquiries").update({ status: status }).eq("id", id);
+  } catch (e) {}
+  return true;
+}
+
+async function deleteInquiry(id) {
+  let list = getLocalInquiries().filter(function (it) { return it.id !== id; });
+  setLocalInquiries(list);
+  try {
+    await db.from("inquiries").delete().eq("id", id);
+  } catch (e) {}
+  return true;
+}

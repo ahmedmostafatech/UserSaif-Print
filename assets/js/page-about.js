@@ -41,8 +41,8 @@
       });
     }
 
-    // إرسال النموذج الداخلي
-    form.addEventListener("submit", function (e) {
+    // إرسال النموذج وحفظ الاستفسار للأدمن
+    form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
       let nameInput = document.getElementById("inq-name");
@@ -66,20 +66,41 @@
         submitBtn.textContent = "جارٍ إرسال الاستفسار...";
       }
 
-      // محاكاة الإرسال وتأكيده للعميل
-      setTimeout(function () {
+      try {
+        let inquiryData = {
+          name: name,
+          phone: phone,
+          topic: topic || "استفسار عام",
+          message: msg,
+          status: "new"
+        };
+
+        if (typeof submitInquiry === "function") {
+          await submitInquiry(inquiryData);
+        } else {
+          // حفظ محلي احتياطي
+          let raw = localStorage.getItem("ys_inquiries");
+          let list = raw ? JSON.parse(raw) : [];
+          inquiryData.id = "INQ-" + Date.now().toString().slice(-4);
+          inquiryData.createdAt = new Date().toISOString();
+          list.unshift(inquiryData);
+          localStorage.setItem("ys_inquiries", JSON.stringify(list));
+        }
+
+        showFeedback(
+          "تم إرسال استفسارك بنجاح إلى إدارة المشغل! سيتواصل معك فريق استوديو يوزرسيف قريباً جداً عبر الهاتف أو الواتساب.",
+          "success"
+        );
+        form.reset();
+      } catch (err) {
+        console.error("Inquiry submit error:", err);
+        showFeedback("حدث خطأ أثناء الإرسال، يمكنك التواصل مباشرة عبر واتساب.", "error");
+      } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.textContent = "إرسال الاستفسار الآن";
         }
-
-        showFeedback(
-          "شكراً لك يا " + name + "، تم استلام استفسارك بنجاح! سيتواصل معك فريق استوديو يوزرسيف عبر الهاتف/الواتساب في أقرب وقت.",
-          "success"
-        );
-
-        form.reset();
-      }, 700);
+      }
     });
 
     function showFeedback(text, type) {

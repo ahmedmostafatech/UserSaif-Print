@@ -104,13 +104,7 @@ p { margin: 0 0 var(--s-2); max-width: 65ch; }
   50% { transform: scale(1.25); opacity: 0.75; }
 }
 
-/* تقليل الحركة: من إعداد الجهاز أو من الزر الظاهر في الموقع */
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-  .js .reveal { opacity: 1; transform: none; }
-  .counter-done { animation: none !important; }
-}
+/* تحكم تقليل الحركة: عند تفعيل زر الموقع */
 html[data-motion="reduced"] { scroll-behavior: auto; }
 html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-motion="reduced"] *::after {
   animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important;

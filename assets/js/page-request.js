@@ -29,7 +29,7 @@ let draft = {
 };
 
 // صورة افتراضية في حالة عدم توفر الصورة
-let PLACEHOLDER_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='260' viewBox='0 0 400 260'><rect width='400' height='260' fill='%23EEF6F6'/><text x='50%25' y='46%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='16' font-weight='600' fill='%23114850'>استوديو يوزرسيف</text><text x='50%25' y='58%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='12' fill='%232F8F98'>صورة تجريبية للعرض</text></svg>";
+let PLACEHOLDER_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='260' viewBox='0 0 400 260'><rect width='400' height='260' fill='%23EEF6F6'/><text x='50%25' y='46%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='16' font-weight='600' fill='%23114850'>استوديو يوزرسيف</text><text x='50%25' y='58%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='12' fill='%232F8F98'>معاينة التصميم الحرفي</text></svg>";
 
 function escapeHtml(str) {
   if (str == null) return "";
@@ -210,7 +210,6 @@ function renderCatalogGrid(servicesList) {
         '<div class="service-card__media">' +
           '<img src="' + escapeHtml(imageSrc) + '" alt="' + escapeHtml(s.name) + '" onerror="this.onerror=null; this.src=\'' + PLACEHOLDER_SVG + '\';">' +
           '<span class="service-card__category">' + escapeHtml(catName) + '</span>' +
-          '<span class="tag-sample">تجريبي</span>' +
         '</div>' +
         '<div class="service-card__body">' +
           '<div class="service-card__title-row">' +

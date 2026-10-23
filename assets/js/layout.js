@@ -50,7 +50,7 @@ function renderFooter() {
     '<p class="caption" style="color:var(--teal-300)">يجب تأكيده قبل الإطلاق</p></div>' +
     "</div>" +
     '<div class="site-footer__note row" style="justify-content:space-between">' +
-    "<span>بيانات تجريبية للعرض فقط</span>" +
+    "<span>استوديو يوزرسيف للطباعة والتخصيص الحرفي • أسوان</span>" +
     '<span class="row"><a href="policies.html">الخصوصية والشروط</a>' +
     '<button class="motion-toggle" id="motion-toggle" aria-pressed="false">تقليل الحركة</button></span>' +
     "</div></div></footer>"
@@ -91,10 +91,13 @@ function setupMobileNav() {
 
 function setupReveal() {
   let items = document.querySelectorAll(".reveal");
+  if (!items.length) return;
+
   if (!("IntersectionObserver" in window)) {
     items.forEach(function (el) { el.classList.add("is-visible"); });
     return;
   }
+
   let io = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
       if (entry.isIntersecting) {
@@ -102,16 +105,23 @@ function setupReveal() {
         io.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.12 });
-  items.forEach(function (el) { io.observe(el); });
+  }, { threshold: 0.05, rootMargin: "0px 0px -30px 0px" });
+
+  items.forEach(function (el) {
+    let rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      el.classList.add("is-visible");
+    } else {
+      io.observe(el);
+    }
+  });
 }
 
 // -------------------------------------------------------------
 // عداد الأرقام التفاعلي السلس (Count-up Animation)
 // -------------------------------------------------------------
 function setupNumberCounters() {
-  let isReduced = document.documentElement.getAttribute("data-motion") === "reduced" ||
-    (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  let isReduced = document.documentElement.getAttribute("data-motion") === "reduced";
 
   let targets = document.querySelectorAll(
     "[data-counter], .atelier-stat__number, .about-stat-item__num, .metric-val, .counter-animate"
@@ -122,7 +132,6 @@ function setupNumberCounters() {
     let text = raw.trim();
     if (text.includes(" - ") || text.includes(" / ")) return null;
 
-    // استخراج البادئة والأرقام واللاحقة
     let match = text.match(/^([^\d]*)([\d,.]+)([^\d]*)$/);
     if (!match) return null;
 
@@ -160,56 +169,64 @@ function setupNumberCounters() {
     return meta.prefix + numStr + meta.suffix;
   }
 
-  if (!("IntersectionObserver" in window) || isReduced) {
-    return; // احتفظ بالقيمة الأصلية دون تحريك
+  if (isReduced) return;
+
+  function triggerCounter(el, meta) {
+    el.textContent = formatVal(0, meta);
+    el.classList.add("is-counting");
+
+    let duration = 1500; // ms
+    let startTime = null;
+
+    function frame(time) {
+      if (!startTime) startTime = time;
+      let elapsed = time - startTime;
+      let progress = Math.min(elapsed / duration, 1);
+
+      let ease = 1 - Math.pow(1 - progress, 3);
+      let current = meta.targetNum * ease;
+
+      el.textContent = formatVal(current, meta);
+
+      if (progress < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        el.textContent = meta.original;
+        el.classList.remove("is-counting");
+        el.classList.add("counter-done");
+      }
+    }
+
+    requestAnimationFrame(frame);
   }
 
-  let counterIO = new IntersectionObserver(function (entries, observer) {
-    entries.forEach(function (entry) {
-      if (!entry.isIntersecting) return;
-      let el = entry.target;
-      observer.unobserve(el);
+  let counterIO = null;
+  if ("IntersectionObserver" in window) {
+    counterIO = new IntersectionObserver(function (entries, observer) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        let el = entry.target;
+        observer.unobserve(el);
 
-      let rawText = el.getAttribute("data-counter-raw") || el.textContent.trim();
-      let meta = parseMeta(rawText);
-      if (!meta) return;
-
-      // ضبط البداية من الصفر
-      el.textContent = formatVal(0, meta);
-      el.classList.add("is-counting");
-
-      let duration = 1500; // ms
-      let startTime = null;
-
-      function frame(time) {
-        if (!startTime) startTime = time;
-        let elapsed = time - startTime;
-        let progress = Math.min(elapsed / duration, 1);
-
-        // easeOutCubic للتسارع والتباطؤ السلس
-        let ease = 1 - Math.pow(1 - progress, 3);
-        let current = meta.targetNum * ease;
-
-        el.textContent = formatVal(current, meta);
-
-        if (progress < 1) {
-          requestAnimationFrame(frame);
-        } else {
-          el.textContent = meta.original;
-          el.classList.remove("is-counting");
-          el.classList.add("counter-done");
-        }
-      }
-
-      requestAnimationFrame(frame);
-    });
-  }, { threshold: 0.15 });
+        let rawText = el.getAttribute("data-counter-raw") || el.textContent.trim();
+        let meta = parseMeta(rawText);
+        if (meta) triggerCounter(el, meta);
+      });
+    }, { threshold: 0.05 });
+  }
 
   targets.forEach(function (el) {
     let raw = el.textContent.trim();
-    if (parseMeta(raw)) {
+    let meta = parseMeta(raw);
+    if (meta) {
       el.setAttribute("data-counter-raw", raw);
-      counterIO.observe(el);
+      let rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        // إذا كان العنصر ظاهراً فور تحميل الصفحة، ابدأ العد فوراً بعد 120ms
+        setTimeout(function () { triggerCounter(el, meta); }, 120);
+      } else if (counterIO) {
+        counterIO.observe(el);
+      }
     }
   });
 }

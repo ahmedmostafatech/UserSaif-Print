@@ -39,6 +39,8 @@
     contentTab: "services", // التاب النشط في إدارة المحتوى: services, categories, options, portfolio
     serviceCategoryFilter: "all",
     portfolioCategoryFilter: "all",
+    inquiries: [],
+    inquiryFilter: "all",
     editingService: null,
     editingCategory: null,
     editingPortfolio: null,
@@ -172,22 +174,36 @@
     if (pCount) pCount.textContent = String(state.portfolio.length);
   }
 
+  function updateInquiriesCount() {
+    let inqs = state.inquiries || [];
+    let newCount = inqs.filter(function (i) { return i.status === "new"; }).length;
+    let repliedCount = inqs.filter(function (i) { return i.status === "replied"; }).length;
+    let navEl = $("nav-inquiries-count");
+    if (navEl) navEl.textContent = String(newCount);
+    if ($("inq-count-all")) $("inq-count-all").textContent = String(inqs.length);
+    if ($("inq-count-new")) $("inq-count-new").textContent = String(newCount);
+    if ($("inq-count-replied")) $("inq-count-replied").textContent = String(repliedCount);
+  }
+
   async function loadAll() {
     let loaded = await Promise.all([
       getOrders(),
       getServices({ includeInactive: true }),
       getOptions(),
       getCategories(),
-      getPortfolio()
+      getPortfolio(),
+      getInquiries()
     ]);
     state.orders = loaded[0];
     state.services = loaded[1];
     state.options = loaded[2];
     state.categories = loaded[3] || [];
     state.portfolio = loaded[4] || [];
+    state.inquiries = loaded[5] || [];
     updateNavCount();
     updateContentCounts();
-    console.log("Admin data loaded:", state.orders.length, "orders,", state.services.length, "services,", state.categories.length, "categories,", state.portfolio.length, "portfolio items");
+    updateInquiriesCount();
+    console.log("Admin data loaded:", state.orders.length, "orders,", state.services.length, "services,", state.categories.length, "categories,", state.portfolio.length, "portfolio items,", state.inquiries.length, "inquiries");
   }
 
   // ---------- الدخول والخروج ----------
@@ -288,19 +304,29 @@
     if (matchDetail) return { view: "detail", id: decodeURIComponent(matchDetail[1]) };
     let matchContent = hash.match(/^#\/content(?:\/([a-z]+))?$/);
     if (matchContent) return { view: "content", tab: matchContent[1] || "services" };
+    if (hash === "#/inquiries") return { view: "inquiries" };
     return { view: "list" };
   }
 
   function updateActiveNav(view) {
     let isOrders = view === "list" || view === "detail";
+    let isInquiries = view === "inquiries";
+    let isContent = view === "content";
+
     let linkOrders = $("nav-link-orders");
+    let linkInquiries = $("nav-link-inquiries");
     let linkContent = $("nav-link-content");
+
     if (linkOrders) {
       if (isOrders) linkOrders.setAttribute("aria-current", "page");
       else linkOrders.removeAttribute("aria-current");
     }
+    if (linkInquiries) {
+      if (isInquiries) linkInquiries.setAttribute("aria-current", "page");
+      else linkInquiries.removeAttribute("aria-current");
+    }
     if (linkContent) {
-      if (!isOrders) linkContent.setAttribute("aria-current", "page");
+      if (isContent) linkContent.setAttribute("aria-current", "page");
       else linkContent.removeAttribute("aria-current");
     }
   }
@@ -312,6 +338,8 @@
       await showDetail(route.id);
     } else if (route.view === "content") {
       showContent(route.tab);
+    } else if (route.view === "inquiries") {
+      showInquiries();
     } else {
       showList();
     }
@@ -421,7 +449,7 @@
     body.innerHTML =
       '<div class="table-wrap"><table class="table admin-table"><thead><tr>' +
       "<th>رقم الطلب</th><th>العميل</th><th>الخدمة</th><th>الكمية</th>" +
-      "<th>الإجمالي التقديري (تجريبي)</th><th>الحالة</th><th><span class=\"sr-only\">إجراء</span></th>" +
+      "<th>الإجمالي التقديري</th><th>الحالة</th><th><span class=\"sr-only\">إجراء</span></th>" +
       "</tr></thead><tbody>" + list.map(orderRowHtml).join("") + "</tbody></table></div>";
   }
 
@@ -531,7 +559,7 @@
     if (order.designHelp) rows.push(["التصميم", "طلب مساعدة في التصميم"]);
 
     if (order.estimatedTotal !== null && order.estimatedTotal !== undefined) {
-      rows.push(["الإجمالي التقديري", numHtml(formatMoney(order.estimatedTotal)) + " ج.م " + '<span class="tag-sample">تجريبي</span>']);
+      rows.push(["الإجمالي التقديري", numHtml(formatMoney(order.estimatedTotal)) + " ج.م"]);
     } else {
       rows.push(["السعر", "حسب الطلب"]);
     }
@@ -790,13 +818,13 @@
     }
   }
 
-  // لو الصورة ما اتحملتش (مثلًا ملفات العينات التجريبية) نعرض رسالة بدل الأيقونة المكسورة
+  // لو الصورة ما اتحملتش نعرض رسالة بدل الأيقونة المكسورة
   function onImageError(event) {
     let img = event.target;
     if (img && img.tagName === "IMG" && img.hasAttribute("data-art")) {
       let holder = document.createElement("span");
       holder.className = "art__missing";
-      holder.textContent = "تعذر عرض الملف (قد يكون ملفًا تجريبيًا)";
+      holder.textContent = "تعذر تحميل معاينة الملف";
       img.replaceWith(holder);
     }
   }
@@ -950,7 +978,7 @@
     let rowsHtml = list.map(function (s) {
       let imgHtml = s.image
         ? '<img class="admin-thumb" src="' + esc(s.image) + '" alt="' + esc(s.name) + '" loading="lazy">'
-        : '<div class="admin-thumb admin-thumb--missing">صورة تجريبية</div>';
+        : '<div class="admin-thumb admin-thumb--missing">معاينة</div>';
 
       let priceText = s.priceMode === "from"
         ? 'ابتداءً من ' + numHtml(formatMoney(s.priceFrom || 0)) + ' ج.م'
@@ -966,7 +994,7 @@
         '<td data-label="الصورة">' + imgHtml + '</td>' +
         '<td data-label="الخدمة">' +
           '<div class="cell">' +
-            '<strong>' + esc(s.name) + '</strong> <span class="tag-sample">تجريبي</span>' +
+            '<strong>' + esc(s.name) + '</strong>' +
             '<span class="cell-sub"><span class="num">' + esc(s.id) + '</span></span>' +
           '</div>' +
         '</td>' +
@@ -1201,12 +1229,11 @@
     let cardsHtml = list.map(function (p) {
       let imgHtml = p.image
         ? '<img src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy">'
-        : '<div class="art__missing">صورة تجريبية</div>';
+        : '<div class="art__missing">معاينة العمل</div>';
 
       return '<article class="portfolio-admin-card">' +
         '<div class="portfolio-admin-card__media">' +
           imgHtml +
-          '<span class="tag-sample" style="position:absolute; inset-block-start:var(--s-1); inset-inline-start:var(--s-1);">تجريبي</span>' +
         '</div>' +
         '<div class="portfolio-admin-card__body">' +
           '<h3 class="h4">' + esc(p.title) + '</h3>' +
