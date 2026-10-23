@@ -221,10 +221,60 @@
   .site-header .btn--primary { display: none; }
 }
 .site-footer { background: var(--teal-900); color: var(--teal-100); padding-block: var(--s-8) var(--s-4); }
-.site-footer a { color: var(--white); }
-.site-footer h4 { color: var(--white); }
-.site-footer__note { margin-block-start: var(--s-4); padding-block-start: var(--s-3); border-block-start: 1px solid rgba(255,255,255,.15); font-size: var(--fs-caption); }
-.motion-toggle { background: transparent; color: var(--white); border: 1px solid rgba(255,255,255,.4); border-radius: var(--r-pill); padding: 4px 14px; cursor: pointer; }
+.site-footer a { color: var(--white); text-decoration: none; transition: color var(--dur-fast); }
+.site-footer a:hover { color: var(--teal-200); }
+.site-footer h4 { color: var(--white); margin-block-end: var(--s-2); font-size: 1.1rem; }
+.site-footer__note { margin-block-start: var(--s-6); padding-block-start: var(--s-4); border-block-start: 1px solid rgba(255,255,255,.15); font-size: var(--fs-caption); color: var(--teal-200); }
+
+.social-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform var(--dur-fast) var(--ease), background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.social-icon-btn:hover {
+  background: var(--orange-500) !important;
+  border-color: var(--orange-500) !important;
+  color: var(--white) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(235, 130, 60, 0.4);
+}
+
+.motion-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: var(--r-pill);
+  padding: 6px 14px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.motion-toggle:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.7);
+  transform: translateY(-1px);
+}
+.motion-toggle.is-reduced {
+  background: var(--orange-500);
+  color: var(--white);
+  border-color: var(--orange-500);
+  font-weight: 600;
+  box-shadow: 0 0 12px rgba(235, 130, 60, 0.45);
+}
+.motion-toggle.is-reduced:hover {
+  background: var(--orange-600);
+  border-color: var(--orange-600);
+}
 
 /* شريط الزر الثابت على الموبايل (خطوات الطلب وصفحة المنتج) */
 .sticky-cta { position: sticky; inset-block-end: 0; background: var(--white); border-block-start: 1px solid var(--border); padding: var(--s-2) var(--gutter); box-shadow: 0 -8px 24px rgba(10,46,50,.08); z-index: 50; }

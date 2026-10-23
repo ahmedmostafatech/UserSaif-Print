@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>الخصوصية والشروط وسياسة الضمان | استوديو يوزرسيف أسوان</title>
+  <meta name="description" content="تعرف على شروط الخدمة، سياسة الضمان ضد عيوب الصناعة، وحماية خصوصية بياناتك وتصاميمك في استوديو يوزرسيف للطباعة والتخصيص الحرفي بأسوان.">
+
+  <!-- الخطوط والأيقونات المعتمدة -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+  <!-- ملفات التنسيق -->
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+
+  <style>
+    .policies-hero {
+      padding-block: var(--s-8) var(--s-10);
+      background: linear-gradient(180deg, var(--teal-50) 0%, var(--paper) 100%);
+      border-block-end: 1px solid var(--border);
+      position: relative;
+    }
+    .policies-hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--teal-800);
+      background: var(--teal-100);
+      padding: 4px 12px;
+      border-radius: var(--r-pill);
+      margin-block-end: var(--s-2);
+    }
+    .policies-hero h1 {
+      margin: 0 0 var(--s-2);
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      color: var(--teal-950);
+      font-weight: 700;
+    }
+    .policies-hero p.lead {
+      max-width: 720px;
+      font-size: 1.125rem;
+      color: var(--ink);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    /* كروت الثقة البارزة */
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--s-3);
+      margin-block: var(--s-6) var(--s-10);
+    }
+    .trust-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: var(--s-4);
+      box-shadow: var(--shadow-1);
+      display: flex;
+      flex-direction: column;
+      gap: var(--s-2);
+      transition: transform var(--tr-fast), box-shadow var(--tr-fast), border-color var(--tr-fast);
+      position: relative;
+      overflow: hidden;
+    }
+    .trust-card::before {
+      content: "";
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline: 0;
+      height: 4px;
+      background: var(--teal-600);
+    }
+    .trust-card:nth-child(2)::before {
+      background: var(--orange-500);
+    }
+    .trust-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-2);
+      border-color: var(--teal-300);
+    }
+    .trust-card__icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--r-md);
+      background: var(--teal-50);
+      color: var(--teal-800);
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+    }
+    .trust-card:nth-child(2) .trust-card__icon {
+      background: var(--orange-50);
+      color: var(--orange-700);
+    }
+    .trust-card h3 {
+      margin: 0;
+      font-size: 1.15rem;
+      color: var(--teal-950);
+    }
+    .trust-card p {
+      margin: 0;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      color: var(--ink);
+    }
+
+    /* المحتوى الرئيسي للبنود */
+    .policy-sections {
+      display: grid;
+      gap: var(--s-8);
+      max-width: 860px;
+      margin-inline: auto;
+      padding-block-end: var(--s-12);
+    }
+    .policy-block {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: var(--s-6);
+      box-shadow: var(--shadow-1);
+    }
+    .policy-block__header {
+      display: flex;
+      align-items: center;
+      gap: var(--s-2);
+      margin-block-end: var(--s-3);
+      padding-block-end: var(--s-2);
+      border-block-end: 2px solid var(--teal-100);
+    }
+    .policy-block__header h2 {
+      margin: 0;
+      font-size: 1.45rem;
+      color: var(--teal-950);
+    }
+    .policy-num {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--r-full);
+      background: var(--teal-800);
+      color: var(--white);
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+    .policy-content {
+      display: grid;
+      gap: var(--s-3);
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--ink);
+    }
+    .policy-content h3 {
+      font-size: 1.125rem;
+      color: var(--teal-900);
+      margin: var(--s-2) 0 var(--s-1);
+    }
+    .policy-content ul {
+      padding-inline-start: var(--s-4);
+      margin: 0;
+      display: grid;
+      gap: var(--s-1);
+    }
+    .policy-highlight-box {
+      background: var(--paper);
+      border-radius: var(--r-md);
+      padding: var(--s-3) var(--s-4);
+      border-inline-start: 4px solid var(--teal-600);
+      font-size: 0.95rem;
+    }
+    .policy-highlight-box--orange {
+      background: rgba(235, 130, 60, 0.05);
+      border-inline-start-color: var(--orange-500);
+    }
+
+    @media (max-width: 860px) {
+      .trust-grid {
+        grid-template-columns: 1fr;
+      }
+      .policy-block {
+        padding: var(--s-4);
+      }
+    }
+  </style>
+
+  <!-- سكربتات التخطيط الموحد -->
+  <script src="assets/js/layout.js" defer></script>
+</head>
+<body>
+  <!-- الهيدر الموحد -->
+  <div id="site-header"></div>
+
+  <main id="main">
+
+    <!-- شريط المسار -->
+    <section class="breadcrumb-strip" style="background:var(--paper); border-block-end:1px solid var(--border); padding-block:var(--s-2);">
+      <div class="container row align-center justify-between wrap gap-s1">
+        <nav aria-label="مسار التصفح">
+          <ol class="breadcrumb" style="margin-bottom:0">
+            <li><a href="index.html">الرئيسية</a></li>
+            <li aria-current="page">الشروط والضمان والخصوصية</li>
+          </ol>
+        </nav>
+        <span class="badge badge--received">توثيق رسمي ومعتمد • أسوان</span>
+      </div>
+    </section>
+
+    <!-- الهيرو التعريفي -->
+    <section class="policies-hero">
+      <div class="container">
+        <span class="policies-hero__badge">
+          <span class="material-symbols-outlined" style="font-size:18px">verified_user</span>
+          التزام حرفي وأمان كامل لعملائنا
+        </span>
+        <h1>شروط الخدمة، سياسة الضمان وخصوصية البيانات</h1>
+        <p class="lead">
+          في استوديو يوزرسيف بأسوان، نحرص على أن تكون تجربتك واضحة، آمنة، ومحمية من لحظة رفع تصميمك وحتى استلام منتجك المطبوع. نلتزم بأعلى معايير جودة الخامات وسرية البيانات.
+        </p>
+      </div>
+    </section>
+
+    <div class="container">
+
+      <!-- أعمدة الثقة الثلاثة -->
+      <section class="trust-grid" aria-label="أهم ضمانات يوزرسيف">
+        <article class="trust-card">
+          <div class="trust-card__icon">
+            <span class="material-symbols-outlined">workspace_premium</span>
+          </div>
+          <h3>ضمان 100% ضد عيوب الصناعة</h3>
+          <p>
+            أي خطأ مصنعي في جودة الخامة أو الطباعة يتم استبداله أو إعادة تنفيذه فورًا ومجانًا وبكل ترحاب.
+          </p>
+        </article>
+
+        <article class="trust-card">
+          <div class="trust-card__icon">
+            <span class="material-symbols-outlined">lock</span>
+          </div>
+          <h3>حماية وسرية بياناتك وتصاميمك</h3>
+          <p>
+            بياناتك وملفاتك الفنية مشفرة ومؤمنة تمامًا، ولا تُباع ولا تُشارك ولا تُستخدم لأغراض تجارية أخرى إطلاقًا.
+          </p>
+        </article>
+
+        <article class="trust-card">
+          <div class="trust-card__icon">
+            <span class="material-symbols-outlined">rule</span>
+          </div>
+          <h3>بروفة فنية قبل الطباعة</h3>
+          <p>
+            لا نبدأ ماكينات الطباعة إلا بعد مراجعتك للبروفة الرقمية والموافقة النهائية على الأبعاد والألوان.
+          </p>
+        </article>
+      </section>
+
+      <!-- البنود التفصيلية -->
+      <section class="policy-sections" aria-label="تفاصيل البنود والسياسات">
+
+        <!-- 1. ضمان الجودة وعيوب الصناعة -->
+        <article class="policy-block">
+          <div class="policy-block__header">
+            <span class="policy-num">1</span>
+            <h2>سياسة الضمان المعتمدة وعيوب الصناعة</h2>
+          </div>
+          <div class="policy-content">
+            <p>
+              نحن نفخر بالاهتمام الدقيق بكل تفصيلة يدوية وآلية تخرج من مشغلنا في أسوان. لضمان راحة بالك، يغطي ضمان استوديو يوزرسيف الحالات التالية:
+            </p>
+            <h3>ماذا يغطي الضمان؟</h3>
+            <ul>
+              <li><strong>ثبات الطباعة والألوان:</strong> نضمن ثبات الطباعة ومقاومتها للغسيل المتكرر عند اتباع إرشادات الغسيل والعناية المدونة مع الطلب.</li>
+              <li><strong>سلامة الخامات:</strong> نتحقق من سلامة الأقمشة القطنية 100%، الهوديز، الكابات، وخامات الأكواب من أي تمزق أو عيب في النسيج قبل وأثناء الطباعة.</li>
+              <li><strong>التطابق مع البروفة:</strong> نضمن مطابقة المنتج النهائي للأبعاد والتمركز المعتمد في البروفة الرقمية التي وافقت عليها.</li>
+              <li><strong>الستيكرات والليبلز:</strong> نضمن مقاومة الستيكرات للماء والرطوبة وثبات المادة اللاصقة على الأسطح النظيفة والملساء.</li>
+            </ul>
+
+            <div class="policy-highlight-box policy-highlight-box--orange">
+              <strong>آلية الاستبدال السريع:</strong>
+              إذا لاحظت أي عيب مصنعي في المنتج، تواصل معنا خلال 3 أيام من الاستلام عبر الواتساب مع تصوير الملاحظة. يقوم فريقنا بإعادة طباعة القطعة وتوصيلها لك فورًا دون أي تكلفة إضافية.
+            </div>
+          </div>
+        </article>
+
+        <!-- 2. الخصوصية وأمان البيانات -->
+        <article class="policy-block">
+          <div class="policy-block__header">
+            <span class="policy-num">2</span>
+            <h2>سياسة الخصوصية وحماية بيانات العملاء</h2>
+          </div>
+          <div class="policy-content">
+            <p>
+              نحن نأخذ خصوصية بياناتك بأعلى درجات المسؤولية والجدية. الموقع مصمم وفق أحدث المعايير البرمجية لتأمين بياناتك الشخصية والفنية:
+            </p>
+            <h3>كيف نستخدم بياناتك؟</h3>
+            <ul>
+              <li><strong>الاسم ورقم الهاتف:</strong> يُستخدمان فقط لمتابعة مراحل تجهيز الطلب، إرسال البروفات، والتنسيق للاستلام أو الشحن.</li>
+              <li><strong>ملفات وتصاميم العملاء:</strong> التصاميم والشعارات التي ترفعها تظل ملكيتك الفكرية الخالصة. لا نقوم أبدًا ببيعها، أو مشاركتها، أو إعادة طباعتها لأي عميل آخر تحت أي ظرف.</li>
+              <li><strong>عدم الاستخدام التجاري أو الترويجي:</strong> لا نقوم بنشر صور لأعمالك أو منتجاتك المنفذة في معرض أعمالنا إلا بعد أخذ موافقتك المسبقة.</li>
+              <li><strong>الأمان والتشفير:</strong> جميع الاتصالات وقواعد البيانات مؤمنة بتشفير قياسي وسياسات تحكم صارمة (Row Level Security) تمنع الوصول غير المصرح به.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- 3. شروط تقديم الطلبات والاعتماد -->
+        <article class="policy-block">
+          <div class="policy-block__header">
+            <span class="policy-num">3</span>
+            <h2>شروط تقديم الطلبات واعتماد البروفات</h2>
+          </div>
+          <div class="policy-content">
+            <h3>خطوات اعتماد الطلب:</h3>
+            <ul>
+              <li>يبدأ الطلب باختيار الخدمة والمواصفات ورفع التصميم عبر الموقع.</li>
+              <li>يقوم الاستوديو بفحص دقة التصميم وتجهيز بروفة رقمية توضح الشكل المتوقع على الخامة المختارة.</li>
+              <li>يتم تأكيد الطلب والسعر النهائي بعد مراجعة العميل للبروفة واعتمادها.</li>
+              <li>الأسعار المعروضة على الموقع هي أسعار تقديرية لحساب التكلفة المبدئية، ويتم تأكيد السعر النهائي وموعد التسليم عند اعتماد التفاصيل الفنية.</li>
+            </ul>
+
+            <h3>جاهزية التصاميم:</h3>
+            <ul>
+              <li>يُفضل إرسال ملفات التصميم بصيغ عالية الدقة (PNG بخلفية شفافة، PDF، أو ملفات فيكتور AI / PSD) لضمان أعلى جودة طباعة.</li>
+              <li>إذا كنت لا تملك تصميمًا جاهزًا، يمكنك اختيار «أحتاج مساعدة في التصميم» وسيقوم فريقنا بمساعدتك في إعداد وتجهيز الفكرة.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- 4. إرشادات العناية بالمنتجات المطبوعة -->
+        <article class="policy-block">
+          <div class="policy-block__header">
+            <span class="policy-num">4</span>
+            <h2>إرشادات العناية بالمنتجات للحفاظ على رونقها</h2>
+          </div>
+          <div class="policy-content">
+            <p>
+              للحفاظ على جودة وثبات الطباعة لأطول فترة ممكنة، نوصي باتباع هذه الإرشادات البسيطة:
+            </p>
+            <ul>
+              <li><strong>الملابس والهوديز:</strong> يُغسل التيشيرت مقلوبًا على الوجه الداخلي بماء بارد أو فاتر (أقل من 30 درجة مئوية). يُرجى تجنب استخدام المبيضات القوية أو التنظيف الجاف.</li>
+              <li><strong>الكي:</strong> لا تقم بكي منطقة الطباعة المباشرة، ويُفضل كي الملابس مقلوبة أو بوضع قطعة قماش عازلة فوق التصميم.</li>
+              <li><strong>الأكواب والمجات:</strong> تُغسل بإسفنجة ناعمة وماء فاتر. يُفضل تجنب غسالات الأطباق ذات درجات الحرارة العالية جدًا للحفاظ على لمعان الألوان.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- 5. الاستلام والشحن والتواصل -->
+        <article class="policy-block">
+          <div class="policy-block__header">
+            <span class="policy-num">5</span>
+            <h2>الاستلام، الشحن، وقنوات التواصل المباشر</h2>
+          </div>
+          <div class="policy-content">
+            <p>
+              نحن متواجدون دائمًا لخدمتكم وتسهيل استلام طلباتكم:
+            </p>
+            <ul>
+              <li><strong>الاستلام من المقر:</strong> يمكنك استلام طلبك مباشرة من مقر الاستوديو في أسوان بعد إشعارك بجاهزية الطلب.</li>
+              <li><strong>التوصيل المحلي:</strong> نوفر مندوب توصيل سريع لجميع أحياء ومناطق محافظة أسوان.</li>
+              <li><strong>الشحن لجميع المحافظات:</strong> نشحن لجميع مدن ومحافظات مصر عبر شركات الشحن المعتمدة مع التغليف الآمن المقاوم للصدمات.</li>
+            </ul>
+
+            <div class="policy-highlight-box" style="margin-top:var(--s-3);">
+              <strong>هل لديك أي استفسار أو اقتراح؟</strong><br>
+              صاحب الاستوديو متاح مباشرة عبر الواتساب على الرقم: 
+              <a href="https://wa.me/201116891025" style="font-weight:700; color:var(--teal-800); text-decoration:underline;" dir="ltr">01116891025</a>، 
+              أو يمكنك إرسال رسالتك فورًا عبر نموذج الاستفسارات في <a href="about.html#inquiry" style="color:var(--teal-800); text-decoration:underline;">صفحة عن الاستوديو</a> وسنقوم بالرد عليك في أسرع وقت.
+            </div>
+          </div>
+        </article>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- الفوتر الموحد للموقع -->
+  <div id="site-footer"></div>
+</body>
+</html>

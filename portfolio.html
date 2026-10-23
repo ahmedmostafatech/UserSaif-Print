@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>الأرشيف البصري ومعرض الأعمال | استوديو يوزرسيف</title>
+  <title>معرض الأعمال | يوزرسيف</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,6 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/config.js"></script>
   <script src="data/schema.js"></script>
+  <script src="assets/js/readiness.js"></script>
   <script src="assets/js/api.js"></script>
   <script src="assets/js/layout.js" defer></script>
   <script src="assets/js/page-portfolio.js" defer></script>
@@ -26,140 +27,111 @@
 
   <main id="main">
 
-    <!-- شريط الأرشيف ومسار التنقل -->
-    <section class="request-archival-bar" style="background:var(--teal-50); border-bottom:1px solid var(--border); padding-block:var(--s-2)">
-      <div class="container" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--s-2)">
-        <nav aria-label="مسار التنقل">
-          <ol class="breadcrumb" style="margin-bottom:0">
-            <li><a href="index.html">الرئيسية</a></li>
-            <li aria-current="page">معرض الأعمال والأرشيف البصري</li>
-          </ol>
-        </nav>
-        <span class="badge badge--received">أعمال منفذة بأسوان</span>
-      </div>
-    </section>
-
-    <!-- مقدمة الأرشيف البصري -->
+    <!-- المقدمة -->
     <section class="portfolio-hero grain">
       <div class="container">
+        <nav aria-label="مسار التنقل">
+          <ol class="breadcrumb">
+            <li><a href="index.html">الرئيسية</a></li>
+            <li aria-current="page">معرض الأعمال</li>
+          </ol>
+        </nav>
+
         <div class="portfolio-hero__header">
-          <div class="portfolio-eyebrow">
-            <span style="display:inline-block; width:24px; height:2px; background:var(--teal-500)"></span>
-            <span>الأرشيف البصري للاستوديو</span>
+          <div class="row">
+            <p class="portfolio-eyebrow">نماذج للاطلاع</p>
+            <span class="badge badge--received">أعمال منفذة بأسوان</span>
           </div>
-          <h1 class="display" style="margin-block:var(--s-1)">نماذج من أعمال تم تنفيذها في أسوان</h1>
-          <p class="muted" style="margin:0; font-size:1.125rem">
-            استكشف معايير الدقة الحرفية في مشغلنا بأسوان عبر نماذج حقيقية تم تنفيذها لعملائنا. يمكنك استعراض مواصفات أي عمل والطلب مباشرة بنفس المواصفة الحرفية.
+          <h1 class="display">معرض الأعمال</h1>
+          <p class="portfolio-lead">
+            استعرض نماذج من الأعمال. وإذا أعجبك أحدها، ابدأ طلبًا جديدًا واستخدمه كمرجع.
           </p>
         </div>
 
-        <!-- شريط الفلاتر وعناصر التحكم في السلايدر (مطابق تماماً للتصميم المرجعي) -->
-        <div class="portfolio-controls-row">
-          
-          <!-- أزرار فلاتر التصنيفات (يمين في RTL) -->
-          <div class="portfolio-filters" id="portfolio-filters-container" role="tablist" aria-label="تصنيفات المعرض">
-            <button class="portfolio-filter-btn is-active" data-category="all" aria-pressed="true">الكل</button>
-            <!-- فلاتر ديناميكية من Supabase عبر api.js -->
-          </div>
+        <!-- الفلاتر وأدوات العرض -->
+        <div class="portfolio-controls">
+          <div class="portfolio-filters" id="filters" role="group" aria-label="تصنيفات المعرض"></div>
 
-          <!-- أدوات السلايدر والتبديل (يسار في RTL) -->
-          <div class="row" style="gap:var(--s-2)">
-            
-            <!-- مفتاح طريقة العرض -->
-            <div class="view-mode-toggle" role="group" aria-label="طريقة العرض">
-              <button type="button" class="view-toggle-btn is-active" id="toggle-view-carousel" title="عرض السلايدر">شريط</button>
-              <button type="button" class="view-toggle-btn" id="toggle-view-grid" title="عرض الشبكة">شبكة</button>
+          <div class="portfolio-tools">
+            <div class="view-toggle" role="group" aria-label="طريقة العرض">
+              <button type="button" id="view-carousel" aria-pressed="true">شريط</button>
+              <button type="button" id="view-grid" aria-pressed="false">شبكة</button>
             </div>
 
-            <!-- أزرار الأسهم والعداد 01 / 07 -->
-            <div class="portfolio-slider-nav" id="portfolio-slider-nav">
-              <button type="button" class="portfolio-nav-btn is-primary" id="portfolio-next-btn" aria-label="العمل التالي">
-                <span class="icon-dir">←</span>
+            <div class="portfolio-slider-nav" id="slider-nav" hidden>
+              <button class="portfolio-nav-btn" type="button" id="prev-btn" aria-label="الأعمال السابقة">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
               </button>
-              <span class="portfolio-counter" id="portfolio-counter-display">00 / 00</span>
-              <button type="button" class="portfolio-nav-btn" id="portfolio-prev-btn" aria-label="العمل السابق" disabled>
-                <span class="icon-dir">→</span>
+              <span class="portfolio-counter num" id="counter" aria-hidden="true">00 / 00</span>
+              <button class="portfolio-nav-btn is-primary" type="button" id="next-btn" aria-label="الأعمال التالية">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
               </button>
             </div>
-
           </div>
-
         </div>
-
       </div>
     </section>
 
-    <!-- منطقة عرض كروت الأعمال (سلايدر أفقي أو شبكة) -->
-    <section class="container section" style="padding-block:var(--s-6) var(--s-10)">
-      
-      <div class="portfolio-carousel-wrapper">
-        <div class="portfolio-carousel-track" id="portfolio-cards-container">
-          <!-- كروت الأعمال تُحمّل ديناميكياً من Supabase عبر api.js -->
-          <div class="skeleton" style="min-width:300px; height:460px; border-radius:var(--r-lg)"></div>
-          <div class="skeleton" style="min-width:300px; height:460px; border-radius:var(--r-lg)"></div>
-          <div class="skeleton" style="min-width:300px; height:460px; border-radius:var(--r-lg)"></div>
+    <!-- الأعمال -->
+    <section class="container portfolio-stage">
+      <div class="portfolio-carousel" id="portfolio-view" data-view="carousel">
+        <div class="portfolio-track" id="track" tabindex="0" role="region" aria-label="أعمال المعرض" aria-busy="true">
+          <div class="skeleton portfolio-skel"></div>
+          <div class="skeleton portfolio-skel"></div>
+          <div class="skeleton portfolio-skel"></div>
         </div>
       </div>
 
-      <!-- بانر الدعوة لطلب منتج مخصص -->
-      <div class="portfolio-cta-banner grain">
+      <div class="portfolio-cta grain">
         <div>
-          <h2 class="h3" style="margin:0 0 6px">هل أعجبك أحد الأعمال وتريد تنفيذ فكرتك الخاصة؟</h2>
-          <p style="margin:0; opacity:0.9">
-            انتقل إلى معالج المواصفات الذكي لتحديد المقاسات، الألوان، ورفع تصميمك أو طلب مساعدة فريقنا في أسوان.
-          </p>
+          <h2 class="h3">أعجبك أحد الأعمال؟ ابدأ طلبك الآن</h2>
+          <p>حدد المواصفات وارفع تصميمك، أو اختر «أحتاج مساعدة في التصميم».</p>
         </div>
-        <a class="btn btn--light btn--lg" href="services.html#wizard-section">
-          <span>ابدأ طلبك الآن</span>
-          <span class="icon-dir">←</span>
+        <a class="btn btn--light btn--lg" href="request.html">
+          <span>ابدأ طلبك</span>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
         </a>
       </div>
-
     </section>
 
-    <!-- النافذة المنبثقة للتفاصيل الكاملة (Quick View Modal) -->
-    <dialog class="portfolio-modal" id="portfolio-detail-modal">
-      <div class="portfolio-modal__media">
-        <img class="portfolio-modal__img" id="modal-img" src="" alt="">
-        <button type="button" class="portfolio-modal__close-btn" onclick="closePortfolioModal()" aria-label="إغلاق">✕</button>
-      </div>
-      <div class="portfolio-modal__body">
-        <div>
-          <span class="label" id="modal-tag" style="color:var(--teal-700)">مواصفة أرشيفية</span>
-          <h3 class="h3" id="modal-title" style="margin:4px 0">عنوان العمل</h3>
-        </div>
-        <p class="caption" id="modal-desc" style="line-height:1.7; margin:0">وصف تفاصيل التنفيذ والخامة والمواصفة المطبعية.</p>
-
-        <div class="portfolio-modal__specs-grid">
-          <div class="spec-field">
-            <span class="spec-label">المواصفة التقنية:</span>
-            <span class="spec-val" id="modal-spec">SILK SCREEN</span>
-          </div>
-          <div class="spec-field">
-            <span class="spec-label">موقع التنفيذ:</span>
-            <span class="spec-val">مشغل يوزرسيف — أسوان</span>
-          </div>
-          <div class="spec-field">
-            <span class="spec-label">مدة الإنجاز التقديرية:</span>
-            <span class="spec-val"><span class="num">3-5</span> أيام عمل</span>
-          </div>
-          <div class="spec-field">
-            <span class="spec-label">الجودة والضمان:</span>
-            <span class="spec-val">تثبيت حراري 190° مئوية</span>
-          </div>
-        </div>
-
-        <div class="row" style="justify-content:space-between; margin-top:var(--s-2)">
-          <button type="button" class="btn btn--ghost" onclick="closePortfolioModal()">إغلاق النافذة</button>
-          <a class="btn btn--primary" id="modal-req-btn" href="services.html#wizard-section">
-            <span>اطلب مماثل لهذا العمل</span>
-            <span class="icon-dir">←</span>
-          </a>
-        </div>
-      </div>
-    </dialog>
-
   </main>
+
+  <!-- نافذة تفاصيل العمل -->
+  <dialog class="portfolio-modal" id="work-dialog" aria-labelledby="work-title">
+    <div class="portfolio-modal__media">
+      <img class="portfolio-modal__img" id="work-img" alt="" decoding="async">
+      <span class="badge badge--received portfolio-modal__sample" id="work-sample" hidden>عمل معتمد</span>
+      <button class="portfolio-modal__close" type="button" id="work-close" aria-label="إغلاق النافذة">✕</button>
+    </div>
+
+    <div class="portfolio-modal__body">
+      <div>
+        <span class="label portfolio-modal__tag" id="work-tag"></span>
+        <h2 class="h3" id="work-title"></h2>
+      </div>
+
+      <dl class="portfolio-modal__specs">
+        <div id="work-service-row">
+          <dt>الخدمة</dt>
+          <dd id="work-service"></dd>
+        </div>
+        <div>
+          <dt>التصنيف</dt>
+          <dd id="work-category"></dd>
+        </div>
+      </dl>
+
+      <p class="caption" id="work-note"></p>
+
+      <div class="portfolio-modal__actions">
+        <button class="btn btn--ghost" type="button" id="work-dismiss">إغلاق</button>
+        <a class="btn btn--primary" id="work-request" href="request.html">
+          <span>اطلب مماثلًا لهذا العمل</span>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </dialog>
 
   <div id="site-footer"></div>
 </body>

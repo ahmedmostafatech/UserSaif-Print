@@ -1,88 +1,77 @@
 /* ============================================================
-   page-portfolio.css — تنسيقات المعرض والأرشيف البصري
-   مبني بالكامل على tokens.css وبدون أي فريمورك خارجي
+   page-portfolio.css — ستايل صفحة معرض الأعمال فقط
+   كل القيم من tokens.css
    ============================================================ */
 
-/* ---------- شريط الأرشيف والهيدر ---------- */
+[hidden] { display: none !important; }
+
+/* قفل سكرول الصفحة أثناء فتح النافذة (بدون قفزة في العرض) */
+html { scrollbar-gutter: stable; }
+html.modal-open { overflow: hidden; }
+
+/* ---------- المقدمة ---------- */
 .portfolio-hero {
-  padding-block: var(--s-8) var(--s-6);
+  padding-block: var(--s-6);
   background: linear-gradient(180deg, var(--teal-50) 0%, var(--paper) 100%);
   border-block-end: 1px solid var(--border);
 }
-.portfolio-hero__header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-1);
-  max-width: 760px;
-}
+.portfolio-hero .breadcrumb { margin-block-end: var(--s-4); }
+.portfolio-hero__header { display: grid; gap: var(--s-1); max-width: 720px; }
+.portfolio-hero__header > * { margin: 0; }
 .portfolio-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: var(--s-1);
-  font-size: var(--fs-label);
-  font-weight: var(--fw-bold);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
   color: var(--teal-700);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
+.portfolio-eyebrow::before {
+  content: "";
+  width: 24px;
+  height: 2px;
+  background: var(--teal-500);
+}
+.portfolio-lead { font-size: 1.125rem; color: var(--text-muted); }
 
-/* ---------- شريط التحكم: الفلاتر، العداد، وأزرار التنقل ---------- */
-.portfolio-controls-row {
+/* ---------- الفلاتر وأدوات العرض ---------- */
+.portfolio-controls {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--s-3);
-  margin-block: var(--s-4) var(--s-4);
-  flex-wrap: wrap;
+  margin-block-start: var(--s-4);
 }
-.portfolio-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-1);
-  align-items: center;
-}
-.portfolio-filter-btn {
-  padding: 6px 16px;
-  border-radius: var(--r-pill);
-  border: 1px solid var(--border-strong);
+.portfolio-filters { display: flex; flex-wrap: wrap; gap: var(--s-1); }
+.portfolio-filters .chip .num { margin-inline-start: var(--s-half); opacity: .8; }
+.portfolio-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); }
+
+.view-toggle {
+  display: inline-flex;
+  padding: 2px;
   background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+}
+.view-toggle button {
+  min-height: 40px;
+  padding-inline: var(--s-2);
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
   color: var(--text-muted);
-  font-size: var(--fs-caption);
   font-weight: var(--fw-medium);
   cursor: pointer;
-  transition: all var(--dur-fast);
-  white-space: nowrap;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
 }
-.portfolio-filter-btn:hover {
-  border-color: var(--teal-700);
-  color: var(--teal-900);
-}
-.portfolio-filter-btn.is-active,
-.portfolio-filter-btn[aria-pressed="true"] {
-  background: var(--teal-900);
-  color: var(--white);
-  border-color: var(--teal-900);
-  font-weight: var(--fw-semibold);
-}
+.view-toggle button[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); }
 
-/* شريط التنقل بالأسهم والعداد (مماثل تماماً للصورة) */
-.portfolio-slider-nav {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-2);
-}
-.portfolio-counter {
-  font-family: var(--font);
-  font-size: var(--fs-caption);
-  font-weight: var(--fw-semibold);
-  color: var(--teal-900);
-  letter-spacing: 0.05em;
-  min-width: 54px;
-  text-align: center;
-}
+.portfolio-slider-nav { display: inline-flex; align-items: center; gap: var(--s-2); }
+.portfolio-counter { min-width: 64px; text-align: center; font-weight: var(--fw-semibold); color: var(--teal-900); }
 .portfolio-nav-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1px solid var(--border-strong);
   background: var(--white);
@@ -90,102 +79,80 @@
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: all var(--dur-fast);
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
 }
-.portfolio-nav-btn:hover {
-  background: var(--teal-50);
-  border-color: var(--teal-700);
-}
-.portfolio-nav-btn.is-primary {
-  background: var(--teal-900);
-  color: var(--white);
-  border-color: var(--teal-900);
-}
-.portfolio-nav-btn.is-primary:hover {
-  background: var(--teal-800);
-}
-.portfolio-nav-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  pointer-events: none;
-}
+.portfolio-nav-btn:hover:not(:disabled) { background: var(--teal-50); border-color: var(--teal-700); }
+.portfolio-nav-btn.is-primary { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.portfolio-nav-btn.is-primary:hover:not(:disabled) { background: var(--primary-hover); }
+.portfolio-nav-btn:disabled { opacity: .4; cursor: not-allowed; }
 
-/* مفتاح طريقة العرض (سلايدر / شبكة) */
-.view-mode-toggle {
-  display: inline-flex;
-  background: var(--paper);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  padding: 2px;
-}
-.view-toggle-btn {
-  padding: 4px 10px;
-  background: transparent;
-  border: 0;
-  border-radius: 4px;
-  font-size: var(--fs-label);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all var(--dur-fast);
-}
-.view-toggle-btn.is-active {
-  background: var(--white);
-  color: var(--teal-900);
-  font-weight: var(--fw-bold);
-  box-shadow: 0 1px 2px rgba(0,0,0,.08);
-}
+/* ---------- الكاروسيل (سكرول أصلي مع snap: سحب باللمس وكيبورد وتراكباد) ---------- */
+.portfolio-stage { padding-block: var(--s-6) var(--s-10); }
 
-/* ---------- كروت الأعمال (Portfolio Cards) المطابقة للصورة ---------- */
-.portfolio-carousel-wrapper {
-  overflow: hidden;
-  position: relative;
-  width: 100%;
-}
-.portfolio-carousel-track {
+.portfolio-track {
   display: flex;
   gap: var(--s-3);
-  transition: transform var(--dur) var(--ease);
-  will-change: transform;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--s-1);
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  /* مساحة للظل ورفع الكرت عند الـ hover بدون قص */
+  padding: var(--s-1) var(--s-1) var(--s-4);
+  margin-inline: calc(var(--s-1) * -1);
 }
-.portfolio-grid-layout {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: var(--s-4);
-}
+.portfolio-track::-webkit-scrollbar { display: none; }
+.portfolio-track > .empty { flex: 1 1 100%; }
 
-.portfolio-card {
-  position: relative;
+.portfolio-card,
+.portfolio-skel {
   flex: 0 0 calc((100% - (var(--s-3) * 2)) / 3);
-  min-width: 290px;
   height: 480px;
   border-radius: var(--r-lg);
+}
+@media (max-width: 960px) {
+  .portfolio-card, .portfolio-skel { flex-basis: calc((100% - var(--s-3)) / 2); }
+}
+@media (max-width: 640px) {
+  .portfolio-card, .portfolio-skel { flex-basis: 86%; height: 440px; } /* جزء من الكرت التالي ظاهر ليدل على السحب */
+}
+
+/* وضع الشبكة */
+.portfolio-carousel[data-view="grid"] .portfolio-track {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  overflow: visible;
+  scroll-snap-type: none;
+}
+.portfolio-carousel[data-view="grid"] .portfolio-track > .empty { grid-column: 1 / -1; }
+.portfolio-carousel[data-view="grid"] .portfolio-card { flex: none; }
+
+/* ---------- الكرت ---------- */
+.portfolio-card {
+  position: relative;
+  scroll-snap-align: start;
   overflow: hidden;
   background: var(--teal-900);
   box-shadow: var(--shadow-2);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
-  cursor: pointer;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
-@media (max-width: 960px) {
-  .portfolio-card {
-    flex: 0 0 calc((100% - var(--s-3)) / 2);
-  }
+.portfolio-card:hover,
+.portfolio-card:focus-within { transform: translateY(-6px); box-shadow: var(--shadow-3); }
+
+/* ظهور الكروت عند التحميل أو تغيير الفلتر (backwards حتى لا يلغي رفع الـ hover) */
+@keyframes portfolio-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
 }
-@media (max-width: 640px) {
-  .portfolio-card {
-    flex: 0 0 100%;
-    height: 440px;
-  }
+.portfolio-card.is-entering {
+  animation: portfolio-in var(--dur-slow) var(--ease) backwards;
+  animation-delay: calc(var(--i, 0) * 50ms);
 }
 
-.portfolio-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-3);
-}
-
-/* صورة الخلفية مع التكبير الناعم */
 .portfolio-card__bg {
   position: absolute;
   inset: 0;
@@ -193,186 +160,194 @@
   height: 100%;
   object-fit: cover;
   transition: transform var(--dur-slow) var(--ease);
-  z-index: 1;
 }
-.portfolio-card:hover .portfolio-card__bg {
-  transform: scale(1.06);
-}
+.portfolio-card:hover .portfolio-card__bg { transform: scale(1.05); }
 
-/* تدرج التظليل الأرشيفي الداكن لقراءة النصوص بوضوح */
 .portfolio-card__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(10, 46, 50, 0.08) 0%,
-    rgba(10, 46, 50, 0.45) 45%,
-    rgba(10, 46, 50, 0.95) 100%
-  );
-  z-index: 2;
-  transition: opacity var(--dur-fast);
-}
-.portfolio-card:hover .portfolio-card__overlay {
-  background: linear-gradient(
-    180deg,
-    rgba(10, 46, 50, 0.04) 0%,
-    rgba(10, 46, 50, 0.4) 40%,
-    rgba(10, 46, 50, 0.98) 100%
-  );
+  background: linear-gradient(180deg, rgba(10, 46, 50, .05) 0%, rgba(10, 46, 50, .5) 50%, rgba(10, 46, 50, .95) 100%);
+  pointer-events: none;
 }
 
-/* محتوى الكرت النصي */
+.portfolio-card .tag-sample {
+  position: absolute;
+  inset-block-start: var(--s-2);
+  inset-inline-start: var(--s-2);
+  z-index: 3;
+}
+
+/* زر شفاف يغطي الكرت كله: يفتح التفاصيل ويعمل بالكيبورد وقارئ الشاشة */
+.portfolio-card__open {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: 0;
+  border-radius: var(--r-lg);
+  background: transparent;
+  cursor: pointer;
+}
+.portfolio-card__open:focus-visible { outline: 3px solid var(--white); outline-offset: -6px; }
+
 .portfolio-card__content {
   position: relative;
   z-index: 3;
-  padding: var(--s-4) var(--s-3);
-  display: flex;
-  flex-direction: column;
+  padding: var(--s-3);
+  display: grid;
   gap: var(--s-1);
   color: var(--white);
+  pointer-events: none; /* النقر يمر للزر الشفاف، ما عدا رابط الطلب */
 }
-.portfolio-card__tag {
-  font-size: var(--fs-label);
-  color: var(--teal-300);
-  font-weight: var(--fw-medium);
-  letter-spacing: 0.03em;
-  margin-block-end: 2px;
-}
-.portfolio-card__title {
-  font-size: 1.35rem;
-  font-weight: var(--fw-bold);
-  color: var(--white);
-  line-height: 1.3;
-  margin: 0;
-}
-.portfolio-card__desc {
-  font-size: var(--fs-caption);
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.6;
-  margin: 4px 0 var(--s-2);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
+.portfolio-card__tag { font-size: var(--fs-label); font-weight: var(--fw-medium); color: var(--teal-100); }
+.portfolio-card__title { margin: 0; font-size: 1.375rem; font-weight: var(--fw-bold); line-height: 1.35; color: var(--white); }
+.portfolio-card__service { margin: 0; font-size: var(--fs-caption); color: rgba(255, 255, 255, .85); max-width: none; }
 
-/* شريط الإجراء والمواصفة الفنية أسفل الكرت */
 .portfolio-card__footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--s-2);
-  padding-block-start: var(--s-2);
-  border-block-start: 1px solid rgba(255, 255, 255, 0.18);
+  margin-block-start: var(--s-1);
+  padding-block-start: var(--s-1);
+  border-block-start: 1px solid rgba(255, 255, 255, .2);
 }
-.portfolio-request-btn {
+.portfolio-request {
+  pointer-events: auto;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--s-1);
+  min-height: 44px;
   color: var(--white);
-  font-size: var(--fs-caption);
   font-weight: var(--fw-semibold);
   text-decoration: none;
-  transition: color var(--dur-fast), transform var(--dur-fast);
 }
-.portfolio-request-btn:hover {
-  color: var(--teal-300);
-  transform: translateX(-4px);
-}
-.portfolio-spec-badge {
-  font-size: 11px;
-  font-weight: var(--fw-bold);
-  color: var(--teal-300);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
+.portfolio-request:hover { color: var(--teal-300); }
+.portfolio-request:focus-visible { outline-color: var(--white); }
+.portfolio-request svg { transition: transform var(--dur-fast) var(--ease); }
+.portfolio-request:hover svg { transform: translateX(-4px); }
 
-/* ---------- النافذة المنبثقة للتفاصيل الكاملة (Quick View Modal) ---------- */
-.portfolio-modal {
-  border: 0;
-  border-radius: var(--r-lg);
-  padding: 0;
-  max-width: 680px;
-  width: calc(100% - 32px);
-  box-shadow: var(--shadow-3);
-  background: var(--white);
-  overflow: hidden;
-}
-.portfolio-modal::backdrop {
-  background: rgba(10, 46, 50, 0.65);
-  backdrop-filter: blur(4px);
-}
-.portfolio-modal__media {
-  position: relative;
-  aspect-ratio: 16 / 10;
-  background: var(--teal-900);
-  overflow: hidden;
-}
-.portfolio-modal__img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.portfolio-modal__close-btn {
-  position: absolute;
-  inset-block-start: var(--s-2);
-  inset-inline-end: var(--s-2);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.6);
-  color: var(--white);
-  border: 0;
-  font-size: 1.1rem;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  transition: background var(--dur-fast);
-}
-.portfolio-modal__close-btn:hover {
-  background: var(--teal-900);
-}
-.portfolio-modal__body {
-  padding: var(--s-4);
-  display: grid;
-  gap: var(--s-2);
-}
-.portfolio-modal__specs-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--s-2);
-  background: var(--teal-50);
-  padding: var(--s-3);
-  border-radius: var(--r-md);
-  margin-block: var(--s-2);
-}
-.spec-field {
-  display: flex;
-  flex-direction: column;
-}
-.spec-label {
-  font-size: var(--fs-label);
-  color: var(--text-muted);
-}
-.spec-val {
-  font-size: var(--fs-caption);
-  font-weight: var(--fw-semibold);
-  color: var(--teal-900);
-}
-
-/* شريط الدعوة السفلي لطلب منتج */
-.portfolio-cta-banner {
-  margin-block-start: var(--s-10);
+/* ---------- شريط الدعوة السفلي ---------- */
+.portfolio-cta {
+  margin-block-start: var(--s-6);
   background: var(--teal-900);
   color: var(--white);
   border-radius: var(--r-lg);
-  padding: var(--s-6) var(--s-4);
+  padding: var(--s-5) var(--s-4);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--s-3);
 }
-.portfolio-cta-banner h2 {
+.portfolio-cta h2 { margin: 0 0 var(--s-1); color: var(--white); }
+.portfolio-cta p { margin: 0; color: var(--teal-100); }
+
+/* ---------- نافذة التفاصيل ---------- */
+.portfolio-modal {
+  --modal-pad: var(--s-4);
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-lg);
+  width: min(680px, calc(100% - 32px));
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  overflow: hidden;
+  background: var(--white);
+  box-shadow: var(--shadow-3);
+  overscroll-behavior: contain;
+}
+.portfolio-modal[open] {
+  display: flex;
+  flex-direction: column;
+  animation: modal-in var(--dur) var(--ease);
+}
+/* بدون blur: الـ backdrop-filter تقيل مع الصور الكبيرة */
+.portfolio-modal::backdrop { background: rgba(10, 46, 50, .68); }
+.portfolio-modal[open]::backdrop { animation: backdrop-in var(--dur) var(--ease); }
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(12px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+
+.portfolio-modal__media {
+  position: relative;
+  flex: none;
+  aspect-ratio: 16 / 10;
+  max-height: 46vh;
+  max-height: 46dvh;
+  overflow: hidden;
+  background: var(--teal-900);
+}
+.portfolio-modal__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+.portfolio-modal__img.is-loaded { opacity: 1; }
+.portfolio-modal__sample { position: absolute; inset-block-start: var(--s-2); inset-inline-start: var(--s-2); }
+.portfolio-modal__close {
+  position: absolute;
+  inset-block-start: var(--s-2);
+  inset-inline-end: var(--s-2);
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(10, 46, 50, .78);
   color: var(--white);
+  font-size: 1.125rem;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+.portfolio-modal__close:hover { background: var(--teal-900); }
+.portfolio-modal__close:focus-visible { outline-color: var(--white); }
+
+/* الجسم هو اللي بيسكرول، والإجراءات ثابتة في آخره */
+.portfolio-modal__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--modal-pad) var(--modal-pad) 0;
+  display: grid;
+  gap: var(--s-2);
+  align-content: start;
+}
+.portfolio-modal__body h2,
+.portfolio-modal__body p { margin: 0; max-width: none; }
+.portfolio-modal__tag { color: var(--teal-700); }
+.portfolio-modal__specs {
+  margin: 0;
+  padding: var(--s-3);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-2);
+  background: var(--teal-50);
+  border-radius: var(--r-md);
+}
+.portfolio-modal__specs dt { font-size: var(--fs-label); color: var(--text-muted); }
+.portfolio-modal__specs dd { margin: 0; font-weight: var(--fw-semibold); color: var(--teal-900); }
+.portfolio-modal__actions {
+  position: sticky;
+  inset-block-end: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--s-2);
+  margin-inline: calc(var(--modal-pad) * -1);
+  padding: var(--s-2) var(--modal-pad);
+  background: var(--white);
+  border-block-start: 1px solid var(--border);
+}
+
+@media (max-width: 640px) {
+  .portfolio-modal { --modal-pad: var(--s-3); }
+  .portfolio-modal__specs { grid-template-columns: 1fr; }
+  .portfolio-modal__actions .btn { flex: 1 1 auto; }
+  .portfolio-cta { padding: var(--s-4) var(--s-3); }
 }

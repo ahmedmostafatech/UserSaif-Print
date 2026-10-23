@@ -458,6 +458,7 @@
     state.openId = null;
     $("detail-view").hidden = true;
     $("content-view").hidden = true;
+    if ($("inquiries-view")) $("inquiries-view").hidden = true;
     $("orders-view").hidden = false;
     document.title = "لوحة الإدارة | يوزرسيف";
     renderOrders();
@@ -720,6 +721,7 @@
     state.order = null;
     $("orders-view").hidden = true;
     $("content-view").hidden = true;
+    if ($("inquiries-view")) $("inquiries-view").hidden = true;
     $("detail-view").hidden = false;
     $("detail-body").innerHTML = '<div class="skeleton admin-skel admin-skel--tall"></div><div class="skeleton admin-skel admin-skel--tall"></div>';
     window.scrollTo(0, 0);
@@ -901,6 +903,116 @@
   }
 
   // ============================================================
+  // استفسارات ورسائل الزوار
+  // ============================================================
+
+  function showInquiries() {
+    state.order = null;
+    state.openId = null;
+    $("orders-view").hidden = true;
+    $("detail-view").hidden = true;
+    $("content-view").hidden = true;
+    if ($("inquiries-view")) $("inquiries-view").hidden = false;
+    document.title = "استفسارات الزوار | لوحة الإدارة";
+    renderInquiries();
+  }
+
+  function renderInquiries() {
+    let container = $("inquiries-body");
+    if (!container) return;
+
+    let inqs = state.inquiries || [];
+    let filter = state.inquiryFilter || "all";
+
+    // تحديث الأزرار النشطة في الشيبس
+    let chips = document.querySelectorAll("#inquiries-chips .chip");
+    chips.forEach(function (c) {
+      if (c.dataset.inqFilter === filter) c.classList.add("is-active");
+      else c.classList.remove("is-active");
+    });
+
+    updateInquiriesCount();
+
+    let list = inqs.filter(function (it) {
+      if (filter === "new") return it.status === "new";
+      if (filter === "replied") return it.status === "replied";
+      return true;
+    });
+
+    list.sort(function (a, b) {
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+    });
+
+    if (list.length === 0) {
+      container.innerHTML = emptyHtml(
+        "لا توجد رسائل",
+        filter === "all"
+          ? "لم يتم إرسال أي استفسارات حتى الآن."
+          : filter === "new"
+          ? "رائع! تم الرد على كافة الاستفسارات، لا توجد رسائل جديدة معلقة."
+          : "لم يتم تعيين أي استفسار كـ «تم الرد» بعد."
+      );
+      return;
+    }
+
+    let cardsHtml = list.map(function (inq) {
+      let isNew = inq.status === "new";
+      let statusBadge = isNew
+        ? '<span class="badge badge--alert">جديدة لم يُرد عليها</span>'
+        : '<span class="badge badge--ready">تم الرد عليها ✓</span>';
+
+      let rawPhone = inq.phone || "";
+      let phoneDigits = String(rawPhone).replace(/\D/g, "");
+      if (phoneDigits.startsWith("0")) phoneDigits = phoneDigits.slice(1);
+      let waText = "مرحبًا " + (inq.name || "يا فندم") + "، مع حضرتك استوديو يوزرسيف بأسوان بخصوص استفسارك (" + (inq.topic || "استفسار عام") + "):";
+      let waUrl = "https://wa.me/20" + phoneDigits + "?text=" + encodeURIComponent(waText);
+
+      let toggleBtn = isNew
+        ? '<button type="button" class="btn btn--secondary btn--sm" data-act="toggle-inq-status" data-id="' + esc(inq.id) + '" data-next="replied">✓ تحديد كـ تم الرد</button>'
+        : '<button type="button" class="btn btn--ghost btn--sm" data-act="toggle-inq-status" data-id="' + esc(inq.id) + '" data-next="new">إعادة إلى جديدة</button>';
+
+      return (
+        '<article class="inquiry-card' + (isNew ? ' inquiry-card--new' : '') + '">' +
+          '<div class="inquiry-card__header">' +
+            '<div class="inquiry-card__sender">' +
+              '<div class="inquiry-card__avatar">' + esc((inq.name || "ع").slice(0, 1)) + '</div>' +
+              '<div>' +
+                '<h3 class="inquiry-card__name">' + esc(inq.name) + '</h3>' +
+                '<span class="caption inq-id-time">' +
+                  '<span class="num">' + esc(inq.id) + '</span> • ' +
+                  '<time datetime="' + esc(inq.createdAt) + '">' + esc(formatDateTime(inq.createdAt)) + '</time>' +
+                '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="inquiry-card__badges">' +
+              '<span class="badge badge--received">' + esc(inq.topic || "استفسار عام") + '</span>' +
+              statusBadge +
+            '</div>' +
+          '</div>' +
+          '<div class="inquiry-card__body">' +
+            '<p class="inquiry-card__message">' + esc(inq.message).replace(/\n/g, "<br>") + '</p>' +
+          '</div>' +
+          '<div class="inquiry-card__footer">' +
+            '<div class="inquiry-card__contact">' +
+              '<a href="tel:' + esc(inq.phone) + '" class="inquiry-phone" dir="ltr">📞 ' + esc(inq.phone) + '</a>' +
+              '<a href="' + esc(waUrl) + '" target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--sm inq-wa-btn">' +
+                '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.63C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.07 16.3C4.24 14.99 3.8 13.47 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67Z"/></svg>' +
+                '<span>رد سريع عبر واتساب</span>' +
+              '</a>' +
+            '</div>' +
+            '<div class="inquiry-card__actions">' +
+              toggleBtn +
+              '<button type="button" class="btn btn--ghost btn--sm text-danger" data-act="delete-inq" data-id="' + esc(inq.id) + '" title="حذف الاستفسار">🗑 حذف</button>' +
+            '</div>' +
+          '</div>' +
+        '</article>'
+      );
+    }).join("");
+
+    container.innerHTML = cardsHtml;
+  }
+
+  // ============================================================
   // إدارة المحتوى (4 تابات: الخدمات، التصنيفات، الخيارات، المعرض)
   // ============================================================
 
@@ -926,6 +1038,7 @@
     state.openId = null;
     $("orders-view").hidden = true;
     $("detail-view").hidden = true;
+    if ($("inquiries-view")) $("inquiries-view").hidden = true;
     $("content-view").hidden = false;
     document.title = "إدارة المحتوى | لوحة الإدارة";
     switchContentTab(tab || state.contentTab || "services");
@@ -1621,22 +1734,48 @@
 
   function setupMotionToggle() {
     let btn = $("motion-toggle");
+    if (!btn) return;
     let saved = null;
     try { saved = localStorage.getItem("ys-motion"); } catch (e) { /* التخزين غير متاح */ }
-    if (saved === "reduced") {
-      document.documentElement.setAttribute("data-motion", "reduced");
-      btn.setAttribute("aria-pressed", "true");
+
+    function updateBtn(reduced) {
+      btn.setAttribute("aria-pressed", String(reduced));
+      if (reduced) {
+        btn.innerHTML = '<span aria-hidden="true">↺</span> <span>إرجاع الحركة الطبيعية</span>';
+        btn.classList.add("btn--primary");
+        btn.classList.remove("btn--secondary");
+        btn.style.background = "var(--orange-500)";
+        btn.style.borderColor = "var(--orange-500)";
+        btn.style.color = "#ffffff";
+        btn.title = "اضغط لتفعيل حركات وانيميشن الموقع الطبيعية";
+      } else {
+        btn.innerHTML = '<span aria-hidden="true">⚡</span> <span>تقليل الحركة</span>';
+        btn.classList.remove("btn--primary");
+        btn.classList.add("btn--secondary");
+        btn.style.background = "";
+        btn.style.borderColor = "";
+        btn.style.color = "";
+        btn.title = "اضغط لتقليل الحركات والانتقالات السريعة";
+      }
     }
+
+    let isReduced = saved === "reduced";
+    if (isReduced) {
+      document.documentElement.setAttribute("data-motion", "reduced");
+    }
+    updateBtn(isReduced);
+
     btn.addEventListener("click", function () {
       let reduced = document.documentElement.getAttribute("data-motion") === "reduced";
-      if (reduced) {
-        document.documentElement.removeAttribute("data-motion");
-      } else {
+      let next = !reduced;
+      if (next) {
         document.documentElement.setAttribute("data-motion", "reduced");
+      } else {
+        document.documentElement.removeAttribute("data-motion");
       }
-      btn.setAttribute("aria-pressed", String(!reduced));
-      try { localStorage.setItem("ys-motion", reduced ? "full" : "reduced"); } catch (e) { /* تجاهل */ }
-      console.log("Motion preference:", reduced ? "full" : "reduced");
+      updateBtn(next);
+      try { localStorage.setItem("ys-motion", next ? "reduced" : "full"); } catch (e) { /* تجاهل */ }
+      console.log("Motion preference:", next ? "reduced" : "full");
     });
   }
 
@@ -1655,6 +1794,72 @@
     $("orders-body").addEventListener("click", onOrdersBodyClick);
     $("detail-body").addEventListener("click", onDetailClick);
     $("detail-body").addEventListener("error", onImageError, true); // أحداث error لا تصعد، فنستخدم capture
+
+    // أحداث الاستفسارات والرسائل
+    if ($("refresh-inquiries-btn")) {
+      $("refresh-inquiries-btn").addEventListener("click", async function () {
+        setLoading($("refresh-inquiries-btn"), true);
+        try {
+          state.inquiries = await getInquiries();
+          updateInquiriesCount();
+          renderInquiries();
+          showToast("تم تحديث قائمة الرسائل والاستفسارات");
+        } catch (err) {
+          handleError(err);
+        } finally {
+          setLoading($("refresh-inquiries-btn"), false);
+        }
+      });
+    }
+
+    if ($("inquiries-chips")) {
+      $("inquiries-chips").addEventListener("click", function (event) {
+        let chip = event.target.closest("button.chip");
+        if (chip && chip.dataset.inqFilter) {
+          state.inquiryFilter = chip.dataset.inqFilter;
+          renderInquiries();
+        }
+      });
+    }
+
+    if ($("inquiries-body")) {
+      $("inquiries-body").addEventListener("click", async function (event) {
+        let btn = event.target.closest("button");
+        if (!btn) return;
+        let act = btn.dataset.act;
+        let id = btn.dataset.id;
+        if (!act || !id) return;
+
+        if (act === "toggle-inq-status") {
+          let next = btn.dataset.next || "replied";
+          setLoading(btn, true);
+          try {
+            await updateInquiryStatus(id, next);
+            let item = state.inquiries.find(function (i) { return i.id === id; });
+            if (item) item.status = next;
+            updateInquiriesCount();
+            renderInquiries();
+            showToast(next === "replied" ? "تم تحديد الاستفسار كـ تم الرد بنجاح" : "تمت إعادة الاستفسار إلى جديدة");
+          } catch (err) {
+            handleError(err);
+          } finally {
+            setLoading(btn, false);
+          }
+        } else if (act === "delete-inq") {
+          openConfirm("حذف الاستفسار", "هل أنت متأكد من حذف هذا الاستفسار نهائيًا؟", async function () {
+            try {
+              await deleteInquiry(id);
+              state.inquiries = state.inquiries.filter(function (i) { return i.id !== id; });
+              updateInquiriesCount();
+              renderInquiries();
+              showToast("تم حذف الاستفسار بنجاح");
+            } catch (err) {
+              handleError(err);
+            }
+          });
+        }
+      });
+    }
 
     $("reject-form").addEventListener("submit", handleRejectSubmit);
     $("reject-reason").addEventListener("input", updateRejectPreview);
