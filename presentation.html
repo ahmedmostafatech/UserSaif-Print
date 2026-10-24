@@ -1,0 +1,1333 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>عرض مشروع استوديو يوزرسيف | UserSaif Studio Presentation</title>
+  <meta name="description" content="العرض التقديمي الشامل لمشروع موقع استوديو يوزرسيف للطباعة والتخصيص الحرفي بأسوان - IEEE Brand & Build Challenge">
+
+  <!-- Google Fonts: IBM Plex Sans Arabic & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       Presentation Design System Tokens
+       ============================================================ */
+    :root {
+      --ink: #0A2E32;
+      --teal-950: #071F22;
+      --teal-900: #0E3B40;
+      --teal-800: #114850;
+      --teal-700: #186872;
+      --teal-500: #2F8F98;
+      --teal-300: #8FC6CA;
+      --teal-100: #DDEEEF;
+      --teal-50:  #EEF6F6;
+      --orange-500: #EB823C;
+      --orange-600: #D4712E;
+      --paper:    #F8F7F4;
+      --paper-card: #FFFFFF;
+      --white:    #FFFFFF;
+      --text:     #0A2E32;
+      --text-muted: #536B6F;
+      --border:   #D5E1E2;
+      --border-light: rgba(255, 255, 255, 0.15);
+      --font-ar:  "IBM Plex Sans Arabic", system-ui, sans-serif;
+      --font-en:  "Inter", system-ui, sans-serif;
+      --r-sm: 8px;
+      --r-md: 14px;
+      --r-lg: 20px;
+      --r-pill: 999px;
+      --shadow-1: 0 4px 16px rgba(10, 46, 50, 0.08);
+      --shadow-2: 0 8px 30px rgba(10, 46, 50, 0.14);
+      --shadow-3: 0 16px 48px rgba(10, 46, 50, 0.22);
+      --slide-ratio: 16 / 9;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #06191B;
+      color: var(--text);
+      font-family: var(--font-ar);
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Deck Viewport */
+    .deck-viewport {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: radial-gradient(circle at 50% 20%, #0E3B40 0%, #06191B 75%);
+    }
+
+    /* Presentation Slide Frame (16:9 Aspect Ratio) */
+    .slide-stage {
+      position: relative;
+      width: 100%;
+      max-width: 1440px;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 80px);
+      background: var(--paper);
+      border-radius: var(--r-lg);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Individual Slide */
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 44px 56px 40px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.97) translateY(12px);
+      transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .slide.is-active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1) translateY(0);
+      z-index: 2;
+    }
+
+    /* Slide Themes */
+    .slide--dark {
+      background: linear-gradient(135deg, var(--teal-950) 0%, var(--teal-900) 100%);
+      color: var(--white);
+    }
+    .slide--dark .slide-eyebrow {
+      color: var(--teal-300);
+    }
+    .slide--dark .slide-title {
+      color: var(--white);
+    }
+    .slide--dark .slide-desc {
+      color: var(--teal-100);
+    }
+    .slide--dark .card-flat {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.12);
+      color: var(--white);
+    }
+    .slide--dark .text-muted {
+      color: #9cb5b8;
+    }
+
+    .slide--light {
+      background: var(--paper);
+      color: var(--ink);
+    }
+    .slide--light .slide-eyebrow {
+      color: var(--teal-700);
+    }
+    .slide--light .slide-title {
+      color: var(--teal-950);
+    }
+    .slide--light .slide-desc {
+      color: var(--text-muted);
+    }
+
+    /* Header in Slide */
+    .slide-header {
+      margin-bottom: 24px;
+      flex-shrink: 0;
+    }
+    .slide-eyebrow {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .slide-eyebrow::before {
+      content: "";
+      width: 20px;
+      height: 2px;
+      background: currentColor;
+      border-radius: var(--r-pill);
+    }
+    .slide-title {
+      font-size: 2.1rem;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 6px;
+    }
+    .slide-desc {
+      font-size: 1.05rem;
+      line-height: 1.55;
+      max-width: 75ch;
+    }
+
+    /* Slide Content Area */
+    .slide-body {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    /* Grid Layout Helpers */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .grid-hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    /* Cards */
+    .card-flat {
+      background: var(--paper-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 20px;
+      box-shadow: var(--shadow-1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+    .card-flat--accent {
+      border-top: 4px solid var(--orange-500);
+    }
+    .card-flat--teal {
+      border-top: 4px solid var(--teal-500);
+    }
+    .card-flat h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-flat p {
+      font-size: 0.925rem;
+      line-height: 1.6;
+    }
+
+    /* Number & Metric Badges */
+    .stat-badge {
+      display: inline-flex;
+      flex-direction: column;
+      padding: 12px 18px;
+      border-radius: var(--r-md);
+      background: var(--teal-50);
+      border: 1px solid var(--teal-300);
+    }
+    .stat-badge__val {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--teal-900);
+      font-family: var(--font-en), var(--font-ar);
+    }
+    .stat-badge__lbl {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Device Mockup Frames */
+    .mockup-desktop {
+      position: relative;
+      border-radius: 10px;
+      background: #1c2b2d;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .mockup-header {
+      background: #142224;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .mockup-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff5f56;
+    }
+    .mockup-dot:nth-child(2) { background: #ffbd2e; }
+    .mockup-dot:nth-child(3) { background: #27c93f; }
+    .mockup-address {
+      flex: 1;
+      margin-inline-start: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      padding: 2px 10px;
+      font-size: 11px;
+      color: var(--teal-300);
+      font-family: monospace;
+      direction: ltr;
+      text-align: start;
+    }
+    .mockup-screen {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #000;
+    }
+    .mockup-screen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+    }
+
+    .mockup-phone {
+      width: 240px;
+      aspect-ratio: 9 / 19.5;
+      background: #111;
+      border-radius: 36px;
+      padding: 8px;
+      border: 3px solid #334;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .mockup-phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 28px;
+      overflow: hidden;
+      background: #0a2e32;
+    }
+    .mockup-phone-screen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+    }
+
+    /* Badges & Chips */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: var(--r-pill);
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+    .chip--teal {
+      background: rgba(143, 198, 202, 0.18);
+      color: var(--teal-300);
+      border: 1px solid rgba(143, 198, 202, 0.35);
+    }
+    .chip--orange {
+      background: rgba(235, 130, 60, 0.15);
+      color: var(--orange-500);
+      border: 1px solid rgba(235, 130, 60, 0.35);
+    }
+    .chip--solid-teal {
+      background: var(--teal-50);
+      color: var(--teal-800);
+      border: 1px solid var(--teal-300);
+    }
+
+    /* Steps Flow Diagram */
+    .flow-row {
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .flow-step {
+      flex: 1;
+      background: var(--paper-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+    .flow-step::after {
+      content: "←";
+      position: absolute;
+      inset-inline-start: -16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: var(--teal-500);
+      font-weight: bold;
+    }
+    .flow-step:last-child::after {
+      display: none;
+    }
+    .flow-step__num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--teal-800);
+      color: var(--white);
+      display: grid;
+      place-items: center;
+      font-size: 0.8125rem;
+      font-weight: 700;
+    }
+    .flow-step h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--teal-900);
+    }
+    .flow-step p {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Comparison Table */
+    /* Comparison Table */
+    .table-spec {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.925rem;
+      background: var(--paper-card);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .table-spec th {
+      background: var(--teal-900);
+      color: var(--white);
+      padding: 12px 16px;
+      text-align: start;
+      font-weight: 600;
+    }
+    .table-spec td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--ink);
+    }
+    .table-spec tr:last-child td {
+      border-bottom: none;
+    }
+    .table-spec tr:nth-child(even) td {
+      background: var(--teal-50);
+    }
+
+    /* Dark Slide Specific Table Styling (Slide 6) */
+    .slide--dark .table-spec {
+      background: #061e21;
+      border: 2px solid #2F8F98;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(143, 198, 202, 0.2);
+    }
+    .slide--dark .table-spec th {
+      background: #031214;
+      padding: 14px 18px;
+      border-bottom: 2px solid #EB823C;
+    }
+    .slide--dark .table-spec th.col-layer-th,
+    .slide--dark .table-spec th:first-child {
+      color: #FFAE52;
+      font-size: 1rem;
+      font-weight: 700;
+      border-inline-end: 1.5px solid rgba(143, 198, 202, 0.25);
+    }
+    .slide--dark .table-spec th.col-tech-th,
+    .slide--dark .table-spec th:last-child {
+      color: #5CE1E6;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .slide--dark .table-spec td {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(143, 198, 202, 0.25);
+    }
+    .slide--dark .table-spec td.col-layer,
+    .slide--dark .table-spec td:first-child {
+      color: #FFAE52 !important;
+      font-weight: 700;
+      font-size: 0.95rem;
+      background: rgba(235, 130, 60, 0.08);
+      border-inline-end: 1.5px solid rgba(143, 198, 202, 0.25);
+      white-space: nowrap;
+    }
+    .slide--dark .table-spec td.col-layer strong,
+    .slide--dark .table-spec td:first-child strong {
+      color: #FFAE52 !important;
+      font-weight: 700;
+    }
+    .slide--dark .table-spec td.col-tech,
+    .slide--dark .table-spec td:last-child {
+      color: #FFFFFF !important;
+      font-weight: 500;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .slide--dark .table-spec .bullet-dot {
+      color: #5CE1E6;
+      font-weight: bold;
+      margin: 0 4px;
+    }
+    .slide--dark .table-spec tr:nth-child(even) td:first-child {
+      background: rgba(235, 130, 60, 0.14);
+    }
+    .slide--dark .table-spec tr:nth-child(even) td:last-child {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .slide--dark .table-spec tr:hover td:first-child {
+      background: rgba(235, 130, 60, 0.22);
+    }
+    .slide--dark .table-spec tr:hover td:last-child {
+      background: rgba(92, 225, 230, 0.12);
+    }
+
+    /* Bottom Control Bar */
+    .deck-controls {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(14, 59, 64, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--r-pill);
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      z-index: 100;
+      color: var(--white);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    .deck-btn {
+      background: transparent;
+      border: 0;
+      color: var(--white);
+      font-size: 1.15rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .deck-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.08);
+    }
+    .deck-btn:active {
+      transform: scale(0.95);
+    }
+    .deck-counter {
+      font-family: var(--font-en);
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--teal-300);
+      min-width: 65px;
+      text-align: center;
+      direction: ltr;
+    }
+
+    /* Print / PDF Stylesheet */
+    @media print {
+      html, body {
+        background: none !important;
+        overflow: visible !important;
+        height: auto !important;
+      }
+      .deck-viewport {
+        padding: 0 !important;
+        background: none !important;
+        display: block !important;
+        height: auto !important;
+      }
+      .deck-controls {
+        display: none !important;
+      }
+      .slide-stage {
+        box-shadow: none !important;
+        max-width: 100% !important;
+        height: auto !important;
+        aspect-ratio: auto !important;
+        border-radius: 0 !important;
+        background: none !important;
+      }
+      .slide {
+        position: relative !important;
+        opacity: 1 !important;
+        transform: none !important;
+        page-break-after: always;
+        break-after: page;
+        height: 100vh !important;
+        width: 100vw !important;
+        max-height: none !important;
+        box-sizing: border-box;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="deck-viewport">
+    <div class="slide-stage" id="slide-stage">
+
+      <!-- ==========================================
+           SLIDE 1: Title Slide (Dark Theme)
+           ========================================== -->
+      <section class="slide slide--dark is-active" data-slide="1">
+        <div class="slide-body" style="justify-content:space-between;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div style="display:inline-flex; align-items:center; gap:12px;">
+              <img src="assets/img/logo.png" alt="شعار يوزرسيف" style="width:56px; height:56px; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.2);">
+              <div>
+                <h3 style="font-size:1.5rem; font-weight:700; color:#fff; line-height:1.1;">يوزرسيف | UserSaif</h3>
+                <span style="font-size:0.875rem; color:var(--teal-300);">استوديو الطباعة والتخصيص الحرفي • أسوان</span>
+              </div>
+            </div>
+            <div class="chip chip--orange">IEEE Aswan SB • Brand &amp; Build Challenge</div>
+          </div>
+
+          <div style="margin-block:auto;">
+            <span class="slide-eyebrow" style="color:var(--orange-500);">مشروع التحدي الرسمي • عرض معماري وهندسي</span>
+            <h1 style="font-size: clamp(2.4rem, 4vw, 3.8rem); font-weight:800; line-height:1.15; color:#fff; margin-block:12px 16px;">
+              منصة يوزرسيف المتكاملة<br>
+              <span style="color:var(--teal-300)">للطباعة الحرفية وتخصيص المنتجات</span>
+            </h1>
+            <p style="font-size:1.25rem; color:var(--teal-100); max-width:68ch; line-height:1.65;">
+              هندسة واجهة وتجربة مستخدم متقدمة، معالج دقيق لمواصفات الإنتاج، وفحص برمجي لجاهزية الطلبات مع تتبع لحظي بنظام الحالات الفنية وقاعدة بيانات Supabase.
+            </p>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid rgba(255,255,255,0.14); padding-top:20px;">
+            <div>
+              <span style="font-size:0.8125rem; color:var(--teal-300); display:block; margin-bottom:4px;">فريق العمل والمهندسون المنفذون:</span>
+              <strong style="font-size:1.1rem; color:#fff;">Ahmed Mostafa &amp; Ebrahim Ashraf &amp; Omar Mohamed</strong>
+            </div>
+            <div style="display:flex; gap:12px; align-items:center;">
+              <span class="chip chip--teal">Vanilla HTML5/CSS3/ES6+</span>
+              <span class="chip chip--teal">Supabase RLS &amp; RPC</span>
+              <span class="chip chip--teal">Mobile-First (17 Viewports)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 2: Project Overview & Objectives (Light Theme)
+           ========================================== -->
+      <section class="slide slide--light" data-slide="2">
+        <header class="slide-header">
+          <span class="slide-eyebrow">نظرة عامة وأهداف التحدي</span>
+          <h2 class="slide-title">الرؤية والهدف: نقل الحرفة من العشوائية إلى الأرشفة الرقمية</h2>
+          <p class="slide-desc">يهدف مشروع يوزرسيف إلى تمكين العلامة التجارية المحلية بأسوان من امتلاك منصة رقمية مستقلة وعالية الكفاءة دون الاعتماد على رسائل الدردشة غير المنظمة.</p>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-3">
+            <div class="card-flat card-flat--teal">
+              <div style="font-size:2rem; color:var(--teal-700)">🎯</div>
+              <h3>تخصيص معياري دقيق</h3>
+              <p>استبدال الوصف النصي العشوائي بمصفوفة مواصفات رقمية (نوع القماش، أوزان GSM، سواتش الألوان، توزيع المقاسات، وتحديد مواضع الطباعة الميكانيكية بدقة).</p>
+            </div>
+
+            <div class="card-flat card-flat--accent">
+              <div style="font-size:2rem; color:var(--orange-500)">🛡️</div>
+              <h3>محرك الجاهزية والضمان</h3>
+              <p>فحص أبعاد وملفات التصميم لحظياً عبر محرك <code>readiness.js</code> للتأكد من جودة الدقة (DPI) وصلاحية الطباعة قبل التوريد مع ضمان 100% ضد عيوب الصناعة.</p>
+            </div>
+
+            <div class="card-flat card-flat--teal">
+              <div style="font-size:2rem; color:var(--teal-700)">📊</div>
+              <h3>تتبع ومراقبة إنتاجية حيّة</h3>
+              <p>توليد معرف طلب فريد (مثل <code>YS-2401</code>) يتيح للعميل تتبع مسار تصنيع طلبه عبر 6 محطات فنية واضحة، مع لوحة قرار وتحكم لصاحب المشروع.</p>
+            </div>
+          </div>
+
+          <div style="margin-top:20px; padding:16px 20px; background:var(--teal-50); border-radius:var(--r-md); border:1px solid var(--teal-300); display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="font-size:1.5rem;">💡</span>
+              <div>
+                <strong style="color:var(--teal-900); font-size:1rem;">هوية استوديو يوزرسيف بأسوان:</strong>
+                <span style="color:var(--text-muted); font-size:0.925rem;">«خليك مختلف .. خليك يوزرسيف» — الجمع بين أصالة الحرفة اليدوية وحداثة التقنيات الرقمية المباشرة (DTF / Laser Die-Cut).</span>
+              </div>
+            </div>
+            <span class="chip chip--solid-teal">100% خامات وقطن مصري معتمد</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 3: Problem vs Solution (Dark Theme)
+           ========================================== -->
+      <section class="slide slide--dark" data-slide="3">
+        <header class="slide-header">
+          <span class="slide-eyebrow">المشكلة والحل الهندسي</span>
+          <h2 class="slide-title">التحديات الواقعية في صناعة الطباعة الشخصية وحلولنا التقنية</h2>
+          <p class="slide-desc">مقارنة تحليلية توضح كيف حلت المنصة الاختناقات التشغيلية الشائعة في إدارة الطلبات والمشاغل الفنية.</p>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <!-- Problem -->
+            <div class="card-flat" style="background:rgba(165, 32, 25, 0.08); border-color:rgba(165, 32, 25, 0.35);">
+              <h3 style="color:#ff857d;">
+                <span>❌</span>
+                <span>الوضع التقليدي (Chat &amp; Social DMs)</span>
+              </h3>
+              <ul style="list-style:none; display:flex; flex-direction:column; gap:12px; margin-top:8px;">
+                <li style="display:flex; gap:10px; font-size:0.95rem; line-height:1.5;">
+                  <span style="color:#ff857d;">•</span>
+                  <span><strong>فقدان تفاصيل الطلب:</strong> ضياع المقاسات والألوان وسط مئات المحادثات غير المفهرسة.</span>
+                </li>
+                <li style="display:flex; gap:10px; font-size:0.95rem; line-height:1.5;">
+                  <span style="color:#ff857d;">•</span>
+                  <span><strong>ملفات رديئة الجودة:</strong> استلام صور مضغوطة عبر واتساب غير صالحة لقص الليزر أو ألواح السلك سكرين.</span>
+                </li>
+                <li style="display:flex; gap:10px; font-size:0.95rem; line-height:1.5;">
+                  <span style="color:#ff857d;">•</span>
+                  <span><strong>انعدام الشفافية:</strong> تكرار أسئلة "طلبي وصل فين؟" واستنزاف وقت الإدارة في الردود اليدوية.</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Solution -->
+            <div class="card-flat" style="background:rgba(47, 143, 152, 0.12); border-color:var(--teal-300);">
+              <h3 style="color:var(--teal-300);">
+                <span>✔️</span>
+                <span>منصة يوزرسيف الهندسية (Digital Atelier)</span>
+              </h3>
+              <ul style="list-style:none; display:flex; flex-direction:column; gap:12px; margin-top:8px;">
+                <li style="display:flex; gap:10px; font-size:0.95rem; line-height:1.5;">
+                  <span style="color:var(--teal-300);">•</span>
+                  <span><strong>معالج مواصفات تفاعلي (Wizard):</strong> حقول قياس وحساب إجمالي آلي وتوزيع مقاسات يمنع الخطأ البشري.</span>
+                </li>
+                <li style="display:flex; gap:10px; font-size:0.95rem; line-height:1.5;">
+                  <span style="color:var(--teal-300);">•</span>
+                  <span><strong>فحص الجاهزية الآلي (Readiness Engine):</strong> تدقيق فوري لنسب الأبعاد وصيغ Vector/PNG قبل إتمام الحفظ.</span>
+                </li>
+                <li style="display:flex; gap:10px; font-size:0.95rem; line-height:1.5;">
+                  <span style="color:var(--teal-300);">•</span>
+                  <span><strong>تتبع حي 6 مراحل بـ Supabase:</strong> استعلام فوري برقم الطلب والهاتف يوضح الموقف التنفيذي وتاريخ كل إجراء.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 4: End-to-End User Journey (Light Theme)
+           ========================================== -->
+      <section class="slide slide--light" data-slide="4">
+        <header class="slide-header">
+          <span class="slide-eyebrow">رحلة المستخدم المتكاملة</span>
+          <h2 class="slide-title">مسار انسيابي فائق السهولة من الاستكشاف وحتى الاستلام</h2>
+          <p class="slide-desc">خريطة تدفق تجربة المستخدم (UX Flow) المصممة لتسهيل الشراء للعميل وسرعة اتخاذ القرار للمشغل.</p>
+        </header>
+
+        <div class="slide-body">
+          <div class="flow-row">
+            <div class="flow-step">
+              <div class="flow-step__num">1</div>
+              <h4>الاستكشاف والمعرض</h4>
+              <p>تصفح الهيرو الموزاييكي، فحص أركان الجودة، واستعراض سابقة الأعمال المنفذة بأسوان عبر اللايت بوكس التفاعلي.</p>
+            </div>
+
+            <div class="flow-step">
+              <div class="flow-step__num">2</div>
+              <h4>اختيار الخدمة والمواصفات</h4>
+              <p>تحديد المنتج (هودي، تيشيرت، ماج، ستيكرات)، واختيار اللون وخامات القطن، وتوزيع المقاسات بالعداد الذكي.</p>
+            </div>
+
+            <div class="flow-step">
+              <div class="flow-step__num">3</div>
+              <h4>رفع التصميم والتحقق</h4>
+              <p>سحب وإفلات ملفات الشعار أو العمل الفني مع فحص الجاهزية وإمكانية تجميع سلة طلبات متعددة بطلب واحد.</p>
+            </div>
+
+            <div class="flow-step">
+              <div class="flow-step__num">4</div>
+              <h4>الإرسال والتتبع المباشر</h4>
+              <p>استلام كود الطلب (مثل <code>YS-2401</code>) ومتابعة التحديثات اللحظية وموعد التجهيز المقدر بأسوان.</p>
+            </div>
+
+            <div class="flow-step">
+              <div class="flow-step__num">5</div>
+              <h4>إدارة المشغل والتنفيذ</h4>
+              <p>مراجعة الإدارة للملف الأصلي عالي الجودة، اتخاذ قرار الاعتماد أو طلب التعديل الفني، وإخطار العميل.</p>
+            </div>
+          </div>
+
+          <div style="margin-top:24px; display:flex; gap:16px; align-items:center; justify-content:center;">
+          
+            <div class="stat-badge">
+              <span class="stat-badge__val">3 خطوات</span>
+              <span class="stat-badge__lbl">لإنهاء مواصفات أعقد طلب</span>
+            </div>
+            <div class="stat-badge">
+              <span class="stat-badge__val">100%</span>
+              <span class="stat-badge__lbl">توافق كامل مع الهواتف الذكية</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 5: Core Functional Modules (Light Theme)
+           ========================================== -->
+      <section class="slide slide--light" data-slide="5">
+        <header class="slide-header">
+          <span class="slide-eyebrow">الميزات والموديولات الرئيسية</span>
+          <h2 class="slide-title">بنية وظيفية متقدمة تغطي دورة حياة الطلب بالكامل</h2>
+          <p class="slide-desc">مكونات برمجية مخصصة طُوّرت خصيصاً لتلبية متطلبات أعمال الطباعة الشخصية والحرفية.</p>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-4">
+            <div class="card-flat card-flat--teal">
+              <h3>🎨 معالج المواصفات</h3>
+              <p><strong>Wizard Step Engine:</strong> تبديل ديناميكي بين الملابس والسيراميك والستيكرات مع سواتش ألوان حية ومحدد مسار القص Die-Cut.</p>
+              <span class="chip chip--solid-teal" style="margin-top:auto;">services.html</span>
+            </div>
+
+            <div class="card-flat card-flat--accent">
+              <h3>🖼️ معرض الكاروسيل والشبكة</h3>
+              <p><strong>Interactive Lightbox:</strong> عرض أعمال المشغل بوضعين (كاروسيل سحب ناعم + شبكة كاملة) مع نافذة تفاصيل ومواصفات الخامات.</p>
+              <span class="chip chip--solid-teal" style="margin-top:auto;">portfolio.html</span>
+            </div>
+
+            <div class="card-flat card-flat--teal">
+              <h3>⏱️ التتبع الزمني الحي</h3>
+              <p><strong>6-Stage Timeline:</strong> تايم لاين رقمي ذكي يتحول من أفقي على الشاشات الكبيرة إلى عمودي مريح على الموبايل برقم الهاتف.</p>
+              <span class="chip chip--solid-teal" style="margin-top:auto;">track.html</span>
+            </div>
+
+            <div class="card-flat card-flat--accent">
+              <h3>🔒 لوحة تحكم المشغل</h3>
+              <p><strong>Admin Command Hub:</strong> مصادقة آمنة، فلترة بالحالات، فحص دقة التصاميم، واعتماد أو رفض مع كتابة مبررات فنية تفصيلية.</p>
+              <span class="chip chip--solid-teal" style="margin-top:auto;">admin.html</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 6: Technologies & Architecture (Dark Theme)
+           ========================================== -->
+      <section class="slide slide--dark" data-slide="6">
+        <header class="slide-header">
+          <span class="slide-eyebrow">المعمارية التقنية والبنية التحتية</span>
+          <h2 class="slide-title">معمارية متينة بدون أطر عمل معقدة (No Framework Overhead)</h2>
+          <p class="slide-desc">بناء الموقع باستخدام أحدث تقنيات الويب الأصلية لتحقيق سرعة تحميل فائقة وأقصى استقرار وأمان لقاعدة البيانات.</p>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <div>
+              <table class="table-spec">
+                <thead>
+                  <tr>
+                    <th class="col-layer-th">الطبقة المعمارية</th>
+                    <th class="col-tech-th">التقنية والأداة الفعلية المستخدمة</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="col-layer"><strong>بنية العرض (Presentation)</strong></td>
+                    <td class="col-tech">Semantic HTML5 <span class="bullet-dot">•</span> CSS3 Custom Properties (Design Tokens) <span class="bullet-dot">•</span> BEM</td>
+                  </tr>
+                  <tr>
+                    <td class="col-layer"><strong>المنطق والبرمجة (Logic)</strong></td>
+                    <td class="col-tech">Vanilla ES6+ JavaScript <span class="bullet-dot">•</span> Async/Await <span class="bullet-dot">•</span> IntersectionObserver</td>
+                  </tr>
+                  <tr>
+                    <td class="col-layer"><strong>قاعدة البيانات والباك إند</strong></td>
+                    <td class="col-tech">Supabase PostgreSQL <span class="bullet-dot">•</span> Stored Procedures (RPC) <span class="bullet-dot">•</span> Real-time DB</td>
+                  </tr>
+                  <tr>
+                    <td class="col-layer"><strong>الأمان والسياسات</strong></td>
+                    <td class="col-tech">Row Level Security (RLS) <span class="bullet-dot">•</span> Secure Private Buckets <span class="bullet-dot">•</span> Data Escaping</td>
+                  </tr>
+                  <tr>
+                    <td class="col-layer"><strong>الطباعة والخطوط</strong></td>
+                    <td class="col-tech">Google Font "IBM Plex Sans Arabic" <span class="bullet-dot">•</span> Tabular Numeric Isolation</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="card-flat" style="background:#061e21; border:2px solid #2F8F98; box-shadow:0 18px 48px rgba(0,0,0,0.65);">
+              <h3 style="color:#FFAE52; display:flex; align-items:center; gap:8px;">
+                <span>⚡</span>
+                <span>تسلسل تدفق البيانات (Data Access Hierarchy)</span>
+              </h3>
+              <div style="font-family:'Courier New', monospace; direction:ltr; font-size:0.88rem; line-height:1.75; background:#031214; padding:16px; border-radius:8px; border:1px solid rgba(143,198,202,0.3); color:#FFFFFF;">
+                <span style="color:#5CE1E6; font-weight:700;">config.js</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#A5D6A7;">[Supabase URL &amp; Public Anon Key]</span><br>
+                &nbsp;&nbsp;<span style="color:#FFB74D; font-weight:bold;">↓</span><br>
+                <span style="color:#5CE1E6; font-weight:700;">schema.js</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#A5D6A7;">[Domain Statuses &amp; Timeline Rules]</span><br>
+                &nbsp;&nbsp;<span style="color:#FFB74D; font-weight:bold;">↓</span><br>
+                <span style="color:#5CE1E6; font-weight:700;">readiness.js</span> &nbsp;&nbsp;<span style="color:#A5D6A7;">[Client-side Validation Engine]</span><br>
+                &nbsp;&nbsp;<span style="color:#FFB74D; font-weight:bold;">↓</span><br>
+                <span style="color:#5CE1E6; font-weight:700;">api.js</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#A5D6A7;">[Safe DB Gates - No Direct Table Query]</span><br>
+                &nbsp;&nbsp;<span style="color:#FFB74D; font-weight:bold;">↓</span><br>
+                <span style="color:#5CE1E6; font-weight:700;">page-*.js</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#A5D6A7;">[DOM Binding &amp; Reactive UI Updates]</span>
+              </div>
+              <p style="font-size:0.88rem; color:#E0F2FE; margin-top:12px; line-height:1.5;">
+                * يُمنع الاستعلام المباشر من الصفحات؛ جميع العمليات تمر عبر دوال <code style="background:rgba(235,130,60,0.25); color:#FFAE52; padding:2px 8px; border-radius:4px; font-weight:bold; border:1px solid rgba(235,130,60,0.4);">api.js</code> لضمان التحقق من الصلاحيات والمدخلات.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 7: UI/UX & Design System (Light Theme)
+           ========================================== -->
+      <section class="slide slide--light" data-slide="7">
+        <header class="slide-header">
+          <span class="slide-eyebrow">نظام التصميم وتجربة المستخدم</span>
+          <h2 class="slide-title">لغة بصرية موحدة وهوية أسوانية راقية</h2>
+          <p class="slide-desc">مبني وفق شبكة مسافات هندسية 8px ومتغيرات مركزية موثقة في ملف <code>tokens.css</code> و <code>base.css</code>.</p>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-3">
+            <div class="card-flat">
+              <h3>🎨 لوحة الألوان الرسمية</h3>
+              <div style="display:flex; flex-direction:column; gap:8px; margin-top:6px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="width:28px; height:28px; border-radius:6px; background:#0E3B40; display:inline-block;"></span>
+                  <span style="font-size:0.85rem;"><strong>Deep Teal (#0E3B40):</strong> وقار وأصالة الحرفة</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="width:28px; height:28px; border-radius:6px; background:#8FC6CA; display:inline-block;"></span>
+                  <span style="font-size:0.85rem;"><strong>Teal Accent (#8FC6CA):</strong> إبراز النقاط الفنية</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="width:28px; height:28px; border-radius:6px; background:#EB823C; display:inline-block;"></span>
+                  <span style="font-size:0.85rem;"><strong>Sunset Amber (#EB823C):</strong> دفء شمس أسوان</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="width:28px; height:28px; border-radius:6px; background:#F8F7F4; border:1px solid #ccc; display:inline-block;"></span>
+                  <span style="font-size:0.85rem;"><strong>Warm Paper (#F8F7F4):</strong> ملمس ورق طبيعي ناعم</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-flat">
+              <h3>📐 الطباعة والمسافات</h3>
+              <ul style="list-style:none; display:flex; flex-direction:column; gap:8px; font-size:0.875rem;">
+                <li><strong>IBM Plex Sans Arabic:</strong> مقروئية استثنائية ونسب هندسية منضبطة للأحرف العربية.</li>
+                <li><strong>Fluid Typography:</strong> استخدام دوال <code>clamp()</code> لتغيير حجم العناوين بسلاسة دون قفزات مفاجئة.</li>
+                <li><strong>8px Grid System:</strong> قيم تباعد مدروسة من <code>--s-1 (8px)</code> إلى <code>--s-12 (96px)</code>.</li>
+                <li><strong>عزل الأرقام:</strong> أرقام إنجليزية بنظام <code>tabular-nums</code> لضبط محاذاة الجداول والأسعار.</li>
+              </ul>
+            </div>
+
+            <div class="card-flat">
+              <h3>♿ إتاحة وتقليل الحركة</h3>
+              <ul style="list-style:none; display:flex; flex-direction:column; gap:8px; font-size:0.875rem;">
+                <li><strong>Reduced Motion Engine:</strong> زر بالفوتر يتيح للعميل تقليل الانتقالات الحركية السريعة (مع حفظ التفضيل بـ LocalStorage).</li>
+                <li><strong>مساحات لمس قياسية:</strong> جميع الأزرار وعناصر التحكم لا تقل عن 44px وفق معايير WCAG 2.5.</li>
+                <li><strong>حالات التباين اللوني:</strong> نصوص عالية الوضوح مع مؤشرات لونية وأيقونية مزدوجة لمنع اللبس.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 8: Responsive Design Across 17 Viewports (Light Theme)
+           ========================================== -->
+      <section class="slide slide--light" data-slide="8">
+        <header class="slide-header">
+          <span class="slide-eyebrow">الهندسة المتجاوبة والجاهزية للشاشات</span>
+          <h2 class="slide-title">اختبار وتوافق دقيق عبر 17 مقاس شاشة مختلف</h2>
+          <p class="slide-desc">من أصغر شاشات الهواتف (320px) وحتى الشاشات المكتبية العملاقة بدقة 4K (2560px)، بنهج Mobile-First خالص.</p>
+        </header>
+
+        <div class="slide-body">
+          <div style="background:var(--white); border:1px solid var(--border); border-radius:var(--r-md); padding:16px; margin-bottom:18px;">
+            <strong style="color:var(--teal-900); font-size:0.95rem; display:block; margin-bottom:8px;">مصفوفة المقاسات المعتمدة والمختبرة آلياً بواسطة Playwright:</strong>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; direction:ltr; justify-content:center;">
+              <span class="chip chip--solid-teal">320px (SE)</span>
+              <span class="chip chip--solid-teal">360px</span>
+              <span class="chip chip--solid-teal">375px (X)</span>
+              <span class="chip chip--solid-teal">390px (13/14)</span>
+              <span class="chip chip--solid-teal">414px (Plus)</span>
+              <span class="chip chip--solid-teal">430px (Pro Max)</span>
+              <span class="chip chip--solid-teal">480px</span>
+              <span class="chip chip--solid-teal">600px</span>
+              <span class="chip chip--solid-teal">768px (Tablet)</span>
+              <span class="chip chip--solid-teal">820px</span>
+              <span class="chip chip--solid-teal">1024px</span>
+              <span class="chip chip--solid-teal">1280px (Laptop)</span>
+              <span class="chip chip--solid-teal">1366px</span>
+              <span class="chip chip--solid-teal">1440px (Desktop)</span>
+              <span class="chip chip--solid-teal">1600px</span>
+              <span class="chip chip--solid-teal">1920px (FHD)</span>
+              <span class="chip chip--solid-teal">2560px (QHD/4K)</span>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="card-flat">
+              <h4 style="color:var(--teal-800)">📱 الهواتف (320px - 480px)</h4>
+              <p>قائمة درج كاملة الارتفاع، كروت تدفق رأسية، أزرار إجراءات مثبتة أسفل الشاشة (Sticky CTA)، وتحويل الجداول إلى كروت ملخصة.</p>
+            </div>
+            <div class="card-flat">
+              <h4 style="color:var(--teal-800)">📟 الأجهزة اللوحية (600px - 960px)</h4>
+              <p>إعادة ترتيب الأعمدة إلى شبكة ثنائية (2-Column Grid)، الحفاظ على سهولة اللمس بالإبهام، وتحسين حجم الصور والخطوط الموزاييكية.</p>
+            </div>
+            <div class="card-flat">
+              <h4 style="color:var(--teal-800)">🖥️ أجهزة الديسكتوب (1024px - 2560px)</h4>
+              <p>تخطيط متكامل بعمودين للطلب والمعاينة، تأثيرات تحويم ناعمة (Hover Effects)، ملاحة أفقية وتثبيت شريط الطلب أثناء التمرير.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 9: Visual Showcase - Desktop Experience (Dark Theme)
+           ========================================== -->
+      <section class="slide slide--dark" data-slide="9">
+        <header class="slide-header">
+          <span class="slide-eyebrow">معرض الواجهات الحقيقية • تجربة الديسكتوب</span>
+          <h2 class="slide-title">فخامة التصميم البصري واستقرار الشاشات الكبيرة</h2>
+          <p class="slide-desc">لقطات شاشة فعلية ملتقطة من الموقع الحي توضح تجانس العناصر والشبكة البصرية.</p>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <div>
+              <div class="mockup-desktop">
+                <div class="mockup-header">
+                  <div class="mockup-dot"></div>
+                  <div class="mockup-dot"></div>
+                  <div class="mockup-dot"></div>
+                  <div class="mockup-address">https://usersaif-print.eg/index.html</div>
+                </div>
+                <div class="mockup-screen">
+                  <img src="assets/img/presentation/index.html_1280.png" alt="الرئيسية على الديسكتوب">
+                </div>
+              </div>
+              <span style="font-size:0.8125rem; color:var(--teal-300); display:block; text-align:center; margin-top:8px;">الصفحة الرئيسية • الهيرو الموزاييكي وإحصائيات المشغل (1280px)</span>
+            </div>
+
+            <div>
+              <div class="mockup-desktop">
+                <div class="mockup-header">
+                  <div class="mockup-dot"></div>
+                  <div class="mockup-dot"></div>
+                  <div class="mockup-dot"></div>
+                  <div class="mockup-address">https://usersaif-print.eg/portfolio.html</div>
+                </div>
+                <div class="mockup-screen">
+                  <img src="assets/img/presentation/portfolio.html_1280.png" alt="معرض الأعمال على الديسكتوب">
+                </div>
+              </div>
+              <span style="font-size:0.8125rem; color:var(--teal-300); display:block; text-align:center; margin-top:8px;">معرض الأعمال • كاروسيل الأرشيف البصري وفلاتر التصنيفات (1280px)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 10: Visual Showcase - Mobile Experience (Light Theme)
+           ========================================== -->
+      <section class="slide slide--light" data-slide="10">
+        <header class="slide-header">
+          <span class="slide-eyebrow">معرض الواجهات الحقيقية • تجربة الموبايل</span>
+          <h2 class="slide-title">أعلى درجات الراحة والانسيابية على الهواتف الذكية</h2>
+          <p class="slide-desc">لقطات حقيقية على مقاسات الشاشة الصعبة (320px - 414px) مع خلو كامل من أي تمرير أفقي أو تشويه نصي.</p>
+        </header>
+
+        <div class="slide-body">
+          <div style="display:flex; justify-content:center; align-items:center; gap:28px;">
+            <!-- Phone 1: Index -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+              <div class="mockup-phone">
+                <div class="mockup-phone-screen">
+                  <img src="assets/img/presentation/index.html_375.png" alt="الرئيسية على الموبايل">
+                </div>
+              </div>
+              <span style="font-size:0.8125rem; font-weight:600; color:var(--teal-900);">الرئيسية (iPhone 375px)</span>
+            </div>
+
+            <!-- Phone 2: Services -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+              <div class="mockup-phone">
+                <div class="mockup-phone-screen">
+                  <img src="assets/img/presentation/services.html_375.png" alt="الخدمات على الموبايل">
+                </div>
+              </div>
+              <span style="font-size:0.8125rem; font-weight:600; color:var(--teal-900);">دليل الخدمات والمواصفات</span>
+            </div>
+
+            <!-- Phone 3: Track -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+              <div class="mockup-phone">
+                <div class="mockup-phone-screen">
+                  <img src="assets/img/presentation/track.html_375.png" alt="التتبع على الموبايل">
+                </div>
+              </div>
+              <span style="font-size:0.8125rem; font-weight:600; color:var(--teal-900);">تتبع الطلب بالهاتف والكود</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 11: QA Testing & Verified Results (Light Theme)
+           ========================================== -->
+      <section class="slide slide--light" data-slide="11">
+        <header class="slide-header">
+          <span class="slide-eyebrow">ضمان الجودة واختبارات الأتمتة</span>
+          <h2 class="slide-title">تحديات هندسية حقيقية تم اكتشافها وحلها بالكامل</h2>
+          <p class="slide-desc">توثيق الاختبارات الآلية والتحسينات الملموسة التي أُجريت أثناء دورة التطوير.</p>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <div class="card-flat card-flat--accent">
+              <h3>🔍 تحديات تم اكتشافها أثناء التدقيق</h3>
+              <ul style="list-style:none; display:flex; flex-direction:column; gap:10px; font-size:0.875rem;">
+                <li style="display:flex; gap:8px;">
+                  <span style="color:var(--orange-500); font-weight:bold;">1.</span>
+                  <span><strong>أوفر فلو 211px في معالج الطلبات:</strong> تسبب زر تغيير الخدمة وشريط المواصفات في تمدد الصفحة خارج العرض على شاشات 320px–480px.</span>
+                </li>
+                <li style="display:flex; gap:8px;">
+                  <span style="color:var(--orange-500); font-weight:bold;">2.</span>
+                  <span><strong>لوحة تحكم المشغل على الشاشات الصغيرة:</strong> ثبات السايد بار بعرض 272px على الموبايل دون تحوله لدرج متنقل.</span>
+                </li>
+                <li style="display:flex; gap:8px;">
+                  <span style="color:var(--orange-500); font-weight:bold;">3.</span>
+                  <span><strong>عناصر لمس صغيرة بالهيدر:</strong> ضيق مساحات النقر في الهواتف المدمجة (أقل من 40px).</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="card-flat card-flat--teal">
+              <h3>✅ الحلول والنتائج المؤكدة (PASSED)</h3>
+              <ul style="list-style:none; display:flex; flex-direction:column; gap:10px; font-size:0.875rem;">
+                <li style="display:flex; gap:8px;">
+                  <span style="color:var(--teal-500); font-weight:bold;">✓</span>
+                  <span><strong>Zero Horizontal Overflow:</strong> إعادة هيكلة الفلكس والتفاف العناصر مع <code>overflow-x: clip</code> ليصبح الفائض 0px عبر كافة الشاشات الـ 17.</span>
+                </li>
+                <li style="display:flex; gap:8px;">
+                  <span style="color:var(--teal-500); font-weight:bold;">✓</span>
+                  <span><strong>Off-Canvas Mobile Admin Drawer:</strong> تحويل سايد بار الإدارة إلى درج متحرك ناعم مع خلفية تعتيم (Scrim).</span>
+                </li>
+                <li style="display:flex; gap:8px;">
+                  <span style="color:var(--teal-500); font-weight:bold;">✓</span>
+                  <span><strong>Safe-Area &amp; Touch Target Compliance:</strong> ضبط هوامش الأمان للهواتف الحديثة مع أحجام أزرار لمسية 44px قياسية.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div style="margin-top:16px; display:flex; gap:12px; justify-content:center;">
+            <div class="stat-badge" style="background:#e3f3ea; border-color:#1b6b45;">
+              <span class="stat-badge__val" style="color:#1b6b45;">0px Overflow</span>
+              <span class="stat-badge__lbl">خلو تام من أي تمدد أفقي</span>
+            </div>
+            <div class="stat-badge" style="background:#e3f3ea; border-color:#1b6b45;">
+              <span class="stat-badge__val" style="color:#1b6b45;">17 / 17</span>
+              <span class="stat-badge__lbl">اجتياز كامل للمقاسات المختبرة</span>
+            </div>
+            <div class="stat-badge" style="background:#e3f3ea; border-color:#1b6b45;">
+              <span class="stat-badge__val" style="color:#1b6b45;">100% Verified</span>
+              <span class="stat-badge__lbl">اختبارات أتمتة عبر Playwright</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 12: Conclusion & Future Roadmap (Dark Theme)
+           ========================================== -->
+      <section class="slide slide--dark" data-slide="12">
+        <header class="slide-header">
+          <span class="slide-eyebrow">الخاتمة والتطلعات المستقبلية</span>
+          <h2 class="slide-title">جاهزية كاملة للإطلاق ومسار تطوير مستمر</h2>
+          <p class="slide-desc">مشروع متكامل يجمع بين الطابع الحرفي الأصيل والهندسة البرمجية الدقيقة لخدمة مجتمع أسوان.</p>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-3" style="margin-bottom:24px;">
+            <div class="card-flat" style="background:rgba(255,255,255,0.06); border-color:var(--teal-300);">
+              <h3 style="color:var(--teal-300)">💳 الدفع الإلكتروني المباشر</h3>
+              <p>تكامل بوابات الدفع المصرية المعتمدة (InstaPay / Fawry / محافظ المحمول) لتأكيد دفع العربون آلياً فور اعتماد الطلب.</p>
+            </div>
+
+            <div class="card-flat" style="background:rgba(255,255,255,0.06); border-color:var(--orange-500);">
+              <h3 style="color:var(--orange-500)">👕 معاينة تفاعلية 3D</h3>
+              <p>دمج محرك عرض ثلاثي الأبعاد ثلاثي المحاور (WebGL/Three.js) يتيح للعميل استعراض مجسم التيشيرت أو الماج بالطباعة قبل الإرسال.</p>
+            </div>
+
+            <div class="card-flat" style="background:rgba(255,255,255,0.06); border-color:var(--teal-300);">
+              <h3 style="color:var(--teal-300)">📲 إشعارات واتساب السحابية</h3>
+              <p>ربط واتساب بيزنس كلاود عبر Webhooks لإرسال رسائل تحديث الحالة الفورية للعميل دون أي تدخل يدوي.</p>
+            </div>
+          </div>
+
+          <div style="text-align:center; padding-top:16px; border-top:1px solid rgba(255,255,255,0.12);">
+            <h3 style="font-size:1.5rem; color:#fff; margin-bottom:6px;">شكراً لكم • جاهزون لأي أسئلة واستفسارات</h3>
+            <p style="color:var(--teal-300); font-size:1rem;">
+              استوديو يوزرسيف بأسوان — IEEE Aswan Student Branch Brand &amp; Build Challenge
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Deck Bar -->
+  <div class="deck-controls">
+    <button class="deck-btn" id="prev-btn" title="الشريحة السابقة (السهم الأيمن)" aria-label="الشريحة السابقة">❯</button>
+    <div class="deck-counter" id="slide-counter">01 / 12</div>
+    <button class="deck-btn" id="next-btn" title="الشريحة التالية (السهم الأيسر أو مسافة)" aria-label="الشريحة التالية">❮</button>
+    <div style="width:1px; height:20px; background:rgba(255,255,255,0.25);"></div>
+    <button class="deck-btn" id="fullscreen-btn" title="وضع ملء الشاشة (F)" aria-label="ملء الشاشة">⛶</button>
+    <button class="deck-btn" id="print-btn" title="طباعة أو تصدير PDF (P)" aria-label="تصدير PDF">⎙</button>
+  </div>
+
+  <!-- Interactive Slide Engine Script -->
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const counter = document.getElementById('slide-counter');
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      const fsBtn = document.getElementById('fullscreen-btn');
+      const printBtn = document.getElementById('print-btn');
+      let currentIdx = 0;
+
+      function updateSlide(idx) {
+        if (idx < 0) idx = 0;
+        if (idx >= slides.length) idx = slides.length - 1;
+        currentIdx = idx;
+
+        slides.forEach((s, i) => {
+          if (i === currentIdx) {
+            s.classList.add('is-active');
+          } else {
+            s.classList.remove('is-active');
+          }
+        });
+
+        const currentNum = String(currentIdx + 1).padStart(2, '0');
+        const totalNum = String(slides.length).padStart(2, '0');
+        counter.textContent = `${currentNum} / ${totalNum}`;
+      }
+
+      function next() {
+        if (currentIdx < slides.length - 1) updateSlide(currentIdx + 1);
+      }
+
+      function prev() {
+        if (currentIdx > 0) updateSlide(currentIdx - 1);
+      }
+
+      nextBtn.addEventListener('click', next);
+      prevBtn.addEventListener('click', prev);
+
+      // Keyboard navigation
+      window.addEventListener('keydown', (e) => {
+        // In RTL, ArrowLeft goes forward, ArrowRight goes backward
+        if (e.key === 'ArrowLeft' || e.key === ' ' || e.key === 'PageDown') {
+          e.preventDefault();
+          next();
+        } else if (e.key === 'ArrowRight' || e.key === 'PageUp') {
+          e.preventDefault();
+          prev();
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          updateSlide(0);
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          updateSlide(slides.length - 1);
+        } else if (e.key === 'f' || e.key === 'F') {
+          toggleFullscreen();
+        } else if (e.key === 'p' || e.key === 'P') {
+          window.print();
+        }
+      });
+
+      // Fullscreen toggle
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+      fsBtn.addEventListener('click', toggleFullscreen);
+      printBtn.addEventListener('click', () => window.print());
+
+      // Touch Swipe Support for mobile tablets
+      let touchStartX = 0;
+      window.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      window.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].screenX;
+        const diff = touchEndX - touchStartX;
+        if (Math.abs(diff) > 50) {
+          if (diff < 0) next(); // Swipe left -> Next
+          else prev();          // Swipe right -> Prev
+        }
+      }, { passive: true });
+
+      updateSlide(0);
+    })();
+  </script>
+</body>
+</html>

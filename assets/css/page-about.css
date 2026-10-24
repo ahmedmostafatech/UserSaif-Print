@@ -12,6 +12,12 @@
   overflow: hidden;
 }
 
+@media (max-width: 640px) {
+  .about-hero {
+    padding-block: var(--s-5) var(--s-6);
+  }
+}
+
 .about-hero__grid {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
@@ -155,6 +161,12 @@
   border-block-end: 1px solid var(--border);
 }
 
+@media (max-width: 640px) {
+  .about-pillars-section {
+    padding-block: var(--s-6);
+  }
+}
+
 .about-pillars-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -216,6 +228,12 @@
   padding-block: var(--s-10);
   background: var(--paper);
   border-block-end: 1px solid var(--border);
+}
+
+@media (max-width: 640px) {
+  .about-social-section {
+    padding-block: var(--s-6);
+  }
 }
 
 .about-social-grid {
@@ -340,6 +358,12 @@
   border-block-end: 1px solid var(--border);
 }
 
+@media (max-width: 640px) {
+  .about-location-section {
+    padding-block: var(--s-6);
+  }
+}
+
 .about-location-grid {
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
@@ -418,6 +442,12 @@
   box-shadow: var(--shadow-3);
   max-width: 820px;
   margin-inline: auto;
+}
+
+@media (max-width: 640px) {
+  .about-inquiry-card {
+    padding: var(--s-3);
+  }
 }
 
 .inquiry-grid-fields {
@@ -499,6 +529,25 @@
     inset-inline-end: auto;
     margin-block-start: var(--s-2);
     max-width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .about-hero__grid {
+    gap: var(--s-4);
+  }
+  .about-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--s-2);
+  }
+  .about-stat-item__num {
+    font-size: 1.5rem;
+  }
+  .map-embed-wrapper {
+    min-height: 260px;
+  }
+  .map-embed-wrapper iframe {
+    min-height: 260px;
   }
 }
 
