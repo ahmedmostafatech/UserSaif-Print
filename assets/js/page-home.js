@@ -19,15 +19,26 @@ function homeEscapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
-document.addEventListener("DOMContentLoaded", async function () {
+function initPageHome() {
   initImageFallbacks();
   initSmoothScroll();
   initHomeLightboxEvents();
+  initPortfolioCarousel();
 
   // جلب البيانات ومزامنة الصفحة الرئيسية لحظياً مع لوحة الأدمن
-  await syncHomePageData();
-  initPortfolioCarousel();
-});
+  syncHomePageData().then(function () {
+    initPortfolioCarousel();
+    if (typeof window.revealVisibleElements === "function") {
+      window.revealVisibleElements();
+    }
+  });
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initPageHome);
+} else {
+  initPageHome();
+}
 
 // ---------- مزامنة بيانات الصفحة الرئيسية من Supabase / Settings ----------
 async function syncHomePageData() {
@@ -74,11 +85,27 @@ function renderHomeServicesGrid(services, categories) {
   grid.innerHTML = services.map(function (s) {
     let catObj = categories.find(function (c) { return c.id === s.category; });
     let catName = catObj ? catObj.name : s.category;
-    let priceText = s.priceFrom ? 'ابتداءً من <span class="num">' + s.priceFrom + '</span> ج.م' : 'حسب المواصفات';
     let imageSrc = s.image || HOME_PLACEHOLDER_SVG;
+    
+    let footerHtml = '';
+    if (s.priceFrom) {
+      footerHtml = 
+        '<div class="catalog-card__price-box">' +
+          '<span class="catalog-card__price-prefix">ابتداءً من</span>' +
+          '<span class="catalog-card__price-val"><span class="num">' + s.priceFrom + '</span> ج.م</span>' +
+        '</div>' +
+        '<a class="btn btn--primary btn--sm" href="services.html?service=' + encodeURIComponent(s.id) + '#wizard-section">ابدأ الطلب</a>';
+    } else {
+      footerHtml = 
+        '<div class="catalog-card__price-box">' +
+          '<span class="catalog-card__price-prefix">التسعير</span>' +
+          '<span class="catalog-card__price-quote">حسب الكمية والمواصفات</span>' +
+        '</div>' +
+        '<a class="btn btn--secondary btn--sm" href="services.html?service=' + encodeURIComponent(s.id) + '#wizard-section">طلب تسعيرة</a>';
+    }
 
     return (
-      '<article class="catalog-card reveal">' +
+      '<article class="catalog-card is-visible">' +
         '<div class="catalog-card__media">' +
           '<img src="' + homeEscapeHtml(imageSrc) + '" alt="' + homeEscapeHtml(s.name) + '" loading="lazy" onerror="this.onerror=null; this.src=\'' + HOME_PLACEHOLDER_SVG + '\';">' +
           '<span class="catalog-card__pill">' + homeEscapeHtml(catName || "خدمة معتمدة") + '</span>' +
@@ -89,16 +116,16 @@ function renderHomeServicesGrid(services, categories) {
             '<p class="catalog-card__desc">' + homeEscapeHtml(s.description || "") + '</p>' +
           '</div>' +
           '<div class="catalog-card__footer">' +
-            '<div class="catalog-card__price-box">' +
-              '<span class="catalog-card__price-prefix">التسعير</span>' +
-              '<span class="catalog-card__price-val">' + priceText + '</span>' +
-            '</div>' +
-            '<a class="btn btn--primary btn--sm" href="services.html?service=' + encodeURIComponent(s.id) + '#wizard-section">ابدأ الطلب</a>' +
+            footerHtml +
           '</div>' +
         '</div>' +
       '</article>'
     );
   }).join("");
+
+  grid.querySelectorAll(".catalog-card").forEach(function (card) {
+    card.classList.add("is-visible");
+  });
 }
 
 // ---------- رسم عناصر كاروسيل معرض الأعمال المنفذة ----------
@@ -113,7 +140,7 @@ function renderHomePortfolioCarousel(items, categories) {
     let serviceLink = "services.html?service=" + encodeURIComponent(item.serviceId || "tshirt") + "&ref=" + encodeURIComponent(item.id) + "#wizard-section";
 
     return (
-      '<article class="portfolio-carousel-item reveal" data-category="' + homeEscapeHtml(item.category) + '" data-id="' + homeEscapeHtml(item.id) + '">' +
+      '<article class="portfolio-carousel-item is-visible" data-category="' + homeEscapeHtml(item.category) + '" data-id="' + homeEscapeHtml(item.id) + '">' +
         '<img src="' + homeEscapeHtml(imageSrc) + '" alt="' + homeEscapeHtml(item.title) + '" loading="lazy" onerror="this.onerror=null; this.src=\'' + HOME_PLACEHOLDER_SVG + '\';">' +
         '<div class="portfolio-carousel-overlay">' +
           '<span class="portfolio-carousel-overlay__badge">' + homeEscapeHtml(catName || "عمل منفّذ بأسوان") + '</span>' +
@@ -136,19 +163,15 @@ function renderHomePortfolioCarousel(items, categories) {
     );
   }).join("");
 
-  // ربط النقر على الكرت لفتح اللايت بوكس
   carousel.querySelectorAll(".portfolio-carousel-item").forEach(function (card) {
+    card.classList.add("is-visible");
     card.style.cursor = "pointer";
-    card.addEventListener("click", function (e) {
-      if (e.target.closest("a")) return; // الروابط تفتح مباشرة
-      let id = card.getAttribute("data-id");
-      let item = homePortfolioItems.find(function (it) { return it.id === id; });
-      if (item) {
-        openHomeWorkModal(item);
-      }
-    });
   });
+
+  // تحديث عدادات وأزرار الكاروسيل بعد الرسم
+  initPortfolioCarousel();
 }
+
 
 // ---------- منطق نافذة اللايت بوكس على الصفحة الرئيسية ----------
 function setHomeModalImage(index) {
@@ -299,6 +322,59 @@ function initHomeLightboxEvents() {
       setHomeModalImage(parseInt(dot.getAttribute("data-dot-idx"), 10));
     }
   });
+
+  // ربط النقر بالكامل عبر تفويض الأحداث على الكاروسيل لدعم العناصر الثابتة والمحقونة
+  let carousel = document.getElementById("portfolio-carousel");
+  if (carousel && !carousel.dataset.delegated) {
+    carousel.dataset.delegated = "true";
+    carousel.addEventListener("click", function (e) {
+      if (e.target.closest("a")) return; // الروابط تفتح مباشرة
+      let card = e.target.closest(".portfolio-carousel-item");
+      if (!card) return;
+      let id = card.getAttribute("data-id");
+      let item = homePortfolioItems.find(function (it) { return it.id === id; });
+      if (!item) {
+        let imgEl = card.querySelector("img");
+        let titleEl = card.querySelector(".portfolio-carousel-overlay__title");
+        let badgeEl = card.querySelector(".portfolio-carousel-overlay__badge");
+        let descEl = card.querySelector(".portfolio-carousel-overlay__desc");
+        let linkEl = card.querySelector(".portfolio-carousel-overlay__link");
+        let sId = "tshirt";
+        if (linkEl && linkEl.href) {
+          try {
+            sId = new URL(linkEl.href, window.location.href).searchParams.get("service") || "tshirt";
+          } catch (err) {}
+        }
+        item = {
+          id: id || "static-p",
+          title: titleEl ? titleEl.textContent.trim() : "نموذج عمل حرفي",
+          category: card.getAttribute("data-category") || "apparel",
+          image: imgEl ? imgEl.src : HOME_PLACEHOLDER_SVG,
+          images: imgEl ? [imgEl.src] : [HOME_PLACEHOLDER_SVG],
+          note: descEl ? descEl.textContent.trim() : "",
+          serviceId: sId
+        };
+      }
+      openHomeWorkModal(item);
+    });
+  }
+}
+
+// مطابقة الفلاتر بمرونة بين أسماء التصنيفات الثابتة وقاعدة البيانات
+function matchPortfolioCategory(itemCat, filterValue) {
+  if (!filterValue || filterValue === "all") return true;
+  if (!itemCat) return false;
+  if (itemCat === filterValue) return true;
+  let allowed = filterValue.split(",").map(function (s) { return s.trim(); });
+  if (allowed.indexOf(itemCat) !== -1) return true;
+  if (filterValue === "stickers" && (itemCat === "stickers" || itemCat === "stickers-labels")) return true;
+  if (filterValue === "stickers-labels" && (itemCat === "stickers" || itemCat === "stickers-labels")) return true;
+  if (filterValue === "mugs" && (itemCat === "mugs" || itemCat === "mugs-gifts")) return true;
+  if (filterValue === "mugs-gifts" && (itemCat === "mugs" || itemCat === "mugs-gifts")) return true;
+  if (filterValue === "caps" && (itemCat === "caps" || itemCat === "cap")) return true;
+  if (filterValue === "apparel" && (itemCat === "apparel" || itemCat === "clothing")) return true;
+  if (filterValue === "phone-cases" && (itemCat === "phone-cases" || itemCat === "phonecase")) return true;
+  return itemCat.indexOf(filterValue) !== -1 || filterValue.indexOf(itemCat) !== -1;
 }
 
 // ---------- كاروسيل معرض الأعمال الحرفية (تصفية وتحريك) ----------
@@ -325,6 +401,12 @@ function initPortfolioCarousel() {
       totalEl.textContent = total < 10 ? "0" + total : String(total);
     }
 
+    var allBtn = document.querySelector('#portfolio-filters .portfolio-chip[data-filter="all"]');
+    var allItemsCount = carousel.querySelectorAll(".portfolio-carousel-item").length;
+    if (allBtn && allItemsCount) {
+      allBtn.textContent = "الكل (" + (allItemsCount < 10 ? "0" + allItemsCount : allItemsCount) + ")";
+    }
+
     if (!total) {
       if (currEl) currEl.textContent = "00";
       if (prevBtn) prevBtn.disabled = true;
@@ -346,6 +428,12 @@ function initPortfolioCarousel() {
     if (currEl) {
       currEl.textContent = activeIndex < 10 ? "0" + activeIndex : String(activeIndex);
     }
+
+    var bar = document.getElementById("portfolio-progress-bar");
+    if (bar) {
+      var pct = total > 0 ? Math.max(15, (activeIndex / total) * 100) : 15;
+      bar.style.width = pct + "%";
+    }
   }
 
   function scrollByStep(forward) {
@@ -365,6 +453,8 @@ function initPortfolioCarousel() {
   carousel.addEventListener("scroll", updateStatus, { passive: true });
 
   filterButtons.forEach(function (btn) {
+    if (btn.dataset.bound === "true") return;
+    btn.dataset.bound = "true";
     btn.addEventListener("click", function () {
       var filterValue = btn.getAttribute("data-filter");
 
@@ -378,7 +468,7 @@ function initPortfolioCarousel() {
       var allItems = carousel.querySelectorAll(".portfolio-carousel-item");
       allItems.forEach(function (item) {
         var cat = item.getAttribute("data-category");
-        if (filterValue === "all" || cat === filterValue) {
+        if (matchPortfolioCategory(cat, filterValue)) {
           item.style.display = "";
           item.style.opacity = "0";
           requestAnimationFrame(function () {
@@ -394,6 +484,7 @@ function initPortfolioCarousel() {
       setTimeout(updateStatus, 160);
     });
   });
+
 
   updateStatus();
   window.addEventListener("resize", updateStatus);

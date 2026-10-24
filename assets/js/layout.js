@@ -153,32 +153,52 @@ function setupMobileNav() {
 }
 
 function setupReveal() {
-  let items = document.querySelectorAll(".reveal");
-  if (!items.length) return;
-
-  if (!("IntersectionObserver" in window)) {
-    items.forEach(function (el) { el.classList.add("is-visible"); });
-    return;
-  }
-
-  let io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
-        io.unobserve(entry.target);
+  function checkVisible() {
+    let unrevealed = document.querySelectorAll(".reveal:not(.is-visible)");
+    if (!unrevealed.length) return;
+    let vh = window.innerHeight || document.documentElement.clientHeight;
+    unrevealed.forEach(function (el) {
+      let rect = el.getBoundingClientRect();
+      if (rect.top <= vh + 80 && rect.bottom >= -80) {
+        el.classList.add("is-visible");
       }
     });
-  }, { threshold: 0.05, rootMargin: "0px 0px -30px 0px" });
+  }
 
-  items.forEach(function (el) {
-    let rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight && rect.bottom > 0) {
-      el.classList.add("is-visible");
-    } else {
-      io.observe(el);
-    }
-  });
+  window.revealVisibleElements = checkVisible;
+  checkVisible();
+
+  if ("IntersectionObserver" in window) {
+    let io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.01, rootMargin: "0px 0px 80px 0px" });
+
+    document.querySelectorAll(".reveal").forEach(function (el) {
+      let rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        el.classList.add("is-visible");
+      } else {
+        io.observe(el);
+      }
+    });
+
+    window.observeNewReveals = function () {
+      document.querySelectorAll(".reveal:not(.is-visible)").forEach(function (el) {
+        io.observe(el);
+      });
+      checkVisible();
+    };
+  }
+
+  window.addEventListener("scroll", checkVisible, { passive: true });
+  window.addEventListener("resize", checkVisible, { passive: true });
 }
+
 
 // -------------------------------------------------------------
 // عداد الأرقام التفاعلي السلس (Count-up Animation)
