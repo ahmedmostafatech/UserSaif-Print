@@ -10,10 +10,10 @@
   // سهم "للأمام" في RTL (يشاور لليسار)
   let ARROW_FORWARD = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>';
 
-  // صورة بديلة مصنفة "صورة تجريبية" (مشفّرة بشكل آمن لتجنب مشاكل علامات الاقتباس)
+  // صورة بديلة لاستوديو يوزرسيف
   let PLACEHOLDER_SVG = "<svg xmlns='http://www.w3.org/2000/svg' width='600' height='750' viewBox='0 0 600 750'>" +
     "<rect width='600' height='750' fill='#0E3B40'/>" +
-    "<text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='24' fill='#8FC6CA'>صورة تجريبية</text></svg>";
+    "<text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='24' fill='#8FC6CA'>استوديو يوزرسيف • أسوان</text></svg>";
   let PLACEHOLDER_SRC = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(PLACEHOLDER_SVG);
 
   // حالة الصفحة
@@ -143,13 +143,11 @@
   function cardHtml(item, index) {
     let service = serviceName(item.serviceId);
     let image = item.image || PLACEHOLDER_SRC;
-    let sampleTag = item.sample ? '<span class="tag-sample">تجريبي</span>' : "";
     let delay = Math.min(index, 6);
 
     return '<article class="portfolio-card is-entering" style="--i:' + delay + '">' +
       '<img class="portfolio-card__bg" src="' + esc(image) + '" alt="' + esc(item.title) + '" loading="lazy" decoding="async">' +
       '<div class="portfolio-card__overlay"></div>' +
-      sampleTag +
       '<button class="portfolio-card__open" type="button" data-open="' + esc(item.id) + '" aria-label="' + esc("عرض تفاصيل: " + item.title) + '"></button>' +
       '<div class="portfolio-card__content">' +
       '<span class="portfolio-card__tag">' + esc(categoryName(item.category)) + "</span>" +
@@ -274,14 +272,13 @@
     if (img.complete && img.naturalWidth > 0) img.classList.add("is-loaded");
 
     let service = serviceName(item.serviceId);
-    $("work-sample").hidden = !item.sample;
+    $("work-sample").hidden = true;
     $("work-tag").textContent = categoryName(item.category);
     $("work-title").textContent = item.title;
     $("work-category").textContent = categoryName(item.category) || "—";
     $("work-service").textContent = service || "—";
     $("work-service-row").hidden = !service;
-    $("work-note").textContent = "اضغط «اطلب مماثلًا» لبدء طلب جديد يستخدم هذا العمل كمرجع." +
-      (item.sample ? " هذا عمل تجريبي للعرض فقط." : "");
+    $("work-note").textContent = "اضغط «اطلب مماثلًا» لبدء طلب جديد يستخدم هذا العمل كمرجع.";
     $("work-request").href = requestUrl(item);
 
     $("work-dialog").querySelector(".portfolio-modal__body").scrollTop = 0;

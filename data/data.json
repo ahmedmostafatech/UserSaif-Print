@@ -65,77 +65,77 @@
       "id": "tshirt", "name": "تيشيرت مطبوع", "category": "apparel", "formType": "apparel",
       "fields": ["color", "sizes", "placement"], "placements": ["chest", "back", "sleeve"],
       "description": "تيشيرت بطباعة حسب تصميمك. اختر اللون والمقاسات ومكان الطباعة.",
-      "image": "img/services/tshirt.jpg", "priceMode": "from", "priceFrom": 220, "sample": true, "active": true
+      "image": "assets/img/tshirt-men.jpg", "priceMode": "from", "priceFrom": 220, "sample": false, "active": true
     },
     {
       "id": "hoodie", "name": "هودي مطبوع", "category": "apparel", "formType": "apparel",
       "fields": ["color", "sizes", "placement"], "placements": ["chest", "back", "sleeve"],
       "description": "هودي بطباعة حسب تصميمك. اختر اللون والمقاسات ومكان الطباعة.",
-      "image": "img/services/hoodie.jpg", "priceMode": "from", "priceFrom": 480, "sample": true, "active": true
+      "image": "assets/img/hoodie-men.jpg", "priceMode": "from", "priceFrom": 480, "sample": false, "active": true
     },
     {
       "id": "sweatshirt", "name": "سويت شيرت مطبوع", "category": "apparel", "formType": "apparel",
       "fields": ["color", "sizes", "placement"], "placements": ["chest", "back", "sleeve"],
       "description": "سويت شيرت بطباعة حسب تصميمك. اختر اللون والمقاسات ومكان الطباعة.",
-      "image": "img/services/sweatshirt.jpg", "priceMode": "from", "priceFrom": 400, "sample": true, "active": true
+      "image": "assets/img/hoodie-men.jpg", "priceMode": "from", "priceFrom": 400, "sample": false, "active": true
     },
     {
       "id": "cap", "name": "كاب مطبوع", "category": "caps", "formType": "apparel",
       "fields": ["color", "placement"], "placements": ["capFront", "capSide", "capBack"],
       "description": "كاب بطباعة حسب تصميمك. اختر اللون ومكان الطباعة.",
-      "image": "img/services/cap.jpg", "priceMode": "from", "priceFrom": 150, "sample": true, "active": true
+      "image": "assets/img/cap-men.jpg", "priceMode": "from", "priceFrom": 150, "sample": false, "active": true
     },
     {
       "id": "stickers", "name": "ستيكرات", "category": "stickers-labels", "formType": "sticker",
       "fields": ["dimensions", "shape", "use"], "placements": [],
       "description": "ستيكرات بالمقاس والشكل الذي تحدده.",
-      "image": "img/services/stickers.jpg", "priceMode": "from", "priceFrom": 60, "sample": true, "active": true
+      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCIem2w5wOVNXPbUqTgyF7-803eBkNc6YuOlO0sx15R2asrWo3b5Ottdz0j88MymbaDb_eCpiaUIZnsnHHmHwYnqGDhB0Kg6whIycnkCwEFi07yJBYgCauzFPfY8ZrSLQVLFpnly0Zsdzvmo8XY2NO5_0w1OB8YZrWwtfzqllMmXteR5EXSiW8tIpfMgSdLrBBBf5g2GN4XrTSwqB0cUTfDe0t9XOjzAxjVEKGWYHRSmiYdVqjxkciA", "priceMode": "from", "priceFrom": 60, "sample": false, "active": true
     },
     {
       "id": "labels", "name": "ليبلز", "category": "stickers-labels", "formType": "sticker",
       "fields": ["dimensions", "shape", "use"], "placements": [],
       "description": "ليبلز بالمقاس والشكل الذي تحدده.",
-      "image": "img/services/labels.jpg", "priceMode": "from", "priceFrom": 80, "sample": true, "active": true
+      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCA5MQoPjASLTzmTEP0U2wpQQ17qIcPRNsTGdTpVpcoUjDsaT5LqGgTJQrOljtK5GguTzBiORE9ql1Mm2xPip_wP7bkcLGV0rna_w1qB7r6hWXOu1dPTPICv3VMwpWwi58lpm-OWTVpjKx4k4Htl5AHEfzAUUrSqA3RaARx8_xNSfUul3C70g_HDmozGkA9qw3CRtmc6gim36w_jR3yAJB7WS09rUpjfnRKpTt98KFn-fK5ND33Mf4U", "priceMode": "from", "priceFrom": 80, "sample": false, "active": true
     },
     {
       "id": "mug", "name": "ماج مطبوع", "category": "mugs-gifts", "formType": "gift",
       "fields": ["customText"], "placements": [],
       "description": "ماج بطباعة تصميمك أو نص تكتبه.",
-      "image": "img/services/mug.jpg", "priceMode": "from", "priceFrom": 100, "sample": true, "active": true
+      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDdRtD9BhMoKmHAdrzLXdTdsMEO4O-I-kRSc4HssMMWy_pyjJgf786kdYri9xuQWoN4PMYjky3g_bwB5s5NOKPDywwItw-pqHGJSum7cn79P4yvigADcbC2eLQMtzncEqv6s3adGwNRWZzLip2rM_0OiNI8Z8U1vgrgg8eHFKT0feP4KjGP8KAy7xnuHMf0Q8V8KB09Px7k1onK2kK7OoUAi1DiHRxAd8eMJxMgLoQSnb3jRYqfrcl6", "priceMode": "from", "priceFrom": 100, "sample": false, "active": true
     },
     {
       "id": "gifts", "name": "هدايا ترويجية", "category": "mugs-gifts", "formType": "gift",
       "fields": ["customText"], "placements": [],
       "description": "هدايا مخصصة. اكتب ما تحتاجه وسنراجعه معك.",
-      "image": "img/services/gifts.jpg", "priceMode": "quote", "priceFrom": null, "sample": true, "active": true
+      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuBQYs-jIzd59sK9hnd5ho9guIvQrtw1408aKzxV-y5SDh9ByPGxhRjrk37OID9RPj3K22t9asAmo5FinqLqNtUJot0nkbIL1UUokgPGM0aq3LsMgvioJZodORW59L9SnUkX_klaoZzm61WN2PV6w7iy47VeUiFD0JQ8-PE7jRg4YdOoajQY3UNRQlzKhBzOEUisZgHX_xPhhQHtOeiPP-qzLpyu5zRGPaJSQCJY416EPrjuy1TjL40o", "priceMode": "quote", "priceFrom": null, "sample": false, "active": true
     },
     {
       "id": "phonecase", "name": "غطاء موبايل مخصص", "category": "phone-cases", "formType": "gift",
       "fields": ["customText", "phoneModel"], "placements": [],
       "description": "غطاء موبايل بتصميمك. حدد طراز الموبايل ونص التخصيص.",
-      "image": "img/services/phonecase.jpg", "priceMode": "from", "priceFrom": 180, "sample": true, "active": true
+      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuA3pmeh84GwPcvxlw30HtgdrNyxRWY9LTgptSOCoJpM0wuGb_6NiAgX1wcCf9UJxQv1XEis94Gd63Rk3jnesRv1ror7QtIwGOQseavH9sH_qKc6IvNIjBtR21aD7FdxzTfOMCqa4TRYql8uE0Tn6O2ghJ081u0gNtSoR5-hnOJgSUBWulRqTyA3IrkH2FV0cL9yMM6crXlRCnAIch4L4do836MggdmVtEkOOzgx2IphnuYZ7k-KzzI1", "priceMode": "from", "priceFrom": 180, "sample": false, "active": true
     },
     {
       "id": "custom", "name": "تصميم مخصص", "category": "custom", "formType": "custom",
       "fields": [], "placements": [],
       "description": "فكرة خاصة؟ اشرحها لنا وسنراجعها معك.",
-      "image": "img/services/custom.jpg", "priceMode": "quote", "priceFrom": null, "sample": true, "active": true
+      "image": "assets/img/about-workshop.jpg", "priceMode": "quote", "priceFrom": null, "sample": false, "active": true
     }
   ],
 
   "portfolio": [
-    { "id": "p01", "title": "أزياء طاقم العمل ومطبوعات الضيافة", "category": "apparel", "serviceId": "tshirt", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCN4kldCTBB87RCRp0fbbihqUu4hoNmrmOKW0s32Xp8NLlet_3GgfyJzLJidfQm7crcbEkRVZc_rHnIh5IVp_r_M3uVRys1YrlpK7a6YXuLD_AzuEeB_Z91uZMmzt5Y3pj-eMXIyMuKk7M2_-RpaxN-Fp2xG60kUvFYBkL06t4xw2-OpeLXq1Z2WaeAZ3vlomL8r7Ywd2fyz4gKkt5dhJjOCpC7FoTZWv8AL_QPGrHscKezRaAwBE50", "sample": true },
-    { "id": "p02", "title": "سويت شيرت بتطريز مونوغرام", "category": "apparel", "serviceId": "sweatshirt", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCDIthOKR8ERElp4ZGcv51wTYGvn8gciUtm5DkwRnIrVekdVs_cHej8MjwvvRABHidoAIZzxmTea1vHnKXOBpragxeK9JcPehal-SjsMxTe1DPU4sgyvKHM4y94JfeXBvcFfZcF_HvJ_HNsZQ6x0KE8UqdItKbvkyEZaR1SfcKJHjd8crKmsUwWQTuPHkAT9HjZXHQnPfjEcCupZJ-Y-gMk4xFCVifikhyNitIhvdyRnA-1TeA1O4bk", "sample": true },
-    { "id": "p03", "title": "هودي شتوي ثقيل بطبعة ظهر فنية", "category": "apparel", "serviceId": "hoodie", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuD_phLH4eLgGLlkA_F142bHnNdwcnR-hqck-nRNo0YlyP2j1-cJEjibCyGPQ8spPMqTOQPGqZYIK4uwEsOJR_XGm8ZhdmU5Ya05KvvaqI78ekEridvZOkzU1EaPEN_R6d8S_J42PKALXSn--JE3Oe2boJfcag51_pBqlz2v57_5IieQb1P0vUuNGJo5oaSg7-3KIvA99x0oCwy5j5GTdQS8Ay66vxmm9TviPPVGAWnUkTqvoiqHtp82", "sample": true },
-    { "id": "p04", "title": "تيشيرتات قطن فاخر بتصميم موحد", "category": "apparel", "serviceId": "tshirt", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCXl4TGFfXR30NWHAsnHxn0pTxg7pQZAl9qwFSkxORX9Et-VW-sqWcRzd6apcIlD0nysS9u5mTclzYQTvVC0hZoyA1QeGcMLpj066ZtXHdND2j8bWrXS8qtBi7a-P4zbsk30svFI29xW7XK0P4L9QBgm6TsH6W3KO4TPvY17gllMBvXcBZ_PL9fGOakXCTuxgmD3TEn3ZxwczC8a1pKTX_Bd8GuKkHq_lYOG51XTP4oI74Q-h9GXn2Q", "sample": true },
-    { "id": "p05", "title": "كابات تذكارية لرحلات نيلية", "category": "caps", "serviceId": "cap", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDD8z0DPzJThIFpfERGChPVDyG9H27XoFPEbeyF-KW8YezIGnmEMuLThJNgiBTf_LF-U8wAlqHa86Yf3pogjHlxIVOndad7ejceeJTAPHLgbNycNp0VmIaY6v-ERWhZROV7Nag5TvsoBg2mJ3O92Dr7LwqKghMewXQZiShtNIdr8KCifPnWrFGlp3HEhnuuamHjYGNCi9xUhxbVipar9znfUVcsT1ldqzDW_d8MTZ9IYpWnkAy7cZJC", "sample": true },
-    { "id": "p06", "title": "كابات وقبعات مطرزة ثلاثية الأبعاد", "category": "caps", "serviceId": "cap", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuBHPXBHNx_2z4GMUJPiOissRbjDjWtt-HzhV1HHhu1Inv34t7Ue_88_IDM7FswbD3XJ1A-CY0ISa3vcTFiCvD_FHlNk1ZDzHA3M2oD5EEVnnwcB-JiDYL3_kpZrLUulStms1_Nb7UReIseCZbo-ggr_ASPwHFzn6-YiVgEen-f_qMJHzRtUm_KQcDSRWZKrsTF8yR0OhlNLatwePaH7EgKPm8cosqghlK480VFJCKHLfjMVydZK97Q1", "sample": true },
-    { "id": "p07", "title": "باك استيكرات مجتمع المطورين", "category": "stickers-labels", "serviceId": "stickers", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCIem2w5wOVNXPbUqTgyF7-803eBkNc6YuOlO0sx15R2asrWo3b5Ottdz0j88MymbaDb_eCpiaUIZnsnHHmHwYnqGDhB0Kg6whIycnkCwEFi07yJBYgCauzFPfY8ZrSLQVLFpnly0Zsdzvmo8XY2NO5_0w1OB8YZrWwtfzqllMmXteR5EXSiW8tIpfMgSdLrBBBf5g2GN4XrTSwqB0cUTfDe0t9XOjzAxjVEKGWYHRSmiYdVqjxkciA", "sample": true },
-    { "id": "p08", "title": "ليبلز وبطاقات براندنج فاخرة", "category": "stickers-labels", "serviceId": "labels", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCA5MQoPjASLTzmTEP0U2wpQQ17qIcPRNsTGdTpVpcoUjDsaT5LqGgTJQrOljtK5GguTzBiORE9ql1Mm2xPip_wP7bkcLGV0rna_w1qB7r6hWXOu1dPTPICv3VMwpWwi58lpm-OWTVpjKx4k4Htl5AHEfzAUUrSqA3RaARx8_xNSfUul3C70g_HDmozGkA9qw3CRtmc6gim36w_jR3yAJB7WS09rUpjfnRKpTt98KFn-fK5ND33Mf4U", "sample": true },
-    { "id": "p09", "title": "أكواب تذكارية لمعرض فني", "category": "mugs-gifts", "serviceId": "mug", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDdRtD9BhMoKmHAdrzLXdTdsMEO4O-I-kRSc4HssMMWy_pyjJgf786kdYri9xuQWoN4PMYjky3g_bwB5s5NOKPDywwItw-pqHGJSum7cn79P4yvigADcbC2eLQMtzncEqv6s3adGwNRWZzLip2rM_0OiNI8Z8U1vgrgg8eHFKT0feP4KjGP8KAy7xnuHMf0Q8V8KB09Px7k1onK2kK7OoUAi1DiHRxAd8eMJxMgLoQSnb3jRYqfrcl6", "sample": true },
-    { "id": "p10", "title": "باقة ترحيبية لمؤتمر الاستثمار", "category": "mugs-gifts", "serviceId": "gifts", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuBQYs-jIzd59sK9hnd5ho9guIvQrtw1408aKzxV-y5SDh9ByPGxhRjrk37OID9RPj3K22t9asAmo5FinqLqNtUJot0nkbIL1UUokgPGM0aq3LsMgvioJZodORW59L9SnUkX_klaoZzm61WN2PV6w7iy47VeUiFD0JQ8-PE7jRg4YdOoajQY3UNRQlzKhBzOEUisZgHX_xPhhQHtOeiPP-qzLpyu5zRGPaJSQCJY416EPrjuy1TjL40o", "sample": true },
-    { "id": "p11", "title": "أغطية هواتف بطابع بصري حديث", "category": "phone-cases", "serviceId": "phonecase", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuA3pmeh84GwPcvxlw30HtgdrNyxRWY9LTgptSOCoJpM0wuGb_6NiAgX1wcCf9UJxQv1XEis94Gd63Rk3jnesRv1ror7QtIwGOQseavH9sH_qKc6IvNIjBtR21aD7FdxzTfOMCqa4TRYql8uE0Tn6O2ghJ081u0gNtSoR5-hnOJgSUBWulRqTyA3IrkH2FV0cL9yMM6crXlRCnAIch4L4do836MggdmVtEkOOzgx2IphnuYZ7k-KzzI1", "sample": true },
-    { "id": "p12", "title": "جرابات موبايل بطباعة خط عربي فني", "category": "phone-cases", "serviceId": "phonecase", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuB1a5YniWY0iKw8u_FFu3CMvwmuLMKPT0pAaIOUF_P5GRGhLTuzxaYopif10g61fLzK5__tC4s6xMDoPrp0W-Es3E1jajK4wp1-6Udi3M93o9XRy4VoNFyHrPM099EIRJns0MGajGMSoqH3kXnLpqmN1cHQuXgwDN_Mn5WKwByguugPWNb2DakpdmJBHtCfAFTkUsJ5Hc_jM9Pv3WiNRt8AJfZYWVL6_o6dYowiieJ1SMSttoATmfz4", "sample": true }
+    { "id": "p01", "title": "أزياء طاقم العمل ومطبوعات الضيافة", "category": "apparel", "serviceId": "tshirt", "image": "assets/img/tshirt-men.jpg", "sample": false },
+    { "id": "p02", "title": "سويت شيرت بتطريز مونوغرام", "category": "apparel", "serviceId": "sweatshirt", "image": "assets/img/hoodie-men.jpg", "sample": false },
+    { "id": "p03", "title": "هودي شتوي ثقيل بطبعة ظهر فنية", "category": "apparel", "serviceId": "hoodie", "image": "assets/img/hoodie-men.jpg", "sample": false },
+    { "id": "p04", "title": "تيشيرتات قطن فاخر بتصميم موحد", "category": "apparel", "serviceId": "tshirt", "image": "assets/img/tshirt-men.jpg", "sample": false },
+    { "id": "p05", "title": "كابات تذكارية لرحلات نيلية", "category": "caps", "serviceId": "cap", "image": "assets/img/cap-men.jpg", "sample": false },
+    { "id": "p06", "title": "كابات وقبعات مطرزة ثلاثية الأبعاد", "category": "caps", "serviceId": "cap", "image": "assets/img/cap-men.jpg", "sample": false },
+    { "id": "p07", "title": "باك استيكرات مجتمع المطورين", "category": "stickers-labels", "serviceId": "stickers", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCIem2w5wOVNXPbUqTgyF7-803eBkNc6YuOlO0sx15R2asrWo3b5Ottdz0j88MymbaDb_eCpiaUIZnsnHHmHwYnqGDhB0Kg6whIycnkCwEFi07yJBYgCauzFPfY8ZrSLQVLFpnly0Zsdzvmo8XY2NO5_0w1OB8YZrWwtfzqllMmXteR5EXSiW8tIpfMgSdLrBBBf5g2GN4XrTSwqB0cUTfDe0t9XOjzAxjVEKGWYHRSmiYdVqjxkciA", "sample": false },
+    { "id": "p08", "title": "ليبلز وبطاقات براندنج فاخرة", "category": "stickers-labels", "serviceId": "labels", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCA5MQoPjASLTzmTEP0U2wpQQ17qIcPRNsTGdTpVpcoUjDsaT5LqGgTJQrOljtK5GguTzBiORE9ql1Mm2xPip_wP7bkcLGV0rna_w1qB7r6hWXOu1dPTPICv3VMwpWwi58lpm-OWTVpjKx4k4Htl5AHEfzAUUrSqA3RaARx8_xNSfUul3C70g_HDmozGkA9qw3CRtmc6gim36w_jR3yAJB7WS09rUpjfnRKpTt98KFn-fK5ND33Mf4U", "sample": false },
+    { "id": "p09", "title": "أكواب تذكارية لمعرض فني", "category": "mugs-gifts", "serviceId": "mug", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDdRtD9BhMoKmHAdrzLXdTdsMEO4O-I-kRSc4HssMMWy_pyjJgf786kdYri9xuQWoN4PMYjky3g_bwB5s5NOKPDywwItw-pqHGJSum7cn79P4yvigADcbC2eLQMtzncEqv6s3adGwNRWZzLip2rM_0OiNI8Z8U1vgrgg8eHFKT0feP4KjGP8KAy7xnuHMf0Q8V8KB09Px7k1onK2kK7OoUAi1DiHRxAd8eMJxMgLoQSnb3jRYqfrcl6", "sample": false },
+    { "id": "p10", "title": "باقة ترحيبية لمؤتمر الاستثمار", "category": "mugs-gifts", "serviceId": "gifts", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuBQYs-jIzd59sK9hnd5ho9guIvQrtw1408aKzxV-y5SDh9ByPGxhRjrk37OID9RPj3K22t9asAmo5FinqLqNtUJot0nkbIL1UUokgPGM0aq3LsMgvioJZodORW59L9SnUkX_klaoZzm61WN2PV6w7iy47VeUiFD0JQ8-PE7jRg4YdOoajQY3UNRQlzKhBzOEUisZgHX_xPhhQHtOeiPP-qzLpyu5zRGPaJSQCJY416EPrjuy1TjL40o", "sample": false },
+    { "id": "p11", "title": "أغطية هواتف بطابع بصري حديث", "category": "phone-cases", "serviceId": "phonecase", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuA3pmeh84GwPcvxlw30HtgdrNyxRWY9LTgptSOCoJpM0wuGb_6NiAgX1wcCf9UJxQv1XEis94Gd63Rk3jnesRv1ror7QtIwGOQseavH9sH_qKc6IvNIjBtR21aD7FdxzTfOMCqa4TRYql8uE0Tn6O2ghJ081u0gNtSoR5-hnOJgSUBWulRqTyA3IrkH2FV0cL9yMM6crXlRCnAIch4L4do836MggdmVtEkOOzgx2IphnuYZ7k-KzzI1", "sample": false },
+    { "id": "p12", "title": "جرابات موبايل بطباعة خط عربي فني", "category": "phone-cases", "serviceId": "phonecase", "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuB1a5YniWY0iKw8u_FFu3CMvwmuLMKPT0pAaIOUF_P5GRGhLTuzxaYopif10g61fLzK5__tC4s6xMDoPrp0W-Es3E1jajK4wp1-6Udi3M93o9XRy4VoNFyHrPM099EIRJns0MGajGMSoqH3kXnLpqmN1cHQuXgwDN_Mn5WKwByguugPWNb2DakpdmJBHtCfAFTkUsJ5Hc_jM9Pv3WiNRt8AJfZYWVL6_o6dYowiieJ1SMSttoATmfz4", "sample": false }
   ],
 
   "faq": [

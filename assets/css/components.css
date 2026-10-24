@@ -209,6 +209,52 @@
 .site-header { position: sticky; inset-block-start: 0; z-index: 100; height: var(--header-h); background: rgba(248,247,244,.92); backdrop-filter: blur(10px); border-block-end: 1px solid var(--border); }
 .site-header__inner { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
 .logo { font-size: 1.5rem; font-weight: var(--fw-bold); color: var(--teal-900); text-decoration: none; }
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  text-decoration: none;
+  transition: opacity var(--dur-fast);
+}
+.site-brand:hover {
+  text-decoration: none;
+  opacity: 0.95;
+}
+.site-logo-img {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-md);
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(17, 72, 80, 0.18);
+  flex-shrink: 0;
+  transition: transform var(--dur-fast) var(--ease);
+}
+.site-brand:hover .site-logo-img {
+  transform: scale(1.04);
+}
+.brand-text-wrap {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.brand-title {
+  font-size: 1.25rem;
+  font-weight: var(--fw-bold);
+  color: var(--teal-900);
+  letter-spacing: -0.01em;
+}
+.brand-slogan {
+  font-size: 0.6875rem;
+  font-weight: var(--fw-medium);
+  color: var(--teal-700);
+  margin-top: 2px;
+}
+@media (max-width: 480px) {
+  .brand-slogan { display: none; }
+  .site-logo-img { width: 38px; height: 38px; }
+  .brand-title { font-size: 1.15rem; }
+}
 .nav { display: flex; align-items: center; gap: var(--s-1); }
 .nav a { padding: var(--s-1) var(--s-2); border-radius: var(--r-sm); color: var(--text); text-decoration: none; font-weight: var(--fw-medium); }
 .nav a:hover { background: var(--teal-50); }

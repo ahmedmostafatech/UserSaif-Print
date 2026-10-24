@@ -39,9 +39,15 @@ function renderHeader() {
   return (
     '<a class="skip-link" href="#main">تخطي إلى المحتوى</a>' +
     '<header class="site-header"><div class="container site-header__inner">' +
-    '<a class="logo" href="index.html" aria-label="يوزرسيف، العودة للرئيسية">يوزرسيف</a>' +
+    '<a class="site-brand" href="index.html" aria-label="يوزرسيف، العودة للرئيسية">' +
+      '<img src="assets/img/logo.png" alt="شعار استوديو يوزرسيف" class="site-logo-img" width="44" height="44">' +
+      '<span class="brand-text-wrap">' +
+        '<span class="brand-title">يوزرسيف</span>' +
+        '<span class="brand-slogan">خليك مختلف .. خليك يوزرسيف</span>' +
+      '</span>' +
+    '</a>' +
     '<nav class="nav" id="main-nav" aria-label="القائمة الرئيسية">' + links + "</nav>" +
-    '<div class="row">' +
+    '<div class="row align-center">' +
     '<a class="btn btn--primary btn--sm" href="services.html#wizard-section">ابدأ طلبك</a>' +
     '<button class="btn btn--secondary btn--sm nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="main-nav">القائمة</button>' +
     "</div></div></header>"
@@ -53,7 +59,13 @@ function renderFooter() {
     '<footer class="site-footer"><div class="container">' +
     '<div class="grid grid--3">' +
     '<div>' +
-      '<div class="logo" style="color:#fff; margin-bottom: 8px;">يوزرسيف</div>' +
+      '<a class="site-brand" href="index.html" style="text-decoration:none; margin-bottom:12px; display:inline-flex;" aria-label="يوزرسيف، العودة للرئيسية">' +
+        '<img src="assets/img/logo.png" alt="شعار استوديو يوزرسيف" class="site-logo-img" style="border-color:rgba(255,255,255,0.2);" width="44" height="44">' +
+        '<span class="brand-text-wrap">' +
+          '<span class="brand-title" style="color:#fff;">يوزرسيف</span>' +
+          '<span class="brand-slogan" style="color:var(--teal-200);">خليك مختلف .. خليك يوزرسيف</span>' +
+        '</span>' +
+      '</a>' +
       '<p style="color:var(--teal-100); font-size:0.9375rem; line-height:1.6; margin-bottom:14px;">استوديو للطباعة وتخصيص المنتجات في أسوان. ننفذ تصاميمك بحرفية وجودة خامات معتمدة وضمان حقيقي ضد عيوب الصناعة.</p>' +
       '<div class="footer-social-row" style="display:flex; align-items:center; gap:10px; margin-top:12px;">' +
         '<a href="' + SOCIAL_LINKS.facebook + '" target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="صفحتنا على فيسبوك" title="فيسبوك">' + SVG_ICONS.facebook + '</a>' +

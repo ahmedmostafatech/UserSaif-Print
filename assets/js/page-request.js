@@ -139,13 +139,11 @@ function showServiceSelectionPrompt() {
   let catalogWrap = document.getElementById("catalog-browser-wrap");
   let compactBar = document.getElementById("selected-service-compact-bar");
   let wizardSection = document.getElementById("wizard-section");
-  let promptSection = document.getElementById("choose-service-prompt");
   let stickyCta = document.getElementById("mobile-sticky-cta");
 
   if (catalogWrap) catalogWrap.style.display = "block";
   if (compactBar) compactBar.style.display = "none";
   if (wizardSection) wizardSection.style.display = "none";
-  if (promptSection) promptSection.style.display = "flex";
   if (stickyCta) stickyCta.style.display = "none";
 }
 
