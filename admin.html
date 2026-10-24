@@ -182,6 +182,9 @@
             <button class="tab" role="tab" id="tab-btn-portfolio" aria-selected="false" data-tab="portfolio">
               المعرض (<span class="num" id="portfolio-count">0</span>)
             </button>
+            <button class="tab" role="tab" id="tab-btn-hero" aria-selected="false" data-tab="hero">
+              صورة الهيرو الرئيسية
+            </button>
           </div>
 
           <!-- تاب 1: الخدمات -->
@@ -221,6 +224,34 @@
               </div>
             </div>
             <div id="portfolio-body"></div>
+          </div>
+
+          <!-- تاب 5: صورة الهيرو والواجهة -->
+          <div class="tab-panel" id="panel-hero" role="tabpanel" aria-labelledby="tab-btn-hero" hidden>
+            <div class="card" style="max-width:680px; margin-top:var(--s-3);">
+              <h3 class="h4" style="margin-bottom:var(--s-1)">صورة الهيرو سكشن (الصفحة الرئيسية)</h3>
+              <p class="muted" style="margin-bottom:var(--s-4)">يمكنك التحكم في الصورة الرئيسية البارزة في واجهة الموقع التي تعبر عن أحدث أعمال ومنتجات الاستوديو بأسوان وتحديثها فوراً.</p>
+              
+              <div class="field">
+                <label class="field__label" for="hero-image-input">رابط أو مسار صورة الهيرو</label>
+                <div class="image-field-row">
+                  <input class="input input--ltr" id="hero-image-input" placeholder="assets/img/hoodie-men.jpg">
+                  <label class="btn btn--secondary btn--sm upload-btn-label">
+                    <span>رفع صورة للهيرو</span>
+                    <input type="file" id="hero-image-file" accept="image/png,image/jpeg,image/webp" hidden>
+                  </label>
+                </div>
+              </div>
+
+              <div class="hero-preview-wrap" style="margin-block:var(--s-3); border-radius:var(--r-lg); overflow:hidden; border:1px solid var(--border); background:var(--teal-50); height:280px; display:flex; align-items:center; justify-content:center;">
+                <img id="hero-image-preview" src="assets/img/hoodie-men.jpg" alt="معاينة صورة الهيرو" style="width:100%; height:100%; object-fit:cover;">
+              </div>
+
+              <div class="row align-center gap-s2" style="margin-top:var(--s-4)">
+                <button class="btn btn--primary" id="save-hero-image-btn" type="button">حفظ صورة الهيرو وتحديث الواجهة</button>
+                <span class="caption muted" id="hero-save-status"></span>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -417,45 +448,60 @@
   </dialog>
 
   <!-- نافذة إضافة / تعديل عمل بالمعرض -->
-  <dialog class="dialog" id="portfolio-dialog" aria-labelledby="port-dlg-title">
+  <dialog class="dialog dialog--wide" id="portfolio-dialog" aria-labelledby="port-dlg-title">
     <form id="portfolio-form" novalidate>
       <h2 class="h3" id="port-dlg-title">بيانات عمل المعرض</h2>
       <p class="muted">يظهر هذا العمل في معرض الأعمال portfolio ويمكن للعميل بدء طلب منه.</p>
 
-      <div class="field">
-        <label class="field__label" for="port-id">معرّف العمل</label>
-        <input class="input input--ltr" id="port-id" required placeholder="مثال: p13">
+      <div class="dialog-grid-2">
+        <div class="field">
+          <label class="field__label" for="port-id">معرّف العمل</label>
+          <input class="input input--ltr" id="port-id" required placeholder="مثال: p13">
+        </div>
+        <div class="field">
+          <label class="field__label" for="port-title">عنوان العمل</label>
+          <input class="input" id="port-title" required placeholder="مثال: تيشيرت بطبعة ملونة">
+        </div>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="port-title">عنوان العمل</label>
-        <input class="input" id="port-title" required placeholder="مثال: تيشيرت بطبعة ملونة">
+      <div class="dialog-grid-2">
+        <div class="field">
+          <label class="field__label" for="port-category">التصنيف</label>
+          <select class="select" id="port-category" required></select>
+        </div>
+        <div class="field">
+          <label class="field__label" for="port-service">الخدمة المرتبطة</label>
+          <select class="select" id="port-service" required></select>
+        </div>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="port-category">التصنيف</label>
-        <select class="select" id="port-category" required></select>
-      </div>
-
-      <div class="field">
-        <label class="field__label" for="port-service">الخدمة المرتبطة</label>
-        <select class="select" id="port-service" required></select>
-      </div>
-
-      <!-- الصورة -->
-      <div class="field">
-        <label class="field__label" for="port-image">مسار أو رابط الصورة</label>
-        <div class="image-field-row">
-          <input class="input input--ltr" id="port-image" required placeholder="img/portfolio/p01.jpg">
+      <!-- قسم إدارة صور العمل المتعددة واختيار الصورة الأساسية -->
+      <div class="field port-gallery-manager" style="background:var(--paper); padding:var(--s-3); border-radius:var(--r-md); border:1px solid var(--border);">
+        <label class="field__label" style="font-weight:700; margin-bottom:4px;">معرض صور العمل (صور متعددة + تحديد الصورة الأساسية)</label>
+        <p class="caption muted" style="margin-bottom:var(--s-2)">يمكنك إضافة أكثر من زاوية أو صورة لنفس المنتج، وتحديد الصورة التي تظهر في الكرت من الخارج كصورة أساسية.</p>
+        
+        <div class="image-field-row" style="margin-bottom:var(--s-2);">
+          <input class="input input--ltr" id="port-new-img-url" placeholder="ألصق رابط صورة إضافية هنا أو ارفع ملفاً">
           <label class="btn btn--secondary btn--sm upload-btn-label">
-            <span>رفع صورة</span>
+            <span>رفع ملف صورة</span>
             <input type="file" id="port-image-file" accept="image/png,image/jpeg,image/webp" hidden>
           </label>
+          <button class="btn btn--secondary btn--sm" id="port-add-img-btn" type="button">+ إضافة للصور</button>
         </div>
-        <div class="image-preview-box" id="port-preview-box" hidden>
-          <img id="port-image-preview" alt="معاينة صورة المعرض">
-          <span class="caption muted" id="port-image-status"></span>
-        </div>
+
+        <input type="hidden" id="port-image">
+
+        <!-- شبكة المصغرات للصور المضافة -->
+        <div class="port-images-grid" id="port-images-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:var(--s-2); margin-top:var(--s-2);"></div>
+        <span class="caption muted" id="port-image-status" style="display:block; margin-top:6px;"></span>
+      </div>
+
+      <div class="field" style="margin-top:var(--s-3);">
+        <label class="check-label" style="display:inline-flex; align-items:center; gap:8px; cursor:pointer;">
+          <input type="checkbox" id="port-autoslide" checked>
+          <strong>تفعيل التبديل التلقائي للصور (Slideshow) في المعرض والواجهة</strong>
+        </label>
+        <span class="field__hint" style="display:block; margin-top:2px;">عند التفعيل، تتنقل الصور المتعددة تلقائياً بنعومة في كارت المعرض واللايت بوكس.</span>
       </div>
 
       <div class="admin-alert" id="port-alert" role="alert" hidden></div>

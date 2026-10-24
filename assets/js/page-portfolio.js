@@ -252,6 +252,42 @@
     document.documentElement.classList.toggle("modal-open", locked);
   }
 
+  let activeModalImages = [];
+  let activeModalIndex = 0;
+  let modalSlideTimer = null;
+
+  function setModalImage(index) {
+    if (!activeModalImages.length) return;
+    activeModalIndex = (index + activeModalImages.length) % activeModalImages.length;
+    let img = $("work-img");
+    img.classList.remove("is-loaded");
+    img.src = activeModalImages[activeModalIndex] || PLACEHOLDER_SRC;
+    if (img.complete && img.naturalWidth > 0) img.classList.add("is-loaded");
+
+    // تحديث حالة المؤشرات
+    let dots = document.querySelectorAll(".modal-gallery-dot");
+    dots.forEach(function (d, i) {
+      if (i === activeModalIndex) d.classList.add("is-active");
+      else d.classList.remove("is-active");
+    });
+  }
+
+  function startModalAutoSlide() {
+    stopModalAutoSlide();
+    if (activeModalImages.length > 1) {
+      modalSlideTimer = setInterval(function () {
+        setModalImage(activeModalIndex + 1);
+      }, 3500);
+    }
+  }
+
+  function stopModalAutoSlide() {
+    if (modalSlideTimer) {
+      clearInterval(modalSlideTimer);
+      modalSlideTimer = null;
+    }
+  }
+
   function openWork(id) {
     let item = state.items.filter(function (it) { return it.id === id; })[0];
     if (!item) return;
@@ -263,13 +299,36 @@
       return;
     }
 
-    let img = $("work-img");
-    img.classList.remove("is-loaded");
-    img.removeAttribute("data-fallback");
-    img.removeAttribute("src");
-    img.alt = item.title;
-    img.src = item.image || PLACEHOLDER_SRC;
-    if (img.complete && img.naturalWidth > 0) img.classList.add("is-loaded");
+    // إعداد قائمة صور العمل
+    activeModalImages = (item.images && item.images.length > 0) ? item.images.slice() : [item.image || PLACEHOLDER_SRC];
+    activeModalIndex = 0;
+
+    let prevBtn = $("work-gallery-prev");
+    let nextBtn = $("work-gallery-next");
+    let dotsWrap = $("work-gallery-dots");
+
+    if (activeModalImages.length > 1) {
+      if (prevBtn) prevBtn.style.display = "grid";
+      if (nextBtn) nextBtn.style.display = "grid";
+      if (dotsWrap) {
+        dotsWrap.style.display = "flex";
+        dotsWrap.innerHTML = activeModalImages.map(function (_, i) {
+          return '<button type="button" class="modal-gallery-dot' + (i === 0 ? ' is-active' : '') + '" data-dot-idx="' + i + '" aria-label="صورة ' + (i + 1) + '"></button>';
+        }).join("");
+      }
+      if (item.autoSlide) {
+        startModalAutoSlide();
+      } else {
+        stopModalAutoSlide();
+      }
+    } else {
+      if (prevBtn) prevBtn.style.display = "none";
+      if (nextBtn) nextBtn.style.display = "none";
+      if (dotsWrap) dotsWrap.style.display = "none";
+      stopModalAutoSlide();
+    }
+
+    setModalImage(0);
 
     let service = serviceName(item.serviceId);
     $("work-sample").hidden = true;
@@ -288,6 +347,7 @@
   }
 
   function closeWork() {
+    stopModalAutoSlide();
     let dialog = $("work-dialog");
     if (dialog.open) dialog.close();
   }
@@ -329,12 +389,36 @@
     img.addEventListener("error", function () { useFallback(img); });
     $("work-close").addEventListener("click", closeWork);
     $("work-dismiss").addEventListener("click", closeWork);
+
+    // أحداث معرض الصور داخل النافذة
+    let prevBtn = $("work-gallery-prev");
+    if (prevBtn) prevBtn.addEventListener("click", function () {
+      stopModalAutoSlide();
+      setModalImage(activeModalIndex - 1);
+    });
+    let nextBtn = $("work-gallery-next");
+    if (nextBtn) nextBtn.addEventListener("click", function () {
+      stopModalAutoSlide();
+      setModalImage(activeModalIndex + 1);
+    });
+    let dotsWrap = $("work-gallery-dots");
+    if (dotsWrap) dotsWrap.addEventListener("click", function (e) {
+      let dot = e.target.closest("[data-dot-idx]");
+      if (dot) {
+        stopModalAutoSlide();
+        setModalImage(parseInt(dot.getAttribute("data-dot-idx"), 10));
+      }
+    });
+
     // الضغط على الخلفية يقفل النافذة
     dialog.addEventListener("click", function (event) {
       if (event.target === dialog) closeWork();
     });
     // يشتغل مع زر الإغلاق ومفتاح Esc وأي إغلاق تاني
-    dialog.addEventListener("close", function () { lockScroll(false); });
+    dialog.addEventListener("close", function () {
+      stopModalAutoSlide();
+      lockScroll(false);
+    });
   }
 
   // ---------- التشغيل ----------

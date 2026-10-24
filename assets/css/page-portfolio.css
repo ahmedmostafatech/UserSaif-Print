@@ -307,6 +307,69 @@ html.modal-open { overflow: hidden; }
 .portfolio-modal__close:hover { background: var(--teal-900); }
 .portfolio-modal__close:focus-visible { outline-color: var(--white); }
 
+/* أدوات التنقل بين صور المشروع المتعددة داخل اللايت بوكس */
+.modal-gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(10, 46, 50, 0.72);
+  color: var(--white);
+  font-size: 1.5rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 4;
+  transition: all var(--dur-fast) var(--ease);
+  backdrop-filter: blur(4px);
+}
+.modal-gallery-nav:hover {
+  background: var(--teal-900);
+  transform: translateY(-50%) scale(1.1);
+}
+.modal-gallery-nav--prev {
+  inset-inline-start: var(--s-2);
+}
+.modal-gallery-nav--next {
+  inset-inline-end: var(--s-2);
+}
+
+.modal-gallery-dots {
+  position: absolute;
+  bottom: var(--s-2);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(10, 46, 50, 0.65);
+  backdrop-filter: blur(6px);
+  z-index: 4;
+}
+.modal-gallery-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+}
+.modal-gallery-dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+.modal-gallery-dot.is-active {
+  background: var(--teal-300);
+  transform: scale(1.35);
+}
+
 /* الجسم هو اللي بيسكرول، والإجراءات ثابتة في آخره */
 .portfolio-modal__body {
   flex: 1 1 auto;

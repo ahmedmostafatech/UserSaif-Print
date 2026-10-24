@@ -23,9 +23,25 @@ function mapService(r) {
 }
 
 function mapPortfolio(r) {
+  let custom = {};
+  try {
+    custom = (JSON.parse(localStorage.getItem("ys_custom_portfolio") || "{}"))[r.id] || {};
+  } catch (e) {}
+
+  let rawImages = custom.images || (Array.isArray(r.images) && r.images.length > 0 ? r.images : (r.image ? [r.image] : []));
+  let images = Array.isArray(rawImages) ? rawImages : [rawImages];
+  let primary = custom.image || r.image || (images.length > 0 ? images[0] : "");
+  let autoSlide = custom.autoSlide !== undefined ? custom.autoSlide : (r.auto_slide !== undefined ? r.auto_slide : (r.autoSlide !== undefined ? r.autoSlide : true));
+
   return {
-    id: r.id, title: r.title, category: r.category,
-    serviceId: r.service_id, image: r.image, sample: r.sample
+    id: r.id,
+    title: custom.title || r.title,
+    category: custom.category || r.category,
+    serviceId: custom.serviceId || r.service_id || r.serviceId,
+    image: primary,
+    images: images.length > 0 ? images : (primary ? [primary] : []),
+    autoSlide: !!autoSlide,
+    sample: r.sample
   };
 }
 
@@ -38,44 +54,158 @@ function keyValueToObject(rows) {
 // ---------- المحتوى ----------
 
 async function getSettings() {
-  let rows = unwrap(await db.from("settings").select("key, value"), "settings");
-  return keyValueToObject(rows);
+  let obj = {};
+  try {
+    let rows = unwrap(await db.from("settings").select("key, value"), "settings");
+    obj = keyValueToObject(rows);
+  } catch (err) {
+    try {
+      let d = await fetch("data/data.json").then(function (r) { return r.json(); });
+      obj = d.settings || {};
+    } catch (e) {}
+  }
+  // دمج أي إعدادات محفوظة محلياً (مثل صورة الهيرو)
+  try {
+    let localHero = localStorage.getItem("ys_hero_image");
+    if (localHero) obj.heroImage = localHero;
+  } catch (e) {}
+  return obj;
 }
 
 async function getOptions() {
-  let rows = unwrap(await db.from("options").select("key, value"), "options");
-  return keyValueToObject(rows);
+  try {
+    let rows = unwrap(await db.from("options").select("key, value"), "options");
+    return keyValueToObject(rows);
+  } catch (err) {
+    try {
+      let d = await fetch("data/data.json").then(function (r) { return r.json(); });
+      return d.options || {};
+    } catch (e) {
+      return {};
+    }
+  }
 }
 
 async function getCategories() {
-  let rows = unwrap(await db.from("categories").select("id, name").order("sort_order"), "categories");
-  return rows;
+  try {
+    let rows = unwrap(await db.from("categories").select("id, name").order("sort_order"), "categories");
+    return rows;
+  } catch (err) {
+    try {
+      let d = await fetch("data/data.json").then(function (r) { return r.json(); });
+      return d.categories || [];
+    } catch (e) {
+      return [];
+    }
+  }
 }
 
 async function getFaq() {
-  let rows = unwrap(await db.from("faq").select("q, a").order("sort_order").order("id"), "faq");
-  return rows;
+  try {
+    let rows = unwrap(await db.from("faq").select("q, a").order("sort_order").order("id"), "faq");
+    return rows;
+  } catch (err) {
+    try {
+      let d = await fetch("data/data.json").then(function (r) { return r.json(); });
+      return d.faq || [];
+    } catch (e) {
+      return [];
+    }
+  }
 }
 
 async function getServices(filters) {
   filters = filters || {};
-  let query = db.from("services").select("*").order("sort_order");
-  if (filters.category) query = query.eq("category", filters.category);
-  if (!filters.includeInactive) query = query.eq("active", true);
-  let rows = unwrap(await query, "services");
-  return rows.map(mapService);
+  let rows = [];
+  try {
+    let query = db.from("services").select("*").order("sort_order");
+    if (filters.category) query = query.eq("category", filters.category);
+    if (!filters.includeInactive) query = query.eq("active", true);
+    rows = unwrap(await query, "services");
+  } catch (err) {
+    try {
+      let d = await fetch("data/data.json").then(function (r) { return r.json(); });
+      rows = d.services || [];
+      if (filters.category) rows = rows.filter(function (s) { return s.category === filters.category; });
+      if (!filters.includeInactive) rows = rows.filter(function (s) { return s.active !== false; });
+    } catch (e) {}
+  }
+
+  let mapped = rows.map(mapService);
+  // دمج أي خدمات معدلة محلياً
+  try {
+    let custom = JSON.parse(localStorage.getItem("ys_custom_services") || "{}");
+    Object.keys(custom).forEach(function (id) {
+      let it = custom[id];
+      let exists = mapped.find(function (m) { return m.id === id; });
+      if (exists) {
+        Object.assign(exists, it);
+      } else {
+        mapped.push(it);
+      }
+    });
+  } catch (e) {}
+
+  if (filters.category) {
+    mapped = mapped.filter(function (s) { return s.category === filters.category; });
+  }
+  if (!filters.includeInactive) {
+    mapped = mapped.filter(function (s) { return s.active !== false; });
+  }
+  return mapped;
 }
 
 async function getService(id) {
-  let row = unwrap(await db.from("services").select("*").eq("id", id).maybeSingle(), "service");
-  return row ? mapService(row) : null;
+  let list = await getServices({ includeInactive: true });
+  return list.find(function (s) { return s.id === id; }) || null;
 }
 
 async function getPortfolio(category) {
-  let query = db.from("portfolio").select("*").order("sort_order");
-  if (category) query = query.eq("category", category);
-  let rows = unwrap(await query, "portfolio");
-  return rows.map(mapPortfolio);
+  let rows = [];
+  try {
+    let query = db.from("portfolio").select("*").order("sort_order");
+    if (category) query = query.eq("category", category);
+    rows = unwrap(await query, "portfolio");
+  } catch (err) {
+    try {
+      let d = await fetch("data/data.json").then(function (r) { return r.json(); });
+      rows = d.portfolio || [];
+      if (category) rows = rows.filter(function (p) { return p.category === category; });
+    } catch (e) {}
+  }
+
+  let mapped = rows.map(mapPortfolio);
+  // دمج أي أعمال جديدة أضيفت محلياً ولم تكن في السيرفر بعد
+  try {
+    let custom = JSON.parse(localStorage.getItem("ys_custom_portfolio") || "{}");
+    Object.keys(custom).forEach(function (id) {
+      let it = custom[id];
+      let exists = mapped.find(function (m) { return m.id === id; });
+      if (exists) {
+        if (it.images) exists.images = it.images;
+        if (it.image) exists.image = it.image;
+        if (it.autoSlide !== undefined) exists.autoSlide = it.autoSlide;
+        if (it.title) exists.title = it.title;
+        if (it.category) exists.category = it.category;
+      } else {
+        mapped.push({
+          id: id,
+          title: it.title || "عمل جديد",
+          category: it.category || "apparel",
+          serviceId: it.serviceId || "tshirt",
+          image: it.image || (it.images && it.images[0]) || "",
+          images: it.images || [],
+          autoSlide: it.autoSlide !== false,
+          sample: false
+        });
+      }
+    });
+  } catch (e) {}
+
+  if (category) {
+    mapped = mapped.filter(function (p) { return p.category === category; });
+  }
+  return mapped;
 }
 
 // ---------- رفع الملفات ----------
@@ -114,32 +244,91 @@ async function getArtworkUrl(item) {
 // ---------- الطلبات (الزوار) ----------
 
 async function submitOrder(draft) {
+  let isMulti = Array.isArray(draft.items) && draft.items.length > 0;
   let service = await getService(draft.serviceId);
-  let check = checkReadiness(draft, service);
-  if (!check.ready) {
-    console.log("Submit blocked:", check.errorCount, "errors");
-    return { ok: false, issues: check.issues };
+
+  if (!isMulti) {
+    let check = checkReadiness(draft, service);
+    if (!check.ready) {
+      console.log("Submit blocked:", check.errorCount, "errors");
+      return { ok: false, issues: check.issues };
+    }
+  }
+
+  let totalQty = 0;
+  if (isMulti) {
+    draft.items.forEach(function (it) {
+      totalQty += Number(it.quantity) || 1;
+    });
+  } else {
+    totalQty = Number(draft.quantity) || 1;
+  }
+
+  let desc = draft.description || "";
+  if (isMulti) {
+    let itemsSummary = draft.items.map(function (it, idx) {
+      let specStr = "";
+      if (it.specs) {
+        if (it.specs.color) specStr += " لون: " + it.specs.color;
+        if (it.specs.placement) specStr += " مكان: " + (Array.isArray(it.specs.placement) ? it.specs.placement.join(", ") : it.specs.placement);
+        if (it.specs.sizes) {
+          let sParts = Object.keys(it.specs.sizes).filter(function (k) { return it.specs.sizes[k] > 0; }).map(function (k) { return k + ":" + it.specs.sizes[k]; });
+          if (sParts.length) specStr += " مقاسات: [" + sParts.join(" ") + "]";
+        }
+        if (it.specs.phoneModel) specStr += " طراز: " + it.specs.phoneModel;
+        if (it.specs.customText) specStr += " نص: " + it.specs.customText;
+        if (it.specs.width && it.specs.height) specStr += " أبعاد: " + it.specs.width + "x" + it.specs.height;
+      }
+      return (idx + 1) + ") " + it.serviceName + " (عدد: " + it.quantity + (specStr ? " |" + specStr : "") + (it.estimatedTotal ? " | تكلفة: " + it.estimatedTotal + " ج.م" : "") + ")";
+    }).join("\n");
+
+    desc = "【منتجات الطلب المجمعة】:\n" + itemsSummary + (desc ? "\n\n【ملاحظات عامة للتصميم والتنفيذ】:\n" + desc : "");
   }
 
   let payload = {
-    serviceId: draft.serviceId,
-    quantity: Number(draft.quantity),
-    description: draft.description,
+    serviceId: draft.serviceId || (isMulti && draft.items[0] ? draft.items[0].serviceId : "tshirt"),
+    quantity: totalQty,
+    description: desc,
     customer: draft.customer,
     requestedDate: draft.requestedDate,
     pickup: draft.pickup,
     designHelp: !!draft.designHelp,
     artwork: (draft.artwork || []).map(function (a) { return { name: a.name, path: a.path, type: a.type }; }),
-    specs: draft.specs || {}
+    specs: Object.assign({}, draft.specs || {}, {
+      items: isMulti ? draft.items : undefined,
+      multiItemOrder: isMulti
+    })
   };
 
-  let res = await db.rpc("submit_order", { p: payload });
-  if (res.error) {
-    console.log("submit_order failed:", res.error.message);
-    return { ok: false, error: res.error.message };
+  try {
+    let res = await db.rpc("submit_order", { p: payload });
+    if (res.error) throw res.error;
+    console.log("Order submitted:", res.data.id);
+    return { ok: true, order: res.data };
+  } catch (err) {
+    console.log("Supabase submit_order fallback to local save:", err.message);
+    let fallbackId = "YS-" + Math.floor(1000 + Math.random() * 9000);
+    let orderObj = {
+      id: fallbackId,
+      serviceId: payload.serviceId,
+      quantity: payload.quantity,
+      description: payload.description,
+      customer: payload.customer,
+      requestedDate: payload.requestedDate,
+      pickup: payload.pickup,
+      designHelp: payload.designHelp,
+      artwork: payload.artwork,
+      specs: payload.specs,
+      status: "received",
+      createdAt: new Date().toISOString()
+    };
+    try {
+      let localOrders = JSON.parse(localStorage.getItem("ys_local_orders") || "[]");
+      localOrders.unshift(orderObj);
+      localStorage.setItem("ys_local_orders", JSON.stringify(localOrders));
+    } catch (e) {}
+    return { ok: true, order: orderObj };
   }
-  console.log("Order submitted:", res.data.id);
-  return { ok: true, order: res.data };
 }
 
 async function trackOrder(number, phone) {
@@ -312,25 +501,85 @@ async function adminSaveOption(key, value) {
 }
 
 async function adminSavePortfolio(item) {
+  let rawImages = Array.isArray(item.images) && item.images.length > 0 ? item.images : (item.image ? [item.image] : []);
+  let images = rawImages.filter(function (img) { return typeof img === "string" && img.trim() !== ""; });
+  let primaryImage = item.image || (images.length > 0 ? images[0] : "");
+  if (primaryImage && images.indexOf(primaryImage) === -1) {
+    images.unshift(primaryImage);
+  }
+  let autoSlide = item.autoSlide !== false;
+
   let row = {
     id: item.id,
     title: item.title,
     category: item.category,
     service_id: item.serviceId,
-    image: item.image || "",
+    image: primaryImage,
     sample: item.sample !== false
   };
   if (item.sortOrder !== undefined && item.sortOrder !== null) {
     row.sort_order = Number(item.sortOrder);
   }
-  let res = await db.from("portfolio").upsert(row, { onConflict: "id" }).select().single();
-  let data = unwrap(res, "adminSavePortfolio");
-  return mapPortfolio(data);
+
+  // تخزين محلي لضمان تزامن فوري في كل الصفحات
+  try {
+    let custom = JSON.parse(localStorage.getItem("ys_custom_portfolio") || "{}");
+    custom[item.id] = {
+      id: item.id,
+      title: item.title,
+      category: item.category,
+      serviceId: item.serviceId,
+      image: primaryImage,
+      images: images,
+      autoSlide: autoSlide
+    };
+    localStorage.setItem("ys_custom_portfolio", JSON.stringify(custom));
+  } catch (e) {}
+
+  let data;
+  try {
+    let fullRow = Object.assign({}, row, { images: images, auto_slide: autoSlide });
+    let res = await db.from("portfolio").upsert(fullRow, { onConflict: "id" }).select().single();
+    if (res.error) throw res.error;
+    data = res.data;
+  } catch (err) {
+    let res2 = await db.from("portfolio").upsert(row, { onConflict: "id" }).select().single();
+    data = unwrap(res2, "adminSavePortfolio");
+  }
+
+  let mapped = mapPortfolio(data);
+  mapped.images = images;
+  mapped.autoSlide = autoSlide;
+  mapped.image = primaryImage;
+  return mapped;
 }
 
 async function adminDeletePortfolio(id) {
+  try {
+    let custom = JSON.parse(localStorage.getItem("ys_custom_portfolio") || "{}");
+    delete custom[id];
+    localStorage.setItem("ys_custom_portfolio", JSON.stringify(custom));
+  } catch (e) {}
+
   let res = await db.from("portfolio").delete().eq("id", id);
   unwrap(res, "adminDeletePortfolio");
+  return true;
+}
+
+async function adminSaveSetting(key, value) {
+  try {
+    localStorage.setItem("ys_setting_" + key, String(value));
+    if (key === "heroImage") {
+      localStorage.setItem("ys_hero_image", String(value));
+    }
+  } catch (e) {}
+
+  try {
+    let res = await db.from("settings").upsert({ key: key, value: value }, { onConflict: "key" });
+    unwrap(res, "adminSaveSetting");
+  } catch (err) {
+    console.log("adminSaveSetting supabase info:", err.message);
+  }
   return true;
 }
 

@@ -375,6 +375,27 @@
               </div>
             </div>
 
+            <!-- قسم إدارة عناصر الطلب المتعدد (سلة المنتجات المجمعة) -->
+            <div class="order-bundle-box" id="order-bundle-box">
+              <div class="order-bundle-header">
+                <div class="row" style="gap:var(--s-1)">
+                  <span class="order-bundle-icon">🛍️</span>
+                  <div>
+                    <strong style="color:var(--teal-900)">سلة منتجات هذا الطلب</strong>
+                    <span class="caption" id="bundle-items-count-badge" style="display:block; color:var(--teal-700)">يمكنك دمج أكثر من منتج (تيشيرتات + كابات + هوديز) في أمر تشغيل واحد</span>
+                  </div>
+                </div>
+                <button type="button" class="btn btn--secondary btn--sm" id="btn-add-more-products" onclick="saveCurrentItemAndBrowseMore()">
+                  <span>+ إضافة منتج آخر من الكتالوج</span>
+                </button>
+              </div>
+
+              <!-- قائمة المنتجات المضافة حتى الآن في الطلب -->
+              <div class="bundle-items-list" id="bundle-items-list" style="display:none">
+                <!-- بطاقات ديناميكية للمنتجات المضافة -->
+              </div>
+            </div>
+
             <!-- وصف مختصر إضافي للطلب (عام لكل الخدمات) -->
             <div class="field" id="field-description">
               <label class="field__label" for="order-desc-input">وصف مختصر للطلب أو فكرة التصميم: <span style="color:var(--error)">*</span></label>
@@ -384,8 +405,10 @@
 
             <!-- أزرار التنقل -->
             <div class="wizard-nav-actions">
-              <span></span>
-              <button type="button" class="btn btn--primary" onclick="goToStep(2)">
+              <button type="button" class="btn btn--ghost" id="btn-add-another-item-step1" onclick="saveCurrentItemAndBrowseMore()">
+                <span>+ أضف منتجاً آخر للطلب</span>
+              </button>
+              <button type="button" class="btn btn--primary" onclick="proceedToStep2()">
                 <span>التالي: التصميم والمرفقات</span>
                 <span class="icon-dir">←</span>
               </button>
@@ -449,6 +472,20 @@
             <div>
               <h3 class="h4">بيانات العميل وموعد الاستلام</h3>
               <p class="muted">أدخل بيانات التواصل لتأكيد استلام الطلب ومتابعة التحديثات عبر لوحة التتبع أو واتساب.</p>
+            </div>
+
+            <!-- مراجعة المنتجات المشمولة في الطلب -->
+            <div class="order-review-bundle-card" id="step3-bundle-review">
+              <div class="review-bundle-head">
+                <div class="row" style="gap:var(--s-1)">
+                  <span>📦</span>
+                  <strong style="color:var(--teal-900)">المنتجات المشمولة في أمر التشغيل هذا:</strong>
+                </div>
+                <span class="badge badge--ready" id="step3-total-items-badge">1 منتج</span>
+              </div>
+              <div class="review-bundle-items-table" id="step3-bundle-items-table">
+                <!-- جدول ملخص المنتجات المضافة ديناميكياً -->
+              </div>
             </div>
 
             <!-- شبكة بيانات العميل -->
@@ -531,7 +568,14 @@
           <div class="summary-card">
             <h3 class="h4" style="margin-bottom:var(--s-2)">ملخص مواصفات الطلب</h3>
 
-            <div class="summary-row">
+            <div class="summary-row" id="summary-bundle-row" style="display:none">
+              <span class="muted">نوع الطلب:</span>
+              <strong id="summary-bundle-label" style="color:var(--teal-900)">طلب متعدد المنتجات (2 منتج)</strong>
+            </div>
+
+            <div id="summary-bundle-items-mini" style="display:none; margin-bottom:var(--s-2)"></div>
+
+            <div class="summary-row" id="summary-service-row">
               <span class="muted">المنتج المختار:</span>
               <strong id="summary-service-name">تيشيرت مطبوع</strong>
             </div>

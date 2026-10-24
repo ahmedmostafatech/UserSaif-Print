@@ -855,3 +855,154 @@
   display: grid;
   gap: var(--s-4);
 }
+
+/* ==================== صندوق سلة الطلب المتعدد (Multi-Item Order Bundle) ==================== */
+.order-bundle-box {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--s-3);
+  display: grid;
+  gap: var(--s-2);
+  margin-block: var(--s-1);
+}
+.order-bundle-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+.order-bundle-icon {
+  font-size: 1.5rem;
+}
+.bundle-items-list {
+  display: grid;
+  gap: var(--s-2);
+  padding-block-start: var(--s-2);
+  border-block-start: 1px dashed var(--border);
+}
+.bundle-item-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--s-2);
+  transition: border-color var(--dur-fast);
+}
+.bundle-item-card:hover {
+  border-color: var(--teal-500);
+}
+.bundle-item-media {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-sm);
+  object-fit: cover;
+  flex: none;
+  background: var(--teal-50);
+}
+.bundle-item-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.bundle-item-title {
+  display: block;
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-caption);
+  color: var(--teal-900);
+}
+.bundle-item-meta {
+  display: block;
+  font-size: var(--fs-label);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bundle-item-cost {
+  text-align: end;
+  flex: none;
+}
+.bundle-item-cost .cost-val {
+  display: block;
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-caption);
+  color: var(--teal-900);
+}
+.bundle-item-del-btn {
+  background: transparent;
+  border: 0;
+  color: var(--error);
+  font-size: 1.125rem;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background var(--dur-fast);
+}
+.bundle-item-del-btn:hover {
+  background: #fee;
+}
+
+/* بطاقة مراجعة عناصر الطلب في الخطوة 3 */
+.order-review-bundle-card {
+  background: var(--teal-50);
+  border: 1px solid var(--teal-200);
+  border-radius: var(--r-md);
+  padding: var(--s-3);
+  display: grid;
+  gap: var(--s-2);
+  margin-block-end: var(--s-2);
+}
+.review-bundle-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.review-bundle-items-table {
+  display: grid;
+  gap: var(--s-1);
+}
+.review-bundle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  background: var(--white);
+  padding: var(--s-2);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+}
+.review-bundle-row__info {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.review-bundle-row__num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--teal-700);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: var(--fs-label);
+  font-weight: var(--fw-bold);
+  flex: none;
+}
+.summary-mini-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  background: var(--paper);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-label);
+  margin-bottom: 4px;
+  border: 1px solid var(--border);
+}

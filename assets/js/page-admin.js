@@ -1045,7 +1045,7 @@
   }
 
   function switchContentTab(tab) {
-    let tabs = ["services", "categories", "options", "portfolio"];
+    let tabs = ["services", "categories", "options", "portfolio", "hero"];
     if (tabs.indexOf(tab) === -1) tab = "services";
     state.contentTab = tab;
 
@@ -1063,6 +1063,7 @@
     else if (tab === "categories") renderCategoriesTab();
     else if (tab === "options") renderOptionsTab();
     else if (tab === "portfolio") renderPortfolioTab();
+    else if (tab === "hero") renderHeroTab();
 
     if (location.hash !== "#/content/" + tab && location.hash !== "#/content") {
       history.replaceState(null, "", "#/content/" + tab);
@@ -1599,8 +1600,11 @@
       $("port-title").value = port.title;
       $("port-category").value = port.category;
       $("port-service").value = port.serviceId;
-      $("port-image").value = port.image || "";
-      updatePortPreview();
+      $("port-autoslide").checked = port.autoSlide !== false;
+
+      let imgs = Array.isArray(port.images) && port.images.length > 0 ? port.images.slice() : (port.image ? [port.image] : []);
+      state.portfolioDialogImages = imgs;
+      state.portfolioPrimaryImage = port.image || (imgs[0] || "");
     } else {
       $("port-dlg-title").textContent = "إضافة عمل للمعرض";
       $("port-id").value = "p" + String(state.portfolio.length + 1).padStart(2, "0");
@@ -1608,24 +1612,46 @@
       $("port-title").value = "";
       if (state.categories.length > 0) $("port-category").value = state.categories[0].id;
       if (state.services.length > 0) $("port-service").value = state.services[0].id;
-      $("port-image").value = "";
-      updatePortPreview();
+      $("port-autoslide").checked = true;
+
+      state.portfolioDialogImages = [];
+      state.portfolioPrimaryImage = "";
     }
 
+    $("port-new-img-url").value = "";
+    $("port-image-status").textContent = "";
+    renderPortImagesGrid();
     $("portfolio-dialog").showModal();
   }
 
-  function updatePortPreview() {
-    let url = $("port-image").value.trim();
-    let box = $("port-preview-box");
-    let img = $("port-image-preview");
-    if (url) {
-      img.src = url;
-      box.hidden = false;
-      $("port-image-status").textContent = "";
-    } else {
-      box.hidden = true;
+  function renderPortImagesGrid() {
+    let grid = $("port-images-grid");
+    if (!grid) return;
+
+    if (!Array.isArray(state.portfolioDialogImages) || state.portfolioDialogImages.length === 0) {
+      grid.innerHTML = '<p class="caption muted" style="grid-column:1/-1; padding:var(--s-2); text-align:center;">لم يتم إضافة أي صور بعد. ارفع صورة أو ألصق الرابط بالأعلى.</p>';
+      $("port-image").value = "";
+      return;
     }
+
+    if (!state.portfolioPrimaryImage || state.portfolioDialogImages.indexOf(state.portfolioPrimaryImage) === -1) {
+      state.portfolioPrimaryImage = state.portfolioDialogImages[0];
+    }
+    $("port-image").value = state.portfolioPrimaryImage;
+
+    grid.innerHTML = state.portfolioDialogImages.map(function (imgUrl, idx) {
+      let isPrimary = (imgUrl === state.portfolioPrimaryImage);
+      return (
+        '<div class="port-img-tile' + (isPrimary ? ' is-primary' : '') + '" style="position:relative; border-radius:var(--r-md); overflow:hidden; border:2px solid ' + (isPrimary ? 'var(--primary)' : 'var(--border)') + '; background:#fff; aspect-ratio:1; display:flex; flex-direction:column;">' +
+          '<img src="' + esc(imgUrl) + '" alt="صورة ' + (idx + 1) + '" style="width:100%; height:100%; object-fit:cover;">' +
+          (isPrimary ? '<span style="position:absolute; inset-inline-start:4px; inset-block-start:4px; background:var(--primary); color:#fff; font-size:10px; font-weight:700; padding:2px 6px; border-radius:var(--r-full); box-shadow:0 2px 4px rgba(0,0,0,0.2);">★ الأساسية</span>' : '') +
+          '<div style="position:absolute; inset-inline:4px; inset-block-end:4px; display:flex; gap:4px; justify-content:space-between;">' +
+            (!isPrimary ? '<button type="button" class="btn btn--light btn--xs btn-set-primary" data-idx="' + idx + '" style="padding:2px 6px; font-size:11px;" title="تعيين كصورة غلاف تظهر بالخارج">تعيين كرئيسية</button>' : '<span></span>') +
+            '<button type="button" class="btn btn--danger btn--xs btn-del-img" data-idx="' + idx + '" style="padding:2px 6px; font-size:11px;" title="حذف هذه الصورة">✕</button>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join("");
   }
 
   async function handlePortfolioSubmit(event) {
@@ -1634,21 +1660,25 @@
 
     let id = $("port-id").value.trim();
     let title = $("port-title").value.trim();
-    let img = $("port-image").value.trim();
+    let images = state.portfolioDialogImages || [];
 
-    if (!id || !title || !img) {
-      $("port-alert").textContent = "المعرف والعنوان والصورة مطلوبة.";
+    if (!id || !title || images.length === 0) {
+      $("port-alert").textContent = "المعرف والعنوان وإضافة صورة واحدة على الأقل مطلوبة.";
       $("port-alert").hidden = false;
       return;
     }
+
+    let primaryImage = state.portfolioPrimaryImage || images[0];
 
     let payload = {
       id: id,
       title: title,
       category: $("port-category").value,
       serviceId: $("port-service").value,
-      image: img,
-      sample: true
+      image: primaryImage,
+      images: images,
+      autoSlide: $("port-autoslide").checked,
+      sample: false
     };
 
     let btn = $("port-submit");
@@ -1662,13 +1692,30 @@
       updateContentCounts();
       renderPortfolioTab();
       $("portfolio-dialog").close();
-      showToast("تم حفظ عمل المعرض بنجاح");
+      showToast("تم حفظ عمل المعرض وصوره المتعددة بنجاح ✓");
     } catch (err) {
       console.log("Save portfolio error:", err);
       $("port-alert").textContent = "تعذر الحفظ: " + friendlyError(err.message);
       $("port-alert").hidden = false;
     } finally {
       setLoading(btn, false);
+    }
+  }
+
+  async function renderHeroTab() {
+    let input = $("hero-image-input");
+    let preview = $("hero-image-preview");
+    let status = $("hero-save-status");
+    if (!input || !preview) return;
+
+    try {
+      let settings = await getSettings();
+      let heroUrl = settings.heroImage || "assets/img/hoodie-men.jpg";
+      input.value = heroUrl;
+      preview.src = heroUrl;
+      if (status) status.textContent = "";
+    } catch (e) {
+      console.log("Failed to load hero image setting:", e);
     }
   }
 
@@ -1683,11 +1730,52 @@
     let file = event.target.files && event.target.files[0];
     if (!file) return;
 
+    if (folder === "portfolio") {
+      let statusEl = $("port-image-status");
+      statusEl.textContent = "جارٍ رفع الصورة إلى المعرض...";
+      try {
+        let res = await uploadContentImage(file, "portfolio");
+        state.portfolioDialogImages.push(res.url);
+        if (!state.portfolioPrimaryImage) {
+          state.portfolioPrimaryImage = res.url;
+        }
+        renderPortImagesGrid();
+        statusEl.textContent = "تم رفع الصورة وإضافتها للمعرض بنجاح ✓";
+        showToast("تمت إضافة صورة جديدة للعمل: " + file.name);
+      } catch (err) {
+        console.log("Portfolio image upload failed:", err);
+        statusEl.textContent = "فشل الرفع: " + friendlyError(err.message);
+        showToast("فشل رفع الصورة: " + friendlyError(err.message), "error");
+      } finally {
+        event.target.value = "";
+      }
+      return;
+    }
+
+    if (folder === "hero") {
+      let statusEl = $("hero-save-status");
+      statusEl.textContent = "جارٍ رفع صورة الهيرو...";
+      try {
+        let res = await uploadContentImage(file, "hero");
+        $("hero-image-input").value = res.url;
+        $("hero-image-preview").src = res.url;
+        statusEl.textContent = "تم الرفع بنجاح ✓ اضغط «حفظ صورة الهيرو» للاعتماد.";
+        showToast("تم رفع صورة الهيرو بنجاح");
+      } catch (err) {
+        console.log("Hero image upload failed:", err);
+        statusEl.textContent = "فشل الرفع: " + friendlyError(err.message);
+        showToast("فشل رفع صورة الهيرو: " + friendlyError(err.message), "error");
+      } finally {
+        event.target.value = "";
+      }
+      return;
+    }
+
     let isSvc = folder === "services";
-    let statusEl = isSvc ? $("svc-image-status") : $("port-image-status");
-    let inputEl = isSvc ? $("svc-image") : $("port-image");
-    let boxEl = isSvc ? $("svc-preview-box") : $("port-preview-box");
-    let previewEl = isSvc ? $("svc-image-preview") : $("port-image-preview");
+    let statusEl = $("svc-image-status");
+    let inputEl = $("svc-image");
+    let boxEl = $("svc-preview-box");
+    let previewEl = $("svc-image-preview");
 
     boxEl.hidden = false;
     statusEl.textContent = "جارٍ رفع الصورة إلى السحابة...";
@@ -2086,8 +2174,77 @@
 
     $("portfolio-form").addEventListener("submit", handlePortfolioSubmit);
     $("port-cancel").addEventListener("click", function () { $("portfolio-dialog").close(); });
-    $("port-image").addEventListener("input", updatePortPreview);
     $("port-image-file").addEventListener("change", function (e) { handleImageUpload(e, "portfolio"); });
+
+    let portAddImgBtn = $("port-add-img-btn");
+    if (portAddImgBtn) {
+      portAddImgBtn.addEventListener("click", function () {
+        let val = ($("port-new-img-url").value || "").trim();
+        if (!val) { showToast("يرجى كتابة أو لصق رابط الصورة أولاً", "error"); return; }
+        state.portfolioDialogImages = state.portfolioDialogImages || [];
+        state.portfolioDialogImages.push(val);
+        if (!state.portfolioPrimaryImage) state.portfolioPrimaryImage = val;
+        $("port-new-img-url").value = "";
+        renderPortImagesGrid();
+        showToast("تمت إضافة الصورة لقائمة صور العمل");
+      });
+    }
+
+    let portImagesGrid = $("port-images-grid");
+    if (portImagesGrid) {
+      portImagesGrid.addEventListener("click", function (e) {
+        let btn = e.target.closest("button");
+        if (!btn) return;
+        let idx = parseInt(btn.dataset.idx, 10);
+        if (isNaN(idx)) return;
+
+        if (btn.classList.contains("btn-set-primary")) {
+          state.portfolioPrimaryImage = state.portfolioDialogImages[idx];
+          renderPortImagesGrid();
+          showToast("تم تحديد هذه الصورة كغلاف أساسي للعمل ★");
+        } else if (btn.classList.contains("btn-del-img")) {
+          let removed = state.portfolioDialogImages.splice(idx, 1)[0];
+          if (state.portfolioPrimaryImage === removed) {
+            state.portfolioPrimaryImage = state.portfolioDialogImages[0] || "";
+          }
+          renderPortImagesGrid();
+          showToast("تم حذف الصورة من القائمة");
+        }
+      });
+    }
+
+    // أحداث صورة الهيرو
+    let heroInput = $("hero-image-input");
+    let heroPreview = $("hero-image-preview");
+    let heroFile = $("hero-image-file");
+    let saveHeroBtn = $("save-hero-image-btn");
+
+    if (heroInput && heroPreview) {
+      heroInput.addEventListener("input", function () {
+        let val = heroInput.value.trim();
+        if (val) heroPreview.src = val;
+      });
+    }
+    if (heroFile) {
+      heroFile.addEventListener("change", function (e) { handleImageUpload(e, "hero"); });
+    }
+    if (saveHeroBtn && heroInput) {
+      saveHeroBtn.addEventListener("click", async function () {
+        let val = heroInput.value.trim();
+        if (!val) { showToast("يرجى إدخال رابط أو رفع صورة للهيرو", "error"); return; }
+        setLoading(saveHeroBtn, true);
+        try {
+          await adminSaveSetting("heroImage", val);
+          let status = $("hero-save-status");
+          if (status) status.textContent = "تم الحفظ بنجاح ✓ وتحديث واجهة الموقع فوراً.";
+          showToast("تم حفظ صورة الهيرو بنجاح ✓");
+        } catch (err) {
+          handleError(err);
+        } finally {
+          setLoading(saveHeroBtn, false);
+        }
+      });
+    }
 
     $("confirm-ok-btn").addEventListener("click", async function () {
       if (typeof state.confirmAction === "function") {

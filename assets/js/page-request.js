@@ -6,6 +6,7 @@ let allCategories = [];
 let allOptions = {};
 let selectedService = null;
 let currentStep = 1;
+let orderItems = [];
 
 // مسودة الطلب المتوافقة مع schema.js وتوقيع submitOrder
 let draft = {
@@ -313,7 +314,8 @@ function selectService(service, scrollIntoWizard) {
   // تحديث مواضع الطباعة بناء على الخدمة الحالية
   updatePlacementsForService(service);
 
-  // تحديث الملخص ومساعد الجاهزية
+  // تحديث الملخص ومساعد الجاهزية وسلة الطلب المجمع
+  renderOrderBundleUI();
   updateSummary();
   updateReadinessFeedback();
 
@@ -876,22 +878,250 @@ function applyFix(issueIndex) {
   showToast("تم تطبيق التصحيح السريع بنجاح.", "success");
 }
 
-function updateSummary() {
-  if (!selectedService) return;
+// -------------------------------------------------------------
+// 7. مساعد جاهزية الطلب والملخص اللحظي وسلة المنتجات المجمعة
+// -------------------------------------------------------------
 
-  // اسم الخدمة
-  let sName = document.getElementById("summary-service-name");
-  if (sName) sName.textContent = selectedService.name;
+function formatItemSpecs(item) {
+  if (!item || !item.specs) return "مواصفات قياسية";
+  let parts = [];
+  let sp = item.specs;
+
+  if (sp.color) {
+    let cObj = (allOptions.colors || []).find(function (c) { return c.id === sp.color; });
+    parts.push("اللون: " + (cObj ? cObj.name : sp.color));
+  }
+
+  if (sp.sizes) {
+    let sList = Object.keys(sp.sizes)
+      .filter(function (k) { return sp.sizes[k] > 0; })
+      .map(function (k) { return k + ":" + sp.sizes[k]; });
+    if (sList.length > 0) parts.push("المقاسات: [" + sList.join("، ") + "]");
+  }
+
+  if (sp.placements && sp.placements.length > 0) {
+    let allPlacements = allOptions.placements || [];
+    let pNames = sp.placements.map(function (pKey) {
+      let found = allPlacements.find(function (x) { return x.id === pKey; });
+      return found ? found.name : pKey;
+    });
+    parts.push("المواضع: " + pNames.join(" + "));
+  }
+
+  if (sp.phoneModel) parts.push("طراز: " + sp.phoneModel);
+  if (sp.customText) parts.push('نص: "' + sp.customText + '"');
+  if (sp.width && sp.height) parts.push("أبعاد: " + sp.width + "×" + sp.height + " " + (sp.unit || "سم"));
+
+  return parts.length > 0 ? parts.join(" • ") : "مواصفات قياسية";
+}
+
+function captureCurrentItem() {
+  if (!selectedService) return null;
+  let qty = parseInt(draft.quantity, 10) || 1;
+  let unitPrice = selectedService.priceFrom || 100;
+  let descVal = document.getElementById("order-desc-input") ? document.getElementById("order-desc-input").value.trim() : "";
+
+  return {
+    id: "item_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
+    serviceId: selectedService.id,
+    serviceName: selectedService.name,
+    serviceImage: selectedService.image || PLACEHOLDER_SVG,
+    quantity: qty,
+    unitPrice: unitPrice,
+    estimatedTotal: unitPrice * qty,
+    specs: JSON.parse(JSON.stringify(draft.specs || {})),
+    itemNote: descVal
+  };
+}
+
+function renderOrderBundleUI() {
+  let countBadge = document.getElementById("bundle-items-count-badge");
+  let list = document.getElementById("bundle-items-list");
+  let step3Table = document.getElementById("step3-bundle-items-table");
+  let step3Badge = document.getElementById("step3-total-items-badge");
+  let bundleRow = document.getElementById("summary-bundle-row");
+  let bundleLabel = document.getElementById("summary-bundle-label");
+  let miniContainer = document.getElementById("summary-bundle-items-mini");
+  let anotherBtnStep1 = document.getElementById("btn-add-another-item-step1");
+
+  let totalQty = orderItems.reduce(function (sum, it) { return sum + it.quantity; }, 0);
+  let totalCost = orderItems.reduce(function (sum, it) { return sum + it.estimatedTotal; }, 0);
+
+  if (countBadge) {
+    if (orderItems.length === 0) {
+      countBadge.textContent = "يمكنك دمج أكثر من منتج (تيشيرتات + كابات + هوديز) في أمر تشغيل واحد";
+    } else {
+      countBadge.innerHTML = 'تمت إضافة <strong style="color:var(--teal-900)">' + orderItems.length + ' منتجات</strong> إلى الطلب • إجمالي <span class="num">' + totalQty + '</span> قطعة (' + totalCost.toLocaleString("en-US") + ' ج.م)';
+    }
+  }
+
+  if (anotherBtnStep1) {
+    anotherBtnStep1.style.display = "inline-flex";
+  }
+
+  if (list) {
+    if (orderItems.length === 0) {
+      list.style.display = "none";
+      list.innerHTML = "";
+    } else {
+      list.style.display = "grid";
+      list.innerHTML = orderItems.map(function (it, idx) {
+        return (
+          '<div class="bundle-item-card" data-item-id="' + it.id + '">' +
+            '<img class="bundle-item-media" src="' + escapeHtml(it.serviceImage) + '" alt="' + escapeHtml(it.serviceName) + '" onerror="this.onerror=null; this.src=\'' + PLACEHOLDER_SVG + '\';">' +
+            '<div class="bundle-item-info">' +
+              '<span class="bundle-item-title">' + (idx + 1) + '. ' + escapeHtml(it.serviceName) + '</span>' +
+              '<span class="bundle-item-meta">' + escapeHtml(formatItemSpecs(it)) + '</span>' +
+              '<span class="caption" style="color:var(--teal-700)">الكمية: <strong class="num">' + it.quantity + '</strong> قطعة</span>' +
+            '</div>' +
+            '<div class="bundle-item-cost">' +
+              '<span class="cost-val num">' + it.estimatedTotal.toLocaleString("en-US") + ' ج.م</span>' +
+              '<span class="caption">(' + it.unitPrice + ' ج.م/ق)</span>' +
+            '</div>' +
+            '<button type="button" class="bundle-item-del-btn" onclick="removeItemFromBundle(\'' + it.id + '\')" title="حذف هذا المنتج من الطلب">' +
+              '✕' +
+            '</button>' +
+          '</div>'
+        );
+      }).join("");
+    }
+  }
+
+  // مراجعة الطلب في الخطوة 3
+  if (step3Table) {
+    let itemsToReview = orderItems.length > 0 ? orderItems : (selectedService ? [captureCurrentItem()].filter(Boolean) : []);
+    let reviewTotalQty = itemsToReview.reduce(function (s, x) { return s + x.quantity; }, 0);
+    let reviewTotalCost = itemsToReview.reduce(function (s, x) { return s + x.estimatedTotal; }, 0);
+
+    if (step3Badge) {
+      step3Badge.textContent = itemsToReview.length + " منتج (" + reviewTotalQty + " قطعة - " + reviewTotalCost.toLocaleString("en-US") + " ج.م)";
+    }
+
+    if (itemsToReview.length === 0) {
+      step3Table.innerHTML = '<div class="empty"><p>لم يتم اختيار منتجات بعد.</p></div>';
+    } else {
+      step3Table.innerHTML = itemsToReview.map(function (it, idx) {
+        return (
+          '<div class="review-bundle-row">' +
+            '<div class="review-bundle-row__info">' +
+              '<span class="review-bundle-row__num">' + (idx + 1) + '</span>' +
+              '<div>' +
+                '<strong style="color:var(--teal-900); font-size:var(--fs-caption)">' + escapeHtml(it.serviceName) + '</strong>' +
+                '<span class="caption" style="display:block; color:var(--text-muted)">' + escapeHtml(formatItemSpecs(it)) + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div style="text-align:end">' +
+              '<span class="badge badge--received num" style="font-size:var(--fs-label)">' + it.quantity + ' قطعة</span>' +
+              '<strong class="num" style="display:block; margin-top:2px; color:var(--teal-900)">' + it.estimatedTotal.toLocaleString("en-US") + ' ج.م</strong>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join("");
+    }
+  }
+
+  // العمود الجانبي (Sidebar)
+  if (bundleRow && bundleLabel) {
+    if (orderItems.length > 1) {
+      bundleRow.style.display = "flex";
+      bundleLabel.textContent = "طلب مجمع (" + orderItems.length + " منتجات)";
+    } else {
+      bundleRow.style.display = "none";
+    }
+  }
+
+  if (miniContainer) {
+    if (orderItems.length > 1) {
+      miniContainer.style.display = "block";
+      miniContainer.innerHTML = orderItems.map(function (it, i) {
+        return (
+          '<div class="summary-mini-item">' +
+            '<span>' + (i + 1) + '. ' + escapeHtml(it.serviceName) + ' (' + it.quantity + 'ق)</span>' +
+            '<strong class="num">' + it.estimatedTotal.toLocaleString("en-US") + ' ج.م</strong>' +
+          '</div>'
+        );
+      }).join("");
+    } else {
+      miniContainer.style.display = "none";
+      miniContainer.innerHTML = "";
+    }
+  }
+}
+
+function saveCurrentItemAndBrowseMore() {
+  if (!selectedService) {
+    showToast("يرجى اختيار خدمة أولاً.", "error");
+    return;
+  }
+
+  let item = captureCurrentItem();
+  if (!item || item.quantity <= 0) {
+    showToast("يرجى تحديد كمية صحيحة للمنتج الحالي.", "error");
+    return;
+  }
+
+  orderItems.push(item);
+  renderOrderBundleUI();
+  updateSummary();
+  showToast("تمت إضافة (" + selectedService.name + ") إلى سلة طلبك! يمكنك الآن اختيار المنتج التالي من الكتالوج.", "success");
+
+  // فتح الكتالوج واختيار منتج آخر
+  expandCatalogBrowser();
+}
+
+function removeItemFromBundle(itemId) {
+  orderItems = orderItems.filter(function (it) { return it.id !== itemId; });
+  renderOrderBundleUI();
+  updateSummary();
+  showToast("تم حذف المنتج من سلة الطلب.", "success");
+}
+
+function proceedToStep2() {
+  // إذا لم يضف العميل أي منتج للسلة حتى الآن، نعتبر المنتج الحالي على الشاشة هو عنصر الطلب
+  if (orderItems.length === 0) {
+    let item = captureCurrentItem();
+    if (item && item.quantity > 0) {
+      orderItems.push(item);
+      renderOrderBundleUI();
+    }
+  }
+  goToStep(2);
+}
+
+function updateSummary() {
+  if (!selectedService && orderItems.length === 0) return;
+
+  let totalQty = 0;
+  let estimatedTotal = 0;
+
+  if (orderItems.length > 0) {
+    totalQty = orderItems.reduce(function (sum, it) { return sum + it.quantity; }, 0);
+    estimatedTotal = orderItems.reduce(function (sum, it) { return sum + it.estimatedTotal; }, 0);
+
+    let sName = document.getElementById("summary-service-name");
+    if (sName) {
+      sName.textContent = orderItems.length === 1 ? orderItems[0].serviceName : (orderItems.length + " منتجات مجمعة");
+    }
+  } else if (selectedService) {
+    totalQty = parseInt(draft.quantity, 10) || 1;
+    let unitPrice = selectedService.priceFrom || 100;
+    estimatedTotal = unitPrice * totalQty;
+
+    let sName = document.getElementById("summary-service-name");
+    if (sName) sName.textContent = selectedService.name;
+  }
 
   // إجمالي الكمية
   let sQty = document.getElementById("summary-quantity");
-  if (sQty) sQty.innerHTML = '<span class="num">' + draft.quantity + '</span> قطعة';
+  if (sQty) sQty.innerHTML = '<span class="num">' + totalQty + '</span> قطعة';
 
   // اللون
   let colorRow = document.getElementById("summary-spec-color-row");
   let colorVal = document.getElementById("summary-color-val");
   if (colorRow && colorVal) {
-    if (draft.specs && draft.specs.color) {
+    if (orderItems.length > 1) {
+      colorRow.style.display = "none";
+    } else if (draft.specs && draft.specs.color) {
       colorRow.style.display = "flex";
       let cObj = (allOptions.colors || []).find(function (c) { return c.id === draft.specs.color; });
       colorVal.textContent = cObj ? cObj.name : draft.specs.color;
@@ -904,19 +1134,23 @@ function updateSummary() {
   let detailRow = document.getElementById("summary-spec-detail-row");
   let detailVal = document.getElementById("summary-spec-detail-val");
   if (detailRow && detailVal) {
-    let text = "";
-    if (selectedService.formType === "apparel") {
-      text = (draft.specs.placements && draft.specs.placements.length > 0)
-        ? draft.specs.placements.join(" + ")
-        : "بدون مواضع";
-    } else if (selectedService.formType === "gift") {
-      text = draft.specs.customText ? 'نص: "' + draft.specs.customText + '"' : "بدون نص مخصص";
-    } else if (selectedService.formType === "sticker") {
-      text = draft.specs.width + " × " + draft.specs.height + " " + (draft.specs.unit || "سم");
-    } else {
-      text = "طلب مخصص";
+    if (orderItems.length > 1) {
+      detailVal.textContent = "مواصفات متعددة لكل منتج";
+    } else if (selectedService) {
+      let text = "";
+      if (selectedService.formType === "apparel") {
+        text = (draft.specs.placements && draft.specs.placements.length > 0)
+          ? draft.specs.placements.join(" + ")
+          : "بدون مواضع";
+      } else if (selectedService.formType === "gift") {
+        text = draft.specs.customText ? 'نص: "' + draft.specs.customText + '"' : "بدون نص مخصص";
+      } else if (selectedService.formType === "sticker") {
+        text = draft.specs.width + " × " + draft.specs.height + " " + (draft.specs.unit || "سم");
+      } else {
+        text = "طلب مخصص";
+      }
+      detailVal.textContent = text;
     }
-    detailVal.textContent = text;
   }
 
   // عدد المرفقات
@@ -931,9 +1165,7 @@ function updateSummary() {
     }
   }
 
-  // حساب السعر التقديري (سعر العينة * الكمية)
-  let unitPrice = selectedService.priceFrom || 100;
-  let estimatedTotal = unitPrice * (parseInt(draft.quantity, 10) || 1);
+  // حساب السعر التقديري
   let totalPriceElem = document.getElementById("summary-total-price");
   if (totalPriceElem) {
     totalPriceElem.innerHTML = '<span class="num">' + estimatedTotal.toLocaleString("en-US") + '</span> ج.م';
@@ -942,7 +1174,11 @@ function updateSummary() {
   // شريط الموبايل الثابت
   let stickyTitle = document.getElementById("sticky-product-title");
   let stickyPrice = document.getElementById("sticky-product-price");
-  if (stickyTitle) stickyTitle.textContent = selectedService.name;
+  if (stickyTitle) {
+    stickyTitle.textContent = orderItems.length > 1
+      ? ("طلب مجمع (" + orderItems.length + " منتجات)")
+      : (selectedService ? selectedService.name : "الطلب المختار");
+  }
   if (stickyPrice) {
     stickyPrice.innerHTML = 'المجموع التقديري: <span class="num">' + estimatedTotal.toLocaleString("en-US") + '</span> ج.م';
   }
@@ -971,7 +1207,6 @@ function goToStep(stepNumber) {
 
   // تحديث مؤشرات الخطوات
   for (let s = 1; s <= 3; s++) {
-    let navItem = document.getElementById("step-nav-1");
     let navElem = document.getElementById("step-nav-" + s);
     let paneElem = document.getElementById("step-pane-" + s);
 
@@ -993,6 +1228,10 @@ function goToStep(stepNumber) {
     }
   }
 
+  // تحديث سلة المنتجات عند التنقل للخطوة 3
+  renderOrderBundleUI();
+  updateSummary();
+
   // التمرير لأعلى المعالج
   let wizard = document.getElementById("wizard-section");
   if (wizard) {
@@ -1003,8 +1242,10 @@ function goToStep(stepNumber) {
 }
 
 function handleStickyAction() {
-  if (currentStep < 3) {
-    goToStep(currentStep + 1);
+  if (currentStep === 1) {
+    proceedToStep2();
+  } else if (currentStep === 2) {
+    goToStep(3);
   } else {
     handleOrderSubmit();
   }
@@ -1015,7 +1256,15 @@ function handleStickyAction() {
 // -------------------------------------------------------------
 
 async function handleOrderSubmit() {
-  console.log("Submitting order draft:", draft);
+  console.log("Submitting order draft, items count:", orderItems.length);
+
+  // إذا كانت السلة فارغة، نلتقط المنتج الحالي
+  if (orderItems.length === 0) {
+    let curItem = captureCurrentItem();
+    if (curItem && curItem.quantity > 0) {
+      orderItems.push(curItem);
+    }
+  }
 
   // تحديث بيانات العميل من الحقول
   let nameInput = document.getElementById("customer-name-input");
@@ -1033,6 +1282,9 @@ async function handleOrderSubmit() {
   let baseDesc = descInput ? descInput.value.trim() : "";
   let extraNotes = notesInput ? notesInput.value.trim() : "";
   draft.description = baseDesc + (extraNotes ? " | ملاحظات: " + extraNotes : "");
+
+  draft.items = orderItems;
+  draft.quantity = orderItems.reduce(function (sum, it) { return sum + it.quantity; }, 0);
 
   let check = checkReadiness(draft, selectedService);
   if (!check.ready) {
@@ -1080,7 +1332,16 @@ function showOrderSuccessScreen(order) {
   }
 
   if (whatsappBtn) {
-    let msg = "مرحباً استوديو يوزرسيف، قمت بتقديم طلب جديد برقم " + order.id + " لخدمة " + (selectedService ? selectedService.name : "") + ". أرجو مراجعته وتأكيده.";
+    let itemsText = "";
+    if (orderItems.length > 0) {
+      itemsText = "\n\nقائمة المنتجات المطلوبة:\n" + orderItems.map(function (it, idx) {
+        return (idx + 1) + ". " + it.serviceName + " (عدد " + it.quantity + " قطعة • " + formatItemSpecs(it) + ")";
+      }).join("\n");
+      let totalPieces = orderItems.reduce(function (s, x) { return s + x.quantity; }, 0);
+      let totalEst = orderItems.reduce(function (s, x) { return s + x.estimatedTotal; }, 0);
+      itemsText += "\n\nالإجمالي: " + totalPieces + " قطعة • القيمة التقديرية: " + totalEst.toLocaleString("en-US") + " ج.م";
+    }
+    let msg = "مرحباً استوديو يوزرسيف، قمت بتقديم طلب جديد برقم " + order.id + itemsText + "\n\nأرجو مراجعته وتأكيده لبدء التنفيذ.";
     whatsappBtn.href = "https://wa.me/201116891025?text=" + encodeURIComponent(msg);
   }
 

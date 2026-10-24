@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/page-home.css">
+  <link rel="stylesheet" href="assets/css/page-portfolio.css">
 
   <!-- سكربتات البيانات وقواعد المشروع -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -206,7 +207,7 @@
           </div>
         </div>
 
-        <div class="services-catalog-grid">
+        <div class="services-catalog-grid" id="home-catalog-grid">
           <!-- 1. تيشيرتات مخصصة -->
           <article class="catalog-card reveal">
             <div class="catalog-card__media">
@@ -620,7 +621,46 @@
       </div>
     </section>
 
-  </main>
+  <!-- نافذة تفاصيل العمل (Lightbox) على الصفحة الرئيسية -->
+  <dialog class="portfolio-modal" id="home-work-dialog" aria-labelledby="home-work-title">
+    <div class="portfolio-modal__media">
+      <img class="portfolio-modal__img" id="home-work-img" alt="" decoding="async">
+      <span class="badge badge--received portfolio-modal__sample" id="home-work-sample" hidden>عمل معتمد</span>
+      <button class="portfolio-modal__close" type="button" id="home-work-close" aria-label="إغلاق النافذة">✕</button>
+      <!-- أدوات التنقل بين صور المشروع المتعددة -->
+      <button class="modal-gallery-nav modal-gallery-nav--prev" id="home-gallery-prev" aria-label="الصورة السابقة" style="display:none">‹</button>
+      <button class="modal-gallery-nav modal-gallery-nav--next" id="home-gallery-next" aria-label="الصورة التالية" style="display:none">›</button>
+      <div class="modal-gallery-dots" id="home-gallery-dots" style="display:none"></div>
+    </div>
+
+    <div class="portfolio-modal__body">
+      <div>
+        <span class="label portfolio-modal__tag" id="home-work-tag"></span>
+        <h2 class="h3" id="home-work-title"></h2>
+      </div>
+
+      <dl class="portfolio-modal__specs">
+        <div id="home-work-service-row">
+          <dt>الخدمة</dt>
+          <dd id="home-work-service"></dd>
+        </div>
+        <div>
+          <dt>التصنيف</dt>
+          <dd id="home-work-category"></dd>
+        </div>
+      </dl>
+
+      <p class="caption" id="home-work-note">اضغط «اطلب مماثلًا» لبدء طلب جديد يستخدم هذا العمل كمرجع مباشر بمشغل يوزرسيف بأسوان.</p>
+
+      <div class="portfolio-modal__actions">
+        <button class="btn btn--ghost" type="button" id="home-work-dismiss">إغلاق</button>
+        <a class="btn btn--primary" id="home-work-request" href="services.html#wizard-section">
+          <span>اطلب مماثلًا لهذا العمل</span>
+          <span class="material-symbols-outlined icon-dir" style="font-size:18px">arrow_back</span>
+        </a>
+      </div>
+    </div>
+  </dialog>
 
   <!-- الفوتر المشترك (يُحقن عبر layout.js) -->
   <div id="site-footer"></div>
